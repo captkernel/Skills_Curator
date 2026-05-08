@@ -1,7 +1,7 @@
 {
   "name": "skills-curator",
-  "version": "4.0.0",
-  "description": "Decide once, re-decide never. Evaluates Claude skills against your project before installing, persists every decision (pros, cons, conflicts, security findings), and exports them as PR-ready markdown artifacts.",
+  "version": "4.1.0",
+  "description": "Decide once, re-decide never. Proactive Claude skill curator with auto-activation: fingerprints your project, surfaces relevant skills on drift, listens for symptoms ('slow tests', 'ugly UI') and maps them to skills. Evaluates before installing, persists every decision, exports PR-ready markdown.",
   "author": {
     "name": "captkernel",
     "url": "https://github.com/captkernel"
