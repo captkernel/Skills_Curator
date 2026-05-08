@@ -14,7 +14,9 @@ Usage:
   python registry.py --search <term>
   python registry.py --detect                   # Scan project for installed skills
   python registry.py --status                   # Project vs global view
-  python registry.py --recommend [--refresh]    # Project-aware recommendations
+  python registry.py --auto [--refresh]         # PROACTIVE: scans only on drift, surfaces top picks
+  python registry.py --symptoms "slow tests"    # Map a complaint to skill categories
+  python registry.py --recommend [--refresh]    # Project-aware recommendations (full output)
   python registry.py --discover [term]          # Search live catalog
   python registry.py --find [term]              # Alias for --discover
   python registry.py --scan                     # Project tech signals only
@@ -63,6 +65,7 @@ for _stream in (sys.stdout, sys.stderr):
         except Exception:
             pass
 
+import hashlib
 import json
 import os
 import re
@@ -72,7 +75,7 @@ import urllib.error
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-VERSION = "4.0.0"
+VERSION = "4.1.0"
 SCHEMA_VERSION = "3.0"
 
 SKILL_DIR            = Path.home() / ".claude" / "skills" / "skills-curator"
@@ -80,6 +83,7 @@ SCRIPTS_DIR          = SKILL_DIR / "scripts"
 REGISTRY_FILE        = SKILL_DIR / "registry.json"
 CATALOG_FILE         = SKILL_DIR / "catalog.json"
 RECOMMENDATIONS_FILE = SKILL_DIR / "recommendations.json"
+AUTO_STATE_FILE      = SKILL_DIR / "auto_state.json"
 
 GIST_ID            = os.environ.get("SKILLS_CURATOR_GIST_ID", "")
 GITHUB_TOKEN       = os.environ.get("SKILLS_CURATOR_GITHUB_TOKEN", "")
@@ -264,6 +268,7 @@ def cmd_init() -> None:
         print(f"   Telemetry: {'⬜ disabled (SKILLS_NO_TELEMETRY=1)' if NO_TELEMETRY else '✅ enabled'}")
     print()
     print(f"  Registry  : --list  --search  --detect  --status  --validate")
+    print(f"  Intel     : --auto  --symptoms \"<phrase>\"")
     print(f"  Discovery : --recommend  --discover [term]  --scan")
     print(f"  Safety    : --check <path>  --audit  --health  --stale")
     print(f"  Authoring : --author  --migrate <agent>")
@@ -827,6 +832,222 @@ def _load_catalog(refresh: bool = False) -> list[dict]:
     with open(CATALOG_FILE, "w", encoding="utf-8") as f:
         json.dump({"fetched_at": datetime.now().isoformat(), "skills": KNOWN_SKILLS}, f, indent=2)
     return list(KNOWN_SKILLS)
+
+
+# ─── Intelligence layer ───────────────────────────────────────────────────────
+# The proactive flow. Skills Curator's USP is judgment that activates without
+# being asked. Two entry points:
+#   --auto      : fingerprint the project, re-run recommendations only on drift
+#   --symptoms  : map a user complaint ("slow tests", "ugly UI") to skill tags
+
+# Files whose presence or mtime change implies the project has shifted enough
+# to re-recommend. Adding/removing a dependency or framework should trip this;
+# editing a single source file should not.
+_FINGERPRINT_FILES = (
+    "package.json", "package-lock.json", "yarn.lock", "pnpm-lock.yaml",
+    "requirements.txt", "pyproject.toml", "Pipfile", "Pipfile.lock", "poetry.lock",
+    "go.mod", "go.sum", "Cargo.toml", "Cargo.lock",
+    "Gemfile", "Gemfile.lock", "composer.json",
+    "tsconfig.json", "tailwind.config.js", "tailwind.config.ts",
+    "next.config.js", "next.config.ts", "vite.config.ts", "vite.config.js",
+    "Dockerfile", "docker-compose.yml",
+    "CLAUDE.md", "AGENTS.md", "README.md",
+)
+
+
+def _project_fingerprint(project_dir: Path) -> str:
+    """Stable hash of (key file paths + their mtimes). Changes when deps,
+    config, or top-level docs change — not when ordinary source files change."""
+    parts: list[str] = []
+    for name in _FINGERPRINT_FILES:
+        p = project_dir / name
+        if p.exists():
+            try:
+                parts.append(f"{name}:{int(p.stat().st_mtime)}:{p.stat().st_size}")
+            except OSError:
+                pass
+    # Workflow dir presence (don't hash mtimes — yaml edits shouldn't trigger)
+    if (project_dir / ".github" / "workflows").is_dir():
+        parts.append(".github/workflows:exists")
+    return hashlib.sha1("|".join(parts).encode()).hexdigest()[:16] if parts else ""
+
+
+def _load_auto_state() -> dict:
+    if not AUTO_STATE_FILE.exists():
+        return {}
+    try:
+        with open(AUTO_STATE_FILE, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _save_auto_state(state: dict) -> None:
+    SKILL_DIR.mkdir(parents=True, exist_ok=True)
+    with open(AUTO_STATE_FILE, "w", encoding="utf-8") as f:
+        json.dump(state, f, indent=2)
+
+
+def cmd_auto(project_dir: Path | None = None, refresh: bool = False) -> None:
+    """Proactive entry point. Call this at session start in any project — it
+    decides whether a re-scan is needed by comparing the project fingerprint
+    against the last known state. Outputs the prioritized 'next actions' only
+    when something actually changed."""
+    project_dir = project_dir or Path.cwd()
+    proj_key = str(project_dir.resolve())
+    fp_now = _project_fingerprint(project_dir)
+
+    if not fp_now:
+        print("⚠️  No project signals to fingerprint (no package.json, requirements.txt, CLAUDE.md, etc.)")
+        print("   Run --recommend explicitly if you want to scan anyway.")
+        return
+
+    state = _load_auto_state()
+    prev = state.get(proj_key, {})
+    fp_last = prev.get("fingerprint")
+
+    if fp_now == fp_last and not refresh:
+        last_top = prev.get("top", [])
+        scanned_at = prev.get("scanned_at", "?")
+        if last_top:
+            print(f"📋 No project changes since {scanned_at}. Last top picks: {', '.join(last_top)}")
+            print(f"   Re-scan with --auto --refresh, or run --recommend for full output.")
+        else:
+            print(f"📋 No project changes since {scanned_at}. No recommendations on file.")
+        return
+
+    # Drift detected (or first scan, or forced refresh) — run the full pipeline
+    if fp_last and fp_last != fp_now:
+        print(f"🔄 Project changed since last scan — re-evaluating recommendations...\n")
+    elif refresh:
+        print(f"🔄 Forced re-scan...\n")
+    else:
+        print(f"🔍 First scan of {project_dir.name} — learning the stack...\n")
+
+    signals = _scan_project(project_dir)
+    if not signals.get("tags"):
+        print("⚠️  No tags extracted. Add a CLAUDE.md or README.md describing the project.")
+        return
+
+    print(f"   Detected: {', '.join(sorted(signals['tags'])[:8])}\n")
+
+    catalog = _load_catalog(refresh)
+    registry_ids = {s["id"] for s in load_registry().get("skills", [])}
+    existing = set(signals.get("existing_skills", [])) | registry_ids
+    project_tags = set(signals["tags"])
+
+    scored: list[tuple[int, set, dict]] = []
+    for skill in catalog:
+        if skill["id"] in existing:
+            continue
+        overlap = project_tags & set(skill.get("tags", []))
+        if not overlap:
+            continue
+        score = len(overlap) * 10
+        score += {"official": 20, "high": 15, "medium": 5, "community": 2}.get(skill.get("trust", ""), 0)
+        scored.append((score, overlap, skill))
+    scored.sort(key=lambda x: -x[0])
+
+    top3 = scored[:3]
+    state[proj_key] = {
+        "fingerprint": fp_now,
+        "scanned_at": str(date.today()),
+        "top": [sk["id"] for _, _, sk in top3],
+    }
+    _save_auto_state(state)
+
+    if not top3:
+        print(f"  ✅ Stack is well-covered. No new skill suggestions.\n")
+        print(f"     Re-run --auto whenever dependencies change.")
+        return
+
+    trust_icons = {"official": "🏛️", "high": "✅", "medium": "🟡", "community": "⬜", "unknown": "❓"}
+    print(f"💡 Top {len(top3)} skill(s) that fit this project:\n")
+    for i, (_, overlap, sk) in enumerate(top3, 1):
+        t = trust_icons.get(sk.get("trust", ""), "❓")
+        why = ", ".join(sorted(overlap)[:3])
+        print(f"  {i}. {t} {sk['name']}")
+        print(f"     Why     : matches [{why}]")
+        print(f"     What    : {sk.get('description', '')[:80]}")
+        print(f"     Install : {sk['install']}")
+        print()
+    print(f"  Next: /skill-evaluate <id> for any of these, or --recommend for the full list.\n")
+
+
+# Symptom → tag map. Tuned for things users actually say in chat. Keys are
+# substrings (case-insensitive); first match wins.
+_SYMPTOM_MAP: list[tuple[tuple[str, ...], list[str]]] = [
+    (("slow test", "tests are slow", "test suite slow"), ["testing", "performance", "test-performance"]),
+    (("flaky test", "tests fail random"),                 ["testing", "test-stability"]),
+    (("no test", "untested", "missing tests"),            ["testing", "test-coverage", "unit-test"]),
+    (("failing ci", "ci is broken", "ci failing", "broken pipeline"), ["ci-cd", "github-actions"]),
+    (("ugly ui", "messy ui", "design is bad", "looks bad"), ["frontend-design", "design-system", "ui"]),
+    (("manual deploy", "deploying by hand", "no automation"), ["ci-cd", "deploy", "release-automation"]),
+    (("no docs", "missing docs", "doc is bad", "outdated docs"), ["docs", "docgen", "readme-builder"]),
+    (("messy commits", "bad commit messages", "commit history"), ["commit-writer", "conventional-commits"]),
+    (("slow build", "build is slow"),                     ["build-tools", "performance", "vite"]),
+    (("auth broken", "session bug", "login issue"),       ["auth", "session-management"]),
+    (("scraping broken", "can't scrape", "browser auth"), ["scraping", "browser-automation"]),
+    (("memory leak", "out of memory", "oom"),             ["performance", "profiling"]),
+    (("slow api", "endpoint is slow"),                    ["performance", "api", "profiling"]),
+    (("hard to refactor", "spaghetti code"),              ["refactor", "code-quality"]),
+    (("pr review takes", "review takes forever"),         ["pr-review", "code-review"]),
+    (("changelog", "release notes"),                      ["changelog", "release-notes"]),
+    (("accessibility", "a11y"),                           ["accessibility", "ui"]),
+]
+
+
+def cmd_symptoms(symptom: str) -> None:
+    """Map a user-described problem to skill categories and search the catalog.
+    Use this when the user says 'X is slow' / 'X is broken' / 'I wish I had Y'
+    instead of naming a skill directly."""
+    sym_lower = symptom.lower()
+    matched_tags: list[str] = []
+    matched_phrases: list[str] = []
+    for keys, tags in _SYMPTOM_MAP:
+        for k in keys:
+            if k in sym_lower:
+                matched_phrases.append(k)
+                matched_tags.extend(tags)
+                break
+    matched_tags = sorted(set(matched_tags))
+
+    if not matched_tags:
+        print(f"⚠️  No symptom mapping for '{symptom}'.")
+        print(f"   Try: --find {symptom}  (free-text catalog search)")
+        return
+
+    print(f"🩺 Symptom '{symptom}' → tags: {', '.join(matched_tags)}\n")
+
+    catalog = _load_catalog()
+    registry_ids = {s["id"] for s in load_registry().get("skills", [])}
+    scored: list[tuple[int, set, dict]] = []
+    for skill in catalog:
+        if skill["id"] in registry_ids:
+            continue
+        overlap = set(matched_tags) & set(skill.get("tags", []))
+        if not overlap:
+            continue
+        score = len(overlap) * 10
+        score += {"official": 20, "high": 15, "medium": 5, "community": 2}.get(skill.get("trust", ""), 0)
+        scored.append((score, overlap, skill))
+    scored.sort(key=lambda x: -x[0])
+
+    if not scored:
+        print(f"  No catalog matches for those tags.")
+        print(f"  Consider scaffolding a custom skill: --author")
+        return
+
+    trust_icons = {"official": "🏛️", "high": "✅", "medium": "🟡", "community": "⬜", "unknown": "❓"}
+    print(f"  Candidates:\n")
+    for _, overlap, sk in scored[:5]:
+        t = trust_icons.get(sk.get("trust", ""), "❓")
+        print(f"  {t} {sk['name']}")
+        print(f"     Tags    : {', '.join(sorted(overlap))}")
+        print(f"     What    : {sk.get('description', '')[:80]}")
+        print(f"     Install : {sk['install']}")
+        print()
+    print(f"  Next: /skill-evaluate <id> before installing.")
 
 
 def cmd_recommend(project_dir: Path | None = None,
@@ -1415,6 +1636,11 @@ def main() -> None:
     p.add_argument("--find",       nargs="?", const="", metavar="TERM",
                    help="Alias for --discover (familiar name from npx skills find)")
     p.add_argument("--scan",       action="store_true")
+    # Intelligence layer (proactive)
+    p.add_argument("--auto",       action="store_true",
+                   help="Proactive scan + recommend, only re-runs on project drift")
+    p.add_argument("--symptoms",   metavar="PHRASE",
+                   help="Map a user-described problem ('slow tests', 'ugly UI') to skills")
     p.add_argument("--refresh",    action="store_true")
     p.add_argument("--max",        type=int, default=8)
     p.add_argument("--path",       type=Path, default=None)
@@ -1447,6 +1673,8 @@ def main() -> None:
                                                  pros=_split_csv(args.pros),
                                                  cons=_split_csv(args.cons),
                                                  conflicts=_split_csv(args.conflicts))
+    elif args.auto:                     cmd_auto(proj, args.refresh)
+    elif args.symptoms:                 cmd_symptoms(args.symptoms)
     elif args.recommend:                cmd_recommend(proj, args.refresh, args.max)
     elif args.discover is not None:     cmd_discover(args.discover or None, args.refresh)
     elif args.find is not None:         cmd_discover(args.find or None, args.refresh)
