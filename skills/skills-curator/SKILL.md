@@ -10,7 +10,7 @@ description: >
   evaluate / recommend / audit / check a skill, or wants to migrate skills to
   another agent.
 metadata:
-  version: "4.1.0"
+  version: "4.2.0"
   author: captkernel
   homepage: https://github.com/captkernel/Skills_Curator
   license: MIT
@@ -218,19 +218,44 @@ If the skill isn't registered yet, `--add` it first.
 
 ---
 
+## Customizing an external skill for this project (`--customize`)
+
+When the user wants to install a skill but it ships examples from a stack they don't use (Vue examples in a React project, Django in a FastAPI project), use `--customize` to fork it as a project-tailored version:
+
+```bash
+python registry.py --customize <source>        # source = registered id, local path, or owner/repo@skill
+```
+
+The engine:
+1. Loads the external `SKILL.md`
+2. Scans this project (same signals as `--scan`)
+3. Scores each section by relevance to the project
+4. Emits a customization plan with per-section actions: `keep`, `keep-trim`, `rewrite-stack`, `drop-or-rewrite`, `rewrite-frontmatter`
+5. Writes a fork at `~/.claude/skills/<name>-for-<project>/SKILL.md` containing the plan
+
+**The agent then rewrites each section** per the action column. Sections marked `rewrite-stack` should have their examples rewritten to use this project's framework. Sections marked `drop-or-rewrite` should be dropped or rewritten from scratch. The engine produces the structured plan; the agent does the prose.
+
+Use `--no-fork` to print only the plan without writing the file.
+
+---
+
 ## Common other commands
 
 ```bash
 python registry.py --check <path>              # security scan a folder
 python registry.py --list                      # all registered skills
 python registry.py --discover [term]           # search live catalog
+python registry.py --find [term]               # alias for --discover
 python registry.py --health                    # A-D health per skill
 python registry.py --stale                     # GitHub release version drift
 python registry.py --migrate cursor            # cross-agent copy
 python registry.py --author                    # scaffold new SKILL.md
+python registry.py --customize <source>        # fork external skill for this project
 python registry.py --sync   |   --push         # cross-device Gist sync
 python registry.py --validate --strict         # CI integrity check
 ```
+
+There's also a no-Python companion skill: `skills-curator-lite`. Same model, agent does everything via Bash/Read/Glob/Grep, no engine. Activates on the same triggers but the user must not have Python — or must explicitly choose Lite.
 
 Full reference: `references/commands.md`.
 
