@@ -1,0 +1,72 @@
+name: Skill submission
+description: Suggest a new skill for the built-in catalog
+labels: ["catalog"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Skill name
+      placeholder: Agent Browser
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: GitHub URL or owner/repo shorthand
+      placeholder: vercel-labs/agent-browser
+    validations:
+      required: true
+
+  - type: input
+    id: install
+    attributes:
+      label: Install command
+      placeholder: npx skills add vercel-labs/agent-browser --skill agent-browser
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - capability — gives Claude a new ability
+        - preference — changes how Claude behaves
+    validations:
+      required: true
+
+  - type: dropdown
+    id: trust
+    attributes:
+      label: Trust tier
+      options:
+        - official — Anthropic / Vercel / major vendor
+        - high — established company or widely-adopted community skill
+        - medium — active community contributor
+        - community — open directory, review before installing
+    validations:
+      required: true
+
+  - type: textarea
+    id: tags
+    attributes:
+      label: Tags
+      description: Comma-separated tags used for project-fit matching
+      placeholder: browser, automation, scraping, cdp, testing
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: One-line description
+    validations:
+      required: true
+
+  - type: textarea
+    id: evaluation
+    attributes:
+      label: Your evaluation
+      description: Optional but valuable. Paste the output of `--export-eval` if you've used the skill on a real project.
