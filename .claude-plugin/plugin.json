@@ -1,0 +1,23 @@
+{
+  "name": "skills-curator",
+  "version": "4.0.0",
+  "description": "Decide once, re-decide never. Evaluates Claude skills against your project before installing, persists every decision (pros, cons, conflicts, security findings), and exports them as PR-ready markdown artifacts.",
+  "author": {
+    "name": "captkernel",
+    "url": "https://github.com/captkernel"
+  },
+  "homepage": "https://github.com/captkernel/Skills_Curator",
+  "repository": "https://github.com/captkernel/Skills_Curator",
+  "license": "MIT",
+  "keywords": [
+    "skills-curator",
+    "skill-evaluator",
+    "skill-registry",
+    "claude-code",
+    "claude-skills",
+    "skill-security",
+    "agent-skills",
+    "skill-judgment"
+  ],
+  "skills": ["./skills/skills-curator"]
+}
