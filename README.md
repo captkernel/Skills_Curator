@@ -70,6 +70,29 @@ These three are the intelligence layer. Everything else (evaluate, audit, migrat
 3. **Scans for danger before install.** 14 risk patterns including remote code execution, hardcoded secrets, GitHub PATs, base64 obfuscation, credential-store access. The `/skill-evaluate` command runs this automatically.
 4. **Audits your whole stack in one pass.** Duplicates, preference conflicts, security-unreviewed skills, version drift, low health scores — surfaced together.
 5. **Re-deciding is the bug, not the feature.** When the same skill resurfaces six months later, you read your past judgment in 5 seconds.
+6. **Forks external skills for your project.** `--customize <skill>` reads an external skill, scores each section by project fit, and writes a customized fork at `~/.claude/skills/<name>-for-<project>/SKILL.md`. The agent then rewrites Vue/Angular examples to match your React+Next stack. Section-level surgery, not whole-skill replacement.
+
+---
+
+## Two flavors
+
+| | `skills-curator` (full) | `skills-curator-lite` |
+|---|---|---|
+| Engine | Python 3.10+ (stdlib only) | None — agent does everything via Bash / Read / Glob / Grep |
+| Install | `npx skills add captkernel/Skills_Curator` | Same plugin; or copy `skills/skills-curator-lite/SKILL.md` directly to `~/.claude/skills/skills-curator-lite/` |
+| `--auto` (drift-detected scan) | ✅ | ❌ |
+| `--symptoms` (complaint→skill) | ✅ | ✅ (agent reads embedded table) |
+| `--customize` (project-fork) | ✅ | ❌ |
+| Pre-install security scan | ✅ 14 patterns | ✅ 14 grep patterns embedded in SKILL.md |
+| Persistent registry | ✅ JSON, tested | ✅ JSON, agent-managed |
+| Cross-device Gist sync | ✅ | ❌ |
+| GitHub release-version checks | ✅ | ❌ |
+| Cross-agent migration (9 agents) | ✅ | ❌ |
+| Unit tests | ✅ 26 cases | ❌ (no engine to test) |
+| Speed on large projects | Fast (single Python pass) | Slower (per-file agent calls) |
+| Transparency | Engine code in `scripts/registry.py` | Every step is in the SKILL.md |
+
+The Lite version exists because Python is a barrier some users can't or won't install. Both ship in the same plugin — install either or both. The registries don't conflict (different paths).
 
 ---
 
@@ -189,6 +212,7 @@ python "$R" --remove <skill-id>
 # Cross-agent + authoring
 python "$R" --migrate cursor                      # copy skills to another agent
 python "$R" --author                              # scaffold a new SKILL.md
+python "$R" --customize <source>                  # fork external skill for this project
 
 # Sync
 python "$R" --sync   |   --push                   # private GitHub Gist
