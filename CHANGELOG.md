@@ -2,6 +2,19 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.0] — 2026-05-08
+
+Two big additions: skill customization, and a no-Python companion.
+
+### Added
+- `--customize <source>` — takes an external skill (registered id, local path, or `owner/repo@skill`), scores each section by project fit, and emits a customization plan + a forked `SKILL.md` the agent can rewrite for this specific project's stack. Per-section actions: `keep`, `keep-trim`, `rewrite-stack`, `drop-or-rewrite`, `rewrite-frontmatter`. The engine produces structured artifacts; the agent does the prose rewrite.
+- `--no-fork` flag for `--customize` (preview the plan without writing the fork file).
+- New companion skill: **Skills Curator Lite** at `skills/skills-curator-lite/SKILL.md`. Pure markdown, no Python — the agent reads project files, applies the embedded catalog + symptom map + security patterns, and writes the registry directly via Bash. Use when Python isn't available or you want a transparent flow. Same model, same registry shape.
+- Plugin manifest now registers both skills (`skills-curator` and `skills-curator-lite`) — install one or both.
+
+### Changed
+- SKILL.md gained a "Customizing an external skill" section explaining the customize→rewrite handoff.
+
 ## [4.1.0] — 2026-05-08
 
 The intelligence layer. Skills Curator's USP shifts from *"evaluate when asked"* to *"activate proactively when the project context warrants it."*
