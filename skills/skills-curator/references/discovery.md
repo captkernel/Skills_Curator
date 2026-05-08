@@ -89,6 +89,58 @@ Want me to evaluate any of these against your project goals, or add them to
 your registry?
 ```
 
+### Single-skill response template
+
+When surfacing one specific skill (after `--find` or `--search` returns a clear winner), use this template:
+
+```
+I found a skill that might help: **<Skill Name>** (<trust-emoji> <trust-level>)
+
+What it does: <one-line capability>
+Why it fits: <one-line tie-back to project signals>
+
+Install:
+  npx skills add <owner/repo> --skill <skill-id>
+
+Evaluate first (recommended):
+  /skill-evaluate <skill-id>
+
+Learn more: https://skills.sh/<owner/repo>/<skill-id>
+```
+
+Always offer `/skill-evaluate` before install for anything not 🏛️ Official trust.
+
+---
+
+## Skill Categories
+
+The recommendation engine maps project signals to these domains. Use these category names + example queries when explaining recommendations or running `--find`:
+
+| Category | Project signals that trigger | Example `--find` queries |
+|---|---|---|
+| Web development | `package.json`, React/Next/Vue/Svelte, `tailwind`, `.tsx`/`.jsx` | `react`, `nextjs`, `tailwind`, `frontend-design` |
+| Backend / APIs | FastAPI, Express, Flask, Django, `requirements.txt` with web frameworks | `api`, `rest`, `graphql`, `auth` |
+| Testing | `pytest`, `jest`, `playwright`, `vitest`, `cypress` directories | `testing`, `e2e`, `playwright`, `unit-test` |
+| DevOps / deployment | `Dockerfile`, `.github/workflows/`, Terraform, K8s manifests | `deploy`, `docker`, `kubernetes`, `ci-cd` |
+| Documentation | `docs/`, README-heavy repos, `mkdocs.yml` | `docs`, `readme`, `changelog`, `api-docs` |
+| Code quality | linters in `package.json`/`pyproject.toml`, `.eslintrc`, `.prettierrc` | `review`, `lint`, `refactor`, `best-practices` |
+| Design / UX | Figma exports, `tailwind.config.js`, design tokens | `ui`, `ux`, `design-system`, `accessibility` |
+| Data / scraping | `playwright`, `puppeteer`, `requests`, `beautifulsoup`, `scrapy` | `scraping`, `browser-automation`, `data-extraction` |
+| Productivity / git | many feature branches, frequent PRs, conventional commits | `commit-writer`, `pr-review`, `git-workflow` |
+| Documentation generation | `docusaurus`, `sphinx`, `typedoc` | `docgen`, `api-docs`, `readme-builder` |
+
+If the user's request doesn't map to any category, fall through to `--find <free-text>` and rank results by trust × tag overlap as usual.
+
+---
+
+## Tips for effective searches
+
+1. **Start specific, broaden if empty.** `react testing` first; if zero matches, try `testing`. Don't go broad on the first pass — broad searches return noise.
+2. **Try alternative terms.** Skill authors don't agree on naming. `deploy` / `deployment` / `ci-cd` / `release` may all surface different skills.
+3. **Check official sources first.** `vercel-labs/agent-skills`, `anthropics/skills`, and `microsoft/*` cover most common domains. If the answer is there, stop.
+4. **Use `--scan` to ground the query.** Run `--scan` first, look at the detected tags, and use those as the search vocabulary instead of the user's exact phrasing.
+5. **`--find` and `--discover` are aliases.** Use whichever you remember — same engine.
+
 ---
 
 ## Trust Levels
