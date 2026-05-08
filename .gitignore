@@ -1,0 +1,19 @@
+# Personal registry — never commit
+registry.json
+catalog.json
+recommendations.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Deploy script credentials
+.token
