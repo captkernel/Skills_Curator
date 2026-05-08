@@ -16,6 +16,7 @@ Usage:
   python registry.py --status                   # Project vs global view
   python registry.py --recommend [--refresh]    # Project-aware recommendations
   python registry.py --discover [term]          # Search live catalog
+  python registry.py --find [term]              # Alias for --discover
   python registry.py --scan                     # Project tech signals only
   python registry.py --check <path>             # Security scan a skill folder
   python registry.py --audit                    # Duplicate + conflict detection
@@ -1411,6 +1412,8 @@ def main() -> None:
     # Discovery
     p.add_argument("--recommend",  action="store_true")
     p.add_argument("--discover",   nargs="?", const="", metavar="TERM")
+    p.add_argument("--find",       nargs="?", const="", metavar="TERM",
+                   help="Alias for --discover (familiar name from npx skills find)")
     p.add_argument("--scan",       action="store_true")
     p.add_argument("--refresh",    action="store_true")
     p.add_argument("--max",        type=int, default=8)
@@ -1446,6 +1449,7 @@ def main() -> None:
                                                  conflicts=_split_csv(args.conflicts))
     elif args.recommend:                cmd_recommend(proj, args.refresh, args.max)
     elif args.discover is not None:     cmd_discover(args.discover or None, args.refresh)
+    elif args.find is not None:         cmd_discover(args.find or None, args.refresh)
     elif args.scan:                     cmd_scan(proj)
     elif args.check:                    cmd_check(args.check)
     elif args.audit:                    cmd_audit()
