@@ -1,6 +1,6 @@
 {
   "name": "skills-curator",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "Decide once, re-decide never. Proactive Claude skill curator with auto-activation: fingerprints your project, surfaces relevant skills on drift, listens for symptoms ('slow tests', 'ugly UI') and maps them to skills. Evaluates before installing, persists every decision, exports PR-ready markdown.",
   "author": {
     "name": "captkernel",
@@ -19,5 +19,5 @@
     "agent-skills",
     "skill-judgment"
   ],
-  "skills": ["./skills/skills-curator"]
+  "skills": ["./skills/skills-curator", "./skills/skills-curator-lite"]
 }
