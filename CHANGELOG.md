@@ -2,6 +2,22 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] — 2026-05-08
+
+The intelligence layer. Skills Curator's USP shifts from *"evaluate when asked"* to *"activate proactively when the project context warrants it."*
+
+### Added
+- `--auto` — proactive scan that fingerprints the project (key dep/config/doc files + mtimes) and only re-recommends when the fingerprint changes. Cheap to call on every session start; designed for the agent to run silently without prompting.
+- `--symptoms "<phrase>"` — maps user complaints (*"slow tests"*, *"ugly UI"*, *"manual deploy"*, etc.) to skill categories using a built-in symptom→tag table. 17 symptom patterns covering testing, CI/CD, UI, deploy, docs, commits, performance, auth, scraping, refactor, accessibility.
+- `--find <term>` — explicit alias for `--discover`, matching the verb users learn from `npx skills find`.
+- `auto_state.json` — persists last project fingerprint + top 3 picks per project so drift detection works across sessions.
+- New SKILL.md "Proactive activation" section instructing the agent to run `--auto` at session start in any real project, and `--symptoms` whenever the user describes a pain point instead of naming a skill.
+- New `references/discovery.md` sections: Skill Categories table (10 domains with example queries), single-skill response template, search tips.
+
+### Changed
+- SKILL.md: explicit "When to activate this skill" trigger-phrase list; full 6-step discover→evaluate→install workflow; explicit "no match" fallback (offer task help OR `--author`).
+- Status output (`registry.py` no-args) now lists the Intel verbs alongside Discovery.
+
 ## [4.0.0] — 2026-05-08
 
 First public release.
