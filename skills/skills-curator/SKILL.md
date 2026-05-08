@@ -10,7 +10,7 @@ description: >
   evaluate / recommend / audit / check a skill, or wants to migrate skills to
   another agent.
 metadata:
-  version: "4.0.0"
+  version: "4.1.0"
   author: captkernel
   homepage: https://github.com/captkernel/Skills_Curator
   license: MIT
@@ -43,6 +43,46 @@ Read reference files on demand:
 - `references/evaluation.md` — evaluation format and principles
 - `references/discovery.md` — how recommendations work, response templates, categories
 - `references/schema.md` — registry data model
+
+---
+
+## Proactive activation (the intelligence layer)
+
+**Skills Curator's main USP is judgment that activates without being asked.** Don't wait for the user to say "evaluate this skill" — surface relevant skills the moment a project context implies one would help.
+
+### Run this at the start of any session in a real project
+
+If the working directory contains `CLAUDE.md`, `package.json`, `requirements.txt`, `pyproject.toml`, `go.mod`, or `Cargo.toml`, run **once, silently** at the start of the session:
+
+```bash
+python ~/.claude/skills/skills-curator/scripts/registry.py --auto
+```
+
+`--auto` is fingerprint-based: it only does a full re-scan when the project has actually changed (new dep, new framework, new CLAUDE.md content). Otherwise it prints a one-line "no changes since last scan" and exits. **Cheap to run on every session — designed to be called proactively.**
+
+If `--auto` surfaces top picks, weave them into your first response to the user *as a quiet observation*, not a sales pitch:
+
+> "While we work on this — I noticed you're using Next.js + Tailwind. There's a `frontend-design` skill (🏛️ official) that adds aesthetic guidelines that match your stack. Want me to evaluate it?"
+
+### Re-run when the project shifts
+
+After the user adds/removes a dependency, edits CLAUDE.md, or installs a new framework, run `--auto --refresh`. The fingerprint will detect the drift.
+
+### When the user describes a problem instead of naming a skill
+
+If the user says *"my tests are slow"*, *"deploys are manual"*, *"the UI looks ugly"*, *"no one writes good commit messages"*, or any other complaint that hints at a missing capability, run:
+
+```bash
+python registry.py --symptoms "<their phrase>"
+```
+
+This maps complaints to skill categories using a built-in symptom→tag table and surfaces matching catalog entries. Don't make the user reverse-engineer "is there a skill for X" — listen for symptoms and recommend.
+
+### Don't over-trigger
+
+- Run `--auto` **at most once per session** unless the project actually changes.
+- Run `--symptoms` only when the user expresses a clear pain point. Don't fire it on every passing reference.
+- If `--auto` returns nothing strong, **say nothing**. Silence is a valid answer when the stack is well-covered.
 
 ---
 
