@@ -42,9 +42,20 @@ All commands are CLI flags on `scripts/registry.py`. Slash commands live in `.cl
 | Flag | Purpose |
 |---|---|
 | `--author` | Interactive scaffold (SKILL.md + MANIFEST.yaml + CHANGELOG) |
-| `--migrate AGENT` | Copy all skills to another agent |
 
-Supported `--migrate` agents: `cursor`, `codex`, `windsurf`, `gemini-cli`, `github-copilot`, `opencode`, `cline`, `aider`, `amp`.
+## Platforms (v4.3)
+
+| Flag | Purpose |
+|---|---|
+| `--platforms` | Show detected + primary platforms |
+| `--platforms --verbose` | Show all 55 supported platforms |
+| `--migrate` | Interactive: prints platforms table, prompts for target(s) |
+| `--migrate AGENT` | Single target (e.g. `cursor`) |
+| `--migrate A,B,C` | Multi-target — comma-separated id list |
+| `--migrate detected` | Every platform detected on this machine |
+| `--migrate --all-detected` | Same as above, flag form |
+
+Skills Curator knows 55 platforms (sourced from `vercel-labs/skills` `dist/cli.mjs`). Primary first-class: `claude-code`, `github-copilot`. The full list rendered by `--platforms --verbose` includes: `aider-desk`, `amp`, `antigravity`, `augment`, `bob`, `claude-code`, `openclaw`, `cline`, `codearts-agent`, `codebuddy`, `codemaker`, `codestudio`, `codex`, `command-code`, `continue`, `cortex`, `crush`, `cursor`, `deepagents`, `devin`, `dexto`, `droid`, `firebender`, `forgecode`, `gemini-cli`, `github-copilot`, `goose`, `hermes-agent`, `junie`, `iflow-cli`, `kilo`, `kimi-cli`, `kiro-cli`, `kode`, `mcpjam`, `mistral-vibe`, `mux`, `opencode`, `openhands`, `pi`, `qoder`, `qwen-code`, `replit`, `rovodev`, `roo`, `tabnine-cli`, `trae`, `trae-cn`, `warp`, `windsurf`, `zencoder`, `neovate`, `pochi`, `adal`, plus the cross-tool `agents` convention.
 
 ## Sync
 

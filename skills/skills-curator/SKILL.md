@@ -1,16 +1,17 @@
 ---
 name: skills-curator
 description: >
-  Decide once, re-decide never. Skills Curator evaluates Claude skills against
-  your project goals before installing, persists every decision (pros, cons,
-  conflicts, security findings) in a personal registry, and exports them as
-  PR-ready markdown artifacts. Recommends skills from the live ecosystem
-  ranked by project fit, not popularity.
+  The intelligence layer for Claude skills. Maintains a trust-rated catalog
+  (curated entries + live GitHub topic search), identifies what fits your
+  project (stack, deps, CLAUDE.md), recommends with pros/cons and per-project
+  customization advice, persists every decision so you never re-evaluate, and
+  migrates across 55 supported agent platforms.
   Use when the user mentions a skill, asks "should I install X", asks to
-  evaluate / recommend / audit / check a skill, or wants to migrate skills to
-  another agent.
+  evaluate / recommend / audit / check a skill, asks "what skills fit this
+  project", asks for a list of supported platforms, or wants to migrate skills
+  to another agent.
 metadata:
-  version: "4.2.0"
+  version: "4.4.0"
   author: captkernel
   homepage: https://github.com/captkernel/Skills_Curator
   license: MIT
@@ -43,6 +44,17 @@ Read reference files on demand:
 - `references/evaluation.md` — evaluation format and principles
 - `references/discovery.md` — how recommendations work, response templates, categories
 - `references/schema.md` — registry data model
+
+---
+
+## First activation in a session
+
+The first time this skill activates in a session, open with this two-line orientation **before** answering, then continue with whatever was asked:
+
+> 🧭 *Skills Curator loaded — your intelligence layer for Claude skills.*
+> *I maintain a trust-rated catalog (curated entries + live GitHub topic search), identify what fits your project (stack, deps, CLAUDE.md), and on request return ranked lists with pros, cons, and per-project customization advice — persisting every decision so you don't re-evaluate. Working on your request now.*
+
+Skip the orientation entirely if `--auto` (next section) is about to surface concrete picks — those are more useful than a generic intro. Don't repeat orientation in later messages of the same session.
 
 ---
 
@@ -239,6 +251,28 @@ Use `--no-fork` to print only the plan without writing the file.
 
 ---
 
+## Platform management
+
+Skills Curator knows about every agent platform `skills.sh` supports — 55 in total. Primary first-class support is **Claude Code** and **GitHub Copilot**; everything else is reachable via the same migration verbs.
+
+When the user asks *"where can I install this?"*, *"what agents do I have?"*, or wants to copy a skill across platforms:
+
+```bash
+python registry.py --platforms                  # show detected + primary platforms
+python registry.py --platforms --verbose        # show all 55
+python registry.py --migrate                    # interactive: prints platforms, prompts
+python registry.py --migrate cursor             # single target
+python registry.py --migrate cursor,codex,roo   # multi-target
+python registry.py --migrate detected           # every platform on this machine
+python registry.py --migrate --all-detected     # equivalent flag form
+```
+
+When migrating without an explicit target in a non-TTY context, Skills Curator defaults to `claude-code` (the primary ecosystem). In TTY, it prompts.
+
+If the user asks *"list all supported platforms"*, run `--platforms --verbose`. Don't read the `PLATFORMS` dict by hand — the engine renders it consistently.
+
+---
+
 ## Common other commands
 
 ```bash
@@ -248,14 +282,15 @@ python registry.py --discover [term]           # search live catalog
 python registry.py --find [term]               # alias for --discover
 python registry.py --health                    # A-D health per skill
 python registry.py --stale                     # GitHub release version drift
-python registry.py --migrate cursor            # cross-agent copy
+python registry.py --platforms [--verbose]     # supported agent platforms
+python registry.py --migrate [target[,...]]    # cross-agent copy (multi-target)
 python registry.py --author                    # scaffold new SKILL.md
 python registry.py --customize <source>        # fork external skill for this project
 python registry.py --sync   |   --push         # cross-device Gist sync
 python registry.py --validate --strict         # CI integrity check
 ```
 
-There's also a no-Python companion skill: `skills-curator-lite`. Same model, agent does everything via Bash/Read/Glob/Grep, no engine. Activates on the same triggers but the user must not have Python — or must explicitly choose Lite.
+**`skills-curator-lite` is the default tier** — same intelligence layer, no Python. The agent does everything via Bash/Read/Glob/Grep using embedded catalogs and rules. Use this Python version when you have 100+ skills (single-pass speed beats N agent steps), need cross-device Gist sync, or want regression-tested behavior. Both ship in the plugin and don't conflict (different registry paths).
 
 Full reference: `references/commands.md`.
 

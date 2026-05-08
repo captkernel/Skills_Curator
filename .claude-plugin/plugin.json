@@ -1,7 +1,7 @@
 {
   "name": "skills-curator",
-  "version": "4.2.0",
-  "description": "Decide once, re-decide never. Proactive Claude skill curator with auto-activation: fingerprints your project, surfaces relevant skills on drift, listens for symptoms ('slow tests', 'ugly UI') and maps them to skills. Evaluates before installing, persists every decision, exports PR-ready markdown.",
+  "version": "4.4.0",
+  "description": "Intelligence layer for Claude skills. Maintains a trust-rated catalog (curated + GitHub topic search), recommends what fits your project, returns ranked lists with pros, cons and customization advice, persists every decision, and migrates skills across 55 supported agent platforms. Ships in two tiers: Lite (Python-free, default) and full (Python 3.10+, performance tier).",
   "author": {
     "name": "captkernel",
     "url": "https://github.com/captkernel"
@@ -19,5 +19,5 @@
     "agent-skills",
     "skill-judgment"
   ],
-  "skills": ["./skills/skills-curator", "./skills/skills-curator-lite"]
+  "skills": ["./skills/skills-curator-lite", "./skills/skills-curator"]
 }

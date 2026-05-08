@@ -2,6 +2,52 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.0] — 2026-05-08
+
+The Lite-promotion release. `skills-curator-lite` is now feature-parity with the v4.3 Python engine and ships as the default tier. The Python full version remains available as the performance/regression-tested tier.
+
+### Added (skills-curator-lite v2.0.0)
+- **Feature parity with the Python v4.3 engine.** Lite gains everything that previously needed Python: `--auto`-equivalent project fingerprint via byte-count + prefix comparison (state file at `auto_state.json`), `--customize`-equivalent section-by-section fork generation, GitHub topic-search catalog enrichment via `curl`, multi-target migration, and the 55-platform catalog.
+- **Five verbs** (was three): RECOMMEND, EVALUATE, AUDIT, **PLATFORMS**, **MIGRATE** — plus the bonus CUSTOMIZE flow for forking external skills.
+- **Embedded catalog expanded to 19 entries** (was ~10), with hand-written pros/cons matching the Python `KNOWN_SKILLS`.
+- **Tag-rivals table + customization hints** — agent surfaces a `--customize` hint when a recommended skill's tags imply a stack mismatch with the project (Vue skill in a React project, etc.).
+- **First-activation orientation** — same two-line intro as the Python version, adapted for Lite.
+- **Live catalog enrichment** via `curl` to GitHub Search API. Honors `SKILLS_NO_TELEMETRY=1`. Cached at `~/.claude/skills/skills-curator-lite/catalog.json`.
+- **Platforms catalog (all 55 supported agents)** embedded as YAML — same shape as the Python `PLATFORMS` dict so behavior matches.
+- **Symptom→skill mapping** expanded from 11 → 17 patterns to mirror the Python version.
+
+### Changed
+- **Lite is now the default install tier.** `install.sh` and `install.ps1` install Lite unconditionally, and add the Python full version on top only when Python 3.10+ is available (or `--with-python` is passed). Order in `plugin.json` `skills` array flipped — Lite is now first.
+- **Plugin description rewritten** to lead with "two tiers" (Lite + Python full).
+- **Lite SKILL.md grew from ~360 lines to ~750 lines** because Python logic became agent instructions + embedded data.
+
+### Notes
+- Lite intentionally drops one capability the Python version has: **cross-device Gist sync via private GitHub Gist**. The plumbing requires a longer flow than belongs in a markdown skill; users who need sync should add the full Python tier.
+- The two skills don't conflict — they use different registry paths (`skills-curator-lite/registry.json` vs `skills-curator/registry.json`). Install both if you want both.
+
+## [4.3.0] — 2026-05-08
+
+The platforms + live-catalog release. Skills Curator now knows about every agent platform `skills.sh` supports, the catalog enriches itself from GitHub topic search, and recommendations include hand-written pros/cons plus customization hints when a stack mismatch is detected.
+
+### Added
+- **`--platforms`** — lists every supported agent platform with detection status. `--verbose` expands the table from primary + detected to all 55. Shows install directory per platform, with `~` substitution.
+- **Multi-target `--migrate`** — accepts comma-separated target list (`--migrate cursor,codex,roo`), the literal `detected` keyword, or `--all-detected` to mean every platform present on the machine. With no argument and a TTY, prints the platforms table and prompts. Falls back to `claude-code` in non-TTY contexts.
+- **`PLATFORMS` catalog** (55 entries) replaces the prior 10-entry `AGENT_PATHS`. Sourced from `vercel-labs/skills` `dist/cli.mjs`. `AGENT_PATHS` is preserved as a `{id: Path}` view for backwards compatibility.
+- **GitHub topic-search catalog enrichment** — `_fetch_github_topics()` queries `topic:claude-skill`, `claude-code-skill`, `agent-skill` from the GitHub Search API, classifies trust by author membership in `_TRUSTED_AUTHORS` (Anthropic, Vercel, Microsoft, Google, ComposioHQ + 5 others), merges with curated `KNOWN_SKILLS`. Curated entries always win on id collision. Cached in `catalog.json` per existing TTL. Honors `SKILLS_NO_TELEMETRY=1`.
+- **Pros/cons** populated on every curated `KNOWN_SKILLS` entry. Honest assessments — what each skill is good at and what its costs are. Surfaces in `--recommend` output.
+- **Customization hints in `--recommend`** — when a recommended skill's tags imply a stack mismatch with the project (Vue skill in a React project, Django skill in a FastAPI project, etc.), the output includes a one-line hint suggesting `--customize <id>` to fork it with rewritten examples.
+- **First-activation orientation** in `SKILL.md` — when the skill activates the first time in a session and the user hasn't named a verb, the agent leads with a two-line intro describing the intelligence layer before answering.
+- **Platform management section** in `SKILL.md` — instructs the agent on when and how to use `--platforms` and the new multi-target `--migrate`.
+- 9 new pytest cases covering platforms catalog size, primary defaults, AGENT_PATHS back-compat, detection behavior, unknown-target rejection, multi-target migrate, pros/cons coverage, telemetry-off catalog behavior, and curated-wins merge semantics.
+
+### Changed
+- **`_load_catalog()`** now returns the merged curated+discovered catalog instead of just `KNOWN_SKILLS`. Behavior is unchanged when offline or with telemetry disabled.
+- **`cmd_recommend()`** prints up to 2 pros and 2 cons per recommendation (when populated), plus the optional customization hint.
+- **`plugin.json` description** rewritten to lead with "intelligence layer" and reference the catalog + 55-platform support, replacing the prior auto-activation-first framing.
+
+### Notes
+- `skills.sh` HTML scraping is **still deliberately not added back** — it was removed in v4.0 as brittle and dishonest. GitHub topic search gives us breadth via a stable JSON API instead.
+
 ## [4.2.0] — 2026-05-08
 
 Two big additions: skill customization, and a no-Python companion.

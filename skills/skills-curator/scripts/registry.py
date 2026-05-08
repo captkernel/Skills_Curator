@@ -76,7 +76,7 @@ import urllib.error
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-VERSION = "4.2.0"
+VERSION = "4.4.0"
 SCHEMA_VERSION = "3.0"
 
 SKILL_DIR            = Path.home() / ".claude" / "skills" / "skills-curator"
@@ -99,21 +99,84 @@ VALID_TYPES    = ("capability", "preference")
 EMPTY_REGISTRY: dict = {"version": SCHEMA_VERSION, "last_updated": str(date.today()), "skills": []}
 
 # ─── Agent skill directory paths ──────────────────────────────────────────────
-# All paths verified against each agent's official docs (May 2026). aider has
-# no native skill system and is deliberately excluded. `agents` is the emerging
-# cross-tool convention that several agents read as a fallback.
-AGENT_PATHS = {
-    "claude-code":     Path.home() / ".claude"          / "skills",
-    "codex":           Path.home() / ".codex"           / "skills",
-    "cursor":          Path.home() / ".cursor"          / "skills",
-    "gemini-cli":      Path.home() / ".gemini"          / "skills",
-    "cline":           Path.home() / ".cline"           / "skills",
-    "windsurf":        Path.home() / ".agents"          / "skills",
-    "github-copilot":  Path.home() / ".copilot"         / "skills",
-    "opencode":        Path.home() / ".config" / "opencode" / "skills",
-    "amp":             Path.home() / ".config" / "agents"   / "skills",
-    "agents":          Path.home() / ".agents"          / "skills",  # cross-tool convention
+# Catalog of every agent platform skills.sh ships an adapter for. Paths kept in
+# sync with vercel-labs/skills (dist/cli.mjs). Each entry: display name, the
+# global skills directory we'd install to, and a detection path whose existence
+# means the agent is present on this machine. `aider` has no native skill
+# system and is deliberately excluded. The cross-tool `agents` convention is
+# kept as a synthetic destination for tools that read ~/.agents/skills.
+HOME = Path.home()
+_CONFIG_HOME = Path(os.environ.get("XDG_CONFIG_HOME", "")) if os.environ.get("XDG_CONFIG_HOME") else HOME / ".config"
+
+PLATFORMS: dict[str, dict] = {
+    # id: {display, dir (where SKILL.md goes), detect (path that signals presence)}
+    "claude-code":     {"display": "Claude Code",      "dir": HOME / ".claude/skills",                    "detect": HOME / ".claude"},
+    "github-copilot":  {"display": "GitHub Copilot",   "dir": HOME / ".copilot/skills",                   "detect": HOME / ".copilot"},
+    "codex":           {"display": "Codex",            "dir": HOME / ".codex/skills",                     "detect": HOME / ".codex"},
+    "cursor":          {"display": "Cursor",           "dir": HOME / ".cursor/skills",                    "detect": HOME / ".cursor"},
+    "gemini-cli":      {"display": "Gemini CLI",       "dir": HOME / ".gemini/skills",                    "detect": HOME / ".gemini"},
+    "cline":           {"display": "Cline",            "dir": HOME / ".cline/skills",                     "detect": HOME / ".cline"},
+    "windsurf":        {"display": "Windsurf",         "dir": HOME / ".codeium/windsurf/skills",          "detect": HOME / ".codeium/windsurf"},
+    "opencode":        {"display": "OpenCode",         "dir": _CONFIG_HOME / "opencode/skills",           "detect": _CONFIG_HOME / "opencode"},
+    "amp":             {"display": "Amp",              "dir": _CONFIG_HOME / "agents/skills",             "detect": _CONFIG_HOME / "amp"},
+    "antigravity":     {"display": "Antigravity",      "dir": HOME / ".gemini/antigravity/skills",        "detect": HOME / ".gemini/antigravity"},
+    "aider-desk":      {"display": "AiderDesk",        "dir": HOME / ".aider-desk/skills",                "detect": HOME / ".aider-desk"},
+    "augment":         {"display": "Augment",          "dir": HOME / ".augment/skills",                   "detect": HOME / ".augment"},
+    "bob":             {"display": "IBM Bob",          "dir": HOME / ".bob/skills",                       "detect": HOME / ".bob"},
+    "openclaw":        {"display": "OpenClaw",         "dir": HOME / ".openclaw/skills",                  "detect": HOME / ".openclaw"},
+    "codearts-agent":  {"display": "CodeArts Agent",   "dir": HOME / ".codeartsdoer/skills",              "detect": HOME / ".codeartsdoer"},
+    "codebuddy":       {"display": "CodeBuddy",        "dir": HOME / ".codebuddy/skills",                 "detect": HOME / ".codebuddy"},
+    "codemaker":       {"display": "Codemaker",        "dir": HOME / ".codemaker/skills",                 "detect": HOME / ".codemaker"},
+    "codestudio":      {"display": "Code Studio",      "dir": HOME / ".codestudio/skills",                "detect": HOME / ".codestudio"},
+    "command-code":    {"display": "Command Code",     "dir": HOME / ".commandcode/skills",               "detect": HOME / ".commandcode"},
+    "continue":        {"display": "Continue",         "dir": HOME / ".continue/skills",                  "detect": HOME / ".continue"},
+    "cortex":          {"display": "Cortex Code",      "dir": HOME / ".snowflake/cortex/skills",          "detect": HOME / ".snowflake/cortex"},
+    "crush":           {"display": "Crush",            "dir": HOME / ".config/crush/skills",              "detect": HOME / ".config/crush"},
+    "deepagents":      {"display": "Deep Agents",      "dir": HOME / ".deepagents/agent/skills",          "detect": HOME / ".deepagents"},
+    "devin":           {"display": "Devin",            "dir": _CONFIG_HOME / "devin/skills",              "detect": _CONFIG_HOME / "devin"},
+    "dexto":           {"display": "Dexto",            "dir": HOME / ".agents/skills",                    "detect": HOME / ".dexto"},
+    "droid":           {"display": "Droid",            "dir": HOME / ".factory/skills",                   "detect": HOME / ".factory"},
+    "firebender":      {"display": "Firebender",       "dir": HOME / ".firebender/skills",                "detect": HOME / ".firebender"},
+    "forgecode":       {"display": "ForgeCode",        "dir": HOME / ".forge/skills",                     "detect": HOME / ".forge"},
+    "goose":           {"display": "Goose",            "dir": _CONFIG_HOME / "goose/skills",              "detect": _CONFIG_HOME / "goose"},
+    "hermes-agent":    {"display": "Hermes Agent",     "dir": HOME / ".hermes/skills",                    "detect": HOME / ".hermes"},
+    "junie":           {"display": "Junie",            "dir": HOME / ".junie/skills",                     "detect": HOME / ".junie"},
+    "iflow-cli":       {"display": "iFlow CLI",        "dir": HOME / ".iflow/skills",                     "detect": HOME / ".iflow"},
+    "kilo":            {"display": "Kilo Code",        "dir": HOME / ".kilocode/skills",                  "detect": HOME / ".kilocode"},
+    "kimi-cli":        {"display": "Kimi Code CLI",    "dir": HOME / ".config/agents/skills",             "detect": HOME / ".kimi"},
+    "kiro-cli":        {"display": "Kiro CLI",         "dir": HOME / ".kiro/skills",                      "detect": HOME / ".kiro"},
+    "kode":            {"display": "Kode",             "dir": HOME / ".kode/skills",                      "detect": HOME / ".kode"},
+    "mcpjam":          {"display": "MCPJam",           "dir": HOME / ".mcpjam/skills",                    "detect": HOME / ".mcpjam"},
+    "mistral-vibe":    {"display": "Mistral Vibe",     "dir": HOME / ".vibe/skills",                      "detect": HOME / ".vibe"},
+    "mux":             {"display": "Mux",              "dir": HOME / ".mux/skills",                       "detect": HOME / ".mux"},
+    "openhands":       {"display": "OpenHands",        "dir": HOME / ".openhands/skills",                 "detect": HOME / ".openhands"},
+    "pi":              {"display": "Pi",               "dir": HOME / ".pi/agent/skills",                  "detect": HOME / ".pi/agent"},
+    "qoder":           {"display": "Qoder",            "dir": HOME / ".qoder/skills",                     "detect": HOME / ".qoder"},
+    "qwen-code":       {"display": "Qwen Code",        "dir": HOME / ".qwen/skills",                      "detect": HOME / ".qwen"},
+    "replit":          {"display": "Replit",           "dir": _CONFIG_HOME / "agents/skills",             "detect": HOME / ".replit"},
+    "rovodev":         {"display": "Rovo Dev",         "dir": HOME / ".rovodev/skills",                   "detect": HOME / ".rovodev"},
+    "roo":             {"display": "Roo Code",         "dir": HOME / ".roo/skills",                       "detect": HOME / ".roo"},
+    "tabnine-cli":     {"display": "Tabnine CLI",      "dir": HOME / ".tabnine/agent/skills",             "detect": HOME / ".tabnine"},
+    "trae":            {"display": "Trae",             "dir": HOME / ".trae/skills",                      "detect": HOME / ".trae"},
+    "trae-cn":         {"display": "Trae CN",          "dir": HOME / ".trae-cn/skills",                   "detect": HOME / ".trae-cn"},
+    "warp":            {"display": "Warp",             "dir": HOME / ".agents/skills",                    "detect": HOME / ".warp"},
+    "zencoder":        {"display": "Zencoder",         "dir": HOME / ".zencoder/skills",                  "detect": HOME / ".zencoder"},
+    "neovate":         {"display": "Neovate",          "dir": HOME / ".neovate/skills",                   "detect": HOME / ".neovate"},
+    "pochi":           {"display": "Pochi",            "dir": HOME / ".pochi/skills",                     "detect": HOME / ".pochi"},
+    "adal":            {"display": "AdaL",             "dir": HOME / ".adal/skills",                      "detect": HOME / ".adal"},
+    "agents":          {"display": "Cross-tool ~/.agents/", "dir": HOME / ".agents/skills",               "detect": HOME / ".agents"},
 }
+
+# Backwards-compat: tests and older callers reference AGENT_PATHS as {id: Path}.
+AGENT_PATHS = {pid: meta["dir"] for pid, meta in PLATFORMS.items()}
+
+# Default install targets when the user hasn't specified — primary ecosystem.
+DEFAULT_PLATFORMS = ["claude-code"]
+
+
+def _detect_platforms() -> list[str]:
+    """Return ids of platforms that appear installed on this machine."""
+    return [pid for pid, meta in PLATFORMS.items() if meta["detect"].exists()]
 
 # ─── Security scan patterns ───────────────────────────────────────────────────
 SECURITY_RISK_PATTERNS = [
@@ -272,7 +335,8 @@ def cmd_init() -> None:
     print(f"  Intel     : --auto  --symptoms \"<phrase>\"")
     print(f"  Discovery : --recommend  --discover [term]  --scan")
     print(f"  Safety    : --check <path>  --audit  --health  --stale")
-    print(f"  Authoring : --author  --migrate <agent>")
+    print(f"  Platforms : --platforms [--verbose]  --migrate [target[,...]]")
+    print(f"  Authoring : --author  --customize <source>")
     print(f"  Sync      : --sync  --push")
     print(f"  Run --help for all options")
 
@@ -628,97 +692,135 @@ KNOWN_SKILLS: list[dict] = [
      "type": "capability", "trust": "official",
      "install": "npx skills add vercel-labs/skills --skill find-skills",
      "tags": ["meta", "discovery", "skill-management"],
-     "description": "Discovers and recommends skills from skills.sh based on task context."},
+     "description": "Discovers and recommends skills from skills.sh based on task context.",
+     "pros": ["Official Vercel maintenance", "Wraps skills.sh discovery in one verb"],
+     "cons": ["Popularity-driven; doesn't filter by project fit", "Overlaps with Skills Curator's --recommend"]},
     {"id": "frontend-design", "name": "Frontend Design", "source": "anthropics/skills",
      "type": "preference", "trust": "official",
      "install": "npx skills add anthropics/skills --skill frontend-design",
      "tags": ["frontend", "design", "react", "css", "html", "ui", "vue"],
-     "description": "Bold design philosophy before writing UI code. Prevents AI-slop aesthetics."},
+     "description": "Bold design philosophy before writing UI code. Prevents AI-slop aesthetics.",
+     "pros": ["Anthropic-curated", "Prevents generic-looking UI defaults", "Stack-agnostic principles"],
+     "cons": ["Strong opinions may conflict with team style guide", "Adds prompt overhead on non-UI tasks"]},
     {"id": "document-skills", "name": "Document Skills", "source": "anthropics/skills",
      "type": "capability", "trust": "official",
      "install": "npx skills add anthropics/skills --skill document-skills",
      "tags": ["documents", "pdf", "word", "excel", "powerpoint", "docx", "xlsx"],
-     "description": "Create and edit PDFs, Word docs, Excel sheets, and presentations."},
+     "description": "Create and edit PDFs, Word docs, Excel sheets, and presentations.",
+     "pros": ["Covers all major office formats", "First-party Anthropic skill"],
+     "cons": ["Useless if your project never produces office files", "Bundles 5 sub-skills you may not need"]},
     {"id": "skill-creator", "name": "Skill Creator", "source": "anthropics/skills",
      "type": "capability", "trust": "official",
      "install": "npx skills add anthropics/skills --skill skill-creator",
      "tags": ["meta", "skill-development", "authoring"],
-     "description": "Interactive skill authoring. Creates properly structured SKILL.md files."},
+     "description": "Interactive skill authoring. Creates properly structured SKILL.md files.",
+     "pros": ["Produces canonically-formatted SKILL.md", "Reduces friction for first-time authors"],
+     "cons": ["Overlaps with Skills Curator's --author", "Adds context cost when not authoring"]},
     {"id": "vercel-react-best-practices", "name": "React Best Practices",
      "source": "vercel-labs/agent-skills", "type": "preference", "trust": "high",
      "install": "npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices",
      "tags": ["react", "nextjs", "frontend", "performance", "typescript"],
-     "description": "React/Next.js performance rules ordered by impact."},
+     "description": "React/Next.js performance rules ordered by impact.",
+     "pros": ["Vercel-authored", "Impact-ranked rules", "Next.js-aware"],
+     "cons": ["Next.js-biased examples (less useful for plain React)", "Doesn't cover SSR alternatives"]},
     {"id": "web-design-guidelines", "name": "Web Design Guidelines",
      "source": "vercel-labs/agent-skills", "type": "preference", "trust": "high",
      "install": "npx skills add vercel-labs/agent-skills --skill web-design-guidelines",
      "tags": ["frontend", "design", "accessibility", "ux", "css", "web"],
-     "description": "UI/UX rules: accessibility, typography, dark mode. Validates against Vercel standards."},
+     "description": "UI/UX rules: accessibility, typography, dark mode. Validates against Vercel standards.",
+     "pros": ["Accessibility-first", "Specific, validatable rules"],
+     "cons": ["Heavy overlap with frontend-design", "Vercel design language may not match your brand"]},
     {"id": "agent-browser", "name": "Agent Browser", "source": "vercel-labs/agent-browser",
      "type": "capability", "trust": "high",
      "install": "npx skills add vercel-labs/agent-browser --skill agent-browser",
      "tags": ["browser", "automation", "scraping", "cdp", "testing", "forms"],
-     "description": "Browser automation via CDP. Element refs, 6 auth methods, screenshots, form filling."},
+     "description": "Browser automation via CDP. Element refs, 6 auth methods, screenshots, form filling.",
+     "pros": ["Six auth methods including session import", "CDP gives access to JS-heavy pages"],
+     "cons": ["Requires Chrome — adds CI dependency", "Heavyweight for static-page scraping"]},
     {"id": "supermemory", "name": "Supermemory", "source": "supermemoryai/supermemory",
      "type": "capability", "trust": "high",
      "install": "npx skills add supermemoryai/supermemory",
      "tags": ["memory", "personalization", "context", "recall", "ai"],
-     "description": "Persistent memory across sessions. Tracks facts, resolves contradictions."},
+     "description": "Persistent memory across sessions. Tracks facts, resolves contradictions.",
+     "pros": ["Cross-session persistence", "Conflict resolution built-in"],
+     "cons": ["Sends context to a third-party service", "Privacy review required for sensitive projects"]},
     {"id": "remotion-best-practices", "name": "Remotion Best Practices",
      "source": "remotion-dev/skills", "type": "preference", "trust": "high",
      "install": "npx skills add remotion-dev/skills --skill remotion-best-practices",
      "tags": ["remotion", "video", "animation", "react", "programmatic-video"],
-     "description": "Remotion knowledge: animations, timing, audio, captions, 3D. Auto-activates on Remotion code."},
+     "description": "Remotion knowledge: animations, timing, audio, captions, 3D. Auto-activates on Remotion code.",
+     "pros": ["First-party Remotion knowledge", "Activates automatically on Remotion files"],
+     "cons": ["Useless if you don't use Remotion", "Adds context cost on every session"]},
     {"id": "firecrawl-cli", "name": "Firecrawl CLI", "source": "firecrawl/cli",
      "type": "capability", "trust": "high",
      "install": "npx skills add firecrawl/cli",
      "tags": ["scraping", "web", "crawl", "data-extraction", "js-rendering"],
-     "description": "Web scraping with JS rendering. Handles SPAs, auth-gated pages, structured extraction."},
+     "description": "Web scraping with JS rendering. Handles SPAs, auth-gated pages, structured extraction.",
+     "pros": ["Handles JS-heavy SPAs out of the box", "Structured-extraction primitives"],
+     "cons": ["Requires Firecrawl API key", "Paid tier for any meaningful usage"]},
     {"id": "openspace", "name": "OpenSpace", "source": "HKUDS/OpenSpace",
      "type": "capability", "trust": "medium",
      "install": "pip install git+https://github.com/HKUDS/OpenSpace.git",
      "tags": ["meta", "self-evolving", "mcp", "token-efficiency"],
-     "description": "Self-evolving skills via MCP. Auto-fix, learn from execution."},
+     "description": "Self-evolving skills via MCP. Auto-fix, learn from execution.",
+     "pros": ["Token-efficient", "Self-improving over usage"],
+     "cons": ["Requires MCP setup", "Research-grade — interface may shift"]},
     {"id": "writing-plans", "name": "Writing Plans", "source": "obra/superpowers",
      "type": "preference", "trust": "medium",
      "install": "npx skills add obra/superpowers --skill writing-plans",
      "tags": ["workflow", "planning", "discipline", "process"],
-     "description": "Plan-before-code discipline. Reduces agents skipping steps."},
+     "description": "Plan-before-code discipline. Reduces agents skipping steps.",
+     "pros": ["Reduces 'jumped to coding' failures", "Forces explicit alignment before edits"],
+     "cons": ["Adds friction for trivial one-liner tasks", "Verbose for simple bug fixes"]},
     {"id": "verification-before-completion", "name": "Verification Before Completion",
      "source": "obra/superpowers", "type": "preference", "trust": "medium",
      "install": "npx skills add obra/superpowers --skill verification-before-completion",
      "tags": ["workflow", "verification", "quality", "testing"],
-     "description": "Verify-before-done discipline. Stops agents marking tasks complete without checking."},
+     "description": "Verify-before-done discipline. Stops agents marking tasks complete without checking.",
+     "pros": ["Catches false-success claims", "Pairs naturally with TDD"],
+     "cons": ["Requires verification commands to actually exist", "Slows iteration when verification is expensive"]},
     {"id": "composio-connect", "name": "Composio Connect",
      "source": "ComposioHQ/composio-skills", "type": "capability", "trust": "high",
      "install": "npx skills add ComposioHQ/composio-skills --skill connect",
      "tags": ["integrations", "api", "gmail", "slack", "github", "notion"],
-     "description": "Connect Claude to SaaS apps with managed OAuth."},
+     "description": "Connect Claude to SaaS apps with managed OAuth.",
+     "pros": ["Managed OAuth removes credential plumbing", "100+ integrations"],
+     "cons": ["Vendor lock-in to Composio", "Routes data through their proxy"]},
     {"id": "security-auditor", "name": "Security Auditor",
      "source": "alirezarezvani/claude-skills", "type": "capability", "trust": "medium",
      "install": "npx skills add alirezarezvani/claude-skills --skill security-auditor",
      "tags": ["security", "audit", "vulnerability", "owasp", "code-review"],
-     "description": "Security audit skill. Scans for OWASP top 10, injection vectors, exposed secrets."},
+     "description": "Security audit skill. Scans for OWASP top 10, injection vectors, exposed secrets.",
+     "pros": ["OWASP-mapped", "Catches obvious vulnerability patterns"],
+     "cons": ["Pattern-based — misses logic-level issues", "Community-maintained, smaller maintainer pool"]},
     {"id": "git-commit-writer", "name": "Git Commit Writer",
      "source": "glebis/claude-skills", "type": "preference", "trust": "medium",
      "install": "npx skills add glebis/claude-skills --skill git-commit-writer",
      "tags": ["git", "commits", "workflow", "conventional-commits"],
-     "description": "Enforces conventional commit message format."},
+     "description": "Enforces conventional commit message format.",
+     "pros": ["Consistent commit history", "Plays well with semantic-release"],
+     "cons": ["Convention may not match team's existing style", "Wasteful if you already have commitlint"]},
     {"id": "senior-backend", "name": "Senior Backend",
      "source": "davila7/claude-code-templates", "type": "preference", "trust": "medium",
      "install": "npx skills add davila7/claude-code-templates --skill senior-backend",
      "tags": ["backend", "api", "python", "nodejs", "go", "typescript", "database"],
-     "description": "Senior backend patterns: API scaffolding, DB optimisation, load testing."},
+     "description": "Senior backend patterns: API scaffolding, DB optimisation, load testing.",
+     "pros": ["Multi-language coverage", "Includes load-testing patterns"],
+     "cons": ["Generic — may not match your stack's idioms", "Adopting all 4 languages bloats prompt"]},
     {"id": "vercel-react-native-skills", "name": "React Native Skills",
      "source": "vercel-labs/agent-skills", "type": "preference", "trust": "high",
      "install": "npx skills add vercel-labs/agent-skills --skill vercel-react-native-skills",
      "tags": ["react-native", "mobile", "ios", "android", "expo"],
-     "description": "React Native best practices: Expo patterns, performance, platform handling."},
+     "description": "React Native best practices: Expo patterns, performance, platform handling.",
+     "pros": ["Expo-aware", "Platform-handling guidance for iOS/Android divergence"],
+     "cons": ["Expo-biased; less useful for bare React Native", "No Fabric/Hermes guidance yet"]},
     {"id": "mcp-builder", "name": "MCP Builder",
      "source": "ComposioHQ/awesome-claude-skills", "type": "capability", "trust": "medium",
      "install": "npx skills add ComposioHQ/awesome-claude-skills --skill mcp-builder",
      "tags": ["mcp", "integration", "api", "tools", "typescript", "python"],
-     "description": "Guides creation of high-quality MCP servers for integrating external APIs."},
+     "description": "Guides creation of high-quality MCP servers for integrating external APIs.",
+     "pros": ["Tightens MCP server quality", "TypeScript + Python coverage"],
+     "cons": ["Only useful when authoring an MCP server", "Heavy overlap with Anthropic MCP docs"]},
 ]
 
 FRAMEWORK_SIGNALS = {
@@ -812,12 +914,92 @@ def _scan_project(project_dir: Path) -> dict:
     return signals
 
 
-def _load_catalog(refresh: bool = False) -> list[dict]:
-    """Return the curated skill catalog.
+# GitHub topic queries used to surface community-maintained skills. We
+# deliberately keep this list narrow — broader queries return too much noise
+# (every PoC repo tagged "claude"). Trust tier is auto-classified by author.
+_GITHUB_SKILL_TOPICS = ["claude-skill", "claude-code-skill", "agent-skill"]
+_TRUSTED_AUTHORS = {
+    "anthropics":   "official",
+    "anthropic":    "official",
+    "vercel-labs":  "official",
+    "vercel":       "official",
+    "microsoft":    "official",
+    "google":       "official",
+    "ComposioHQ":   "high",
+    "supermemoryai": "high",
+    "remotion-dev":  "high",
+    "firecrawl":     "high",
+    "obra":          "medium",
+}
 
-    We deliberately do NOT track install counts. skills.sh has no public JSON
-    API for per-skill telemetry, and HTML scraping is brittle. Trust tier +
-    tag-overlap is a more honest matching signal than fake popularity numbers.
+
+def _classify_trust(author: str) -> str:
+    """Map a GitHub author/org to a trust tier."""
+    return _TRUSTED_AUTHORS.get(author, _TRUSTED_AUTHORS.get(author.lower(), "unknown"))
+
+
+def _fetch_github_topics(timeout: int = 6) -> list[dict]:
+    """Pull repos tagged with skill topics from GitHub. Best effort, returns
+    [] on any error, rate-limit, or when telemetry is disabled. Trust tier
+    is classified by author membership in _TRUSTED_AUTHORS.
+    """
+    if NO_TELEMETRY:
+        return []
+    out: list[dict] = []
+    seen: set[str] = set()
+    headers = {"Accept": "application/vnd.github+json", "User-Agent": "skills-curator"}
+    if GITHUB_TOKEN:
+        headers["Authorization"] = f"token {GITHUB_TOKEN}"
+    for topic in _GITHUB_SKILL_TOPICS:
+        url = f"https://api.github.com/search/repositories?q=topic:{topic}&sort=stars&per_page=20"
+        try:
+            raw = _http_get(url, headers=headers, timeout=timeout)
+            if not raw:
+                continue
+            data = json.loads(raw)
+        except Exception:
+            continue
+        for repo in data.get("items", []):
+            full = repo.get("full_name", "")
+            if not full or full in seen:
+                continue
+            seen.add(full)
+            owner = full.split("/", 1)[0]
+            out.append({
+                "id": repo.get("name", "").lower(),
+                "name": repo.get("name", ""),
+                "source": full,
+                "type": "capability",
+                "trust": _classify_trust(owner),
+                "install": f"npx skills add {full}",
+                "tags": (repo.get("topics") or []) + ["github-discovered"],
+                "description": (repo.get("description") or "").strip()[:240],
+                "stars": repo.get("stargazers_count", 0),
+                "pros": [],
+                "cons": [],
+            })
+    return out
+
+
+def _merge_catalog(curated: list[dict], discovered: list[dict]) -> list[dict]:
+    """Merge curated KNOWN_SKILLS with GitHub-discovered entries. Curated
+    entries win on id collision — community discoveries can't override our
+    pros/cons or trust classification.
+    """
+    by_id = {s["id"]: s for s in discovered}
+    for s in curated:
+        by_id[s["id"]] = s  # curated overrides discovered
+    return list(by_id.values())
+
+
+def _load_catalog(refresh: bool = False) -> list[dict]:
+    """Return the merged skill catalog (curated + GitHub-discovered).
+
+    Curated entries (KNOWN_SKILLS) include hand-written pros/cons. GitHub
+    topic search adds breadth but those entries arrive with empty pros/cons
+    and "unknown"-tier trust unless the author is in _TRUSTED_AUTHORS.
+    Cached for CATALOG_TTL_HOURS. We never scrape skills.sh HTML — that was
+    deliberately removed in v4.0 (brittle, dishonest for a judgment tool).
     """
     if not refresh and CATALOG_FILE.exists():
         try:
@@ -829,10 +1011,16 @@ def _load_catalog(refresh: bool = False) -> list[dict]:
         except Exception:
             pass
 
+    discovered = _fetch_github_topics()
+    merged = _merge_catalog(KNOWN_SKILLS, discovered)
     SKILL_DIR.mkdir(parents=True, exist_ok=True)
     with open(CATALOG_FILE, "w", encoding="utf-8") as f:
-        json.dump({"fetched_at": datetime.now().isoformat(), "skills": KNOWN_SKILLS}, f, indent=2)
-    return list(KNOWN_SKILLS)
+        json.dump({
+            "fetched_at": datetime.now().isoformat(),
+            "sources": ["KNOWN_SKILLS"] + (["github-topics"] if discovered else []),
+            "skills": merged,
+        }, f, indent=2)
+    return merged
 
 
 # ─── Intelligence layer ───────────────────────────────────────────────────────
@@ -1341,6 +1529,26 @@ def cmd_recommend(project_dir: Path | None = None,
     print(f"  Recommendations for: {project_dir.name}")
     print(f"{'═' * 60}")
 
+    def _customize_hint(sk: dict, project_tags: set[str]) -> str | None:
+        """One-line customization hint when the skill's tags suggest a stack
+        mismatch with the project. Returns None if no obvious mismatch."""
+        skill_tags = set(sk.get("tags", []))
+        # Vue-tagged skill in a React project (or vice versa) is the canonical
+        # case for --customize. Generalize to a few stack pairs.
+        rivals = [
+            ({"vue", "nuxt"},     {"react", "nextjs"}),
+            ({"react", "nextjs"}, {"vue", "nuxt"}),
+            ({"angular"},         {"react", "vue"}),
+            ({"django", "flask"}, {"fastapi"}),
+            ({"fastapi"},         {"django", "flask"}),
+        ]
+        for skill_set, project_set in rivals:
+            if skill_set & skill_tags and project_set & project_tags:
+                return (f"Stack mismatch ({', '.join(sorted(skill_set & skill_tags))} "
+                        f"in skill vs {', '.join(sorted(project_set & project_tags))} in project) "
+                        f"— run `--customize {sk['id']}` to fork with rewritten examples.")
+        return None
+
     def show(group: list, label: str, icon: str, max_show: int) -> None:
         if not group:
             return
@@ -1351,6 +1559,13 @@ def cmd_recommend(project_dir: Path | None = None,
             print(f"       Why     : [{', '.join(sorted(overlap)[:3])}]")
             print(f"       What    : {sk.get('description', '')[:75]}")
             print(f"       Trust   : {sk.get('trust', '?')}")
+            for p in sk.get("pros", [])[:2]:
+                print(f"       ✓ Pro   : {p}")
+            for c in sk.get("cons", [])[:2]:
+                print(f"       ✗ Con   : {c}")
+            hint = _customize_hint(sk, tags)
+            if hint:
+                print(f"       💡 Tip   : {hint}")
             print(f"       Install : {sk['install']}")
             print()
 
@@ -1714,18 +1929,88 @@ def cmd_stale() -> None:
 
 # ─── Cross-Agent Migration ────────────────────────────────────────────────────
 
-def cmd_migrate(target_agent: str) -> None:
-    """Copy globally installed Claude Code skills to another agent's skills directory."""
-    if target_agent not in AGENT_PATHS:
-        print(f"❌ Unknown agent: {target_agent}")
-        print(f"   Known: {', '.join(AGENT_PATHS.keys())}")
-        return
+def cmd_platforms(verbose: bool = False) -> None:
+    """List every supported agent platform with detection status."""
+    detected = set(_detect_platforms())
+    total = len(PLATFORMS)
+    primary = {"claude-code", "github-copilot"}
 
-    src_dir = AGENT_PATHS["claude-code"]
-    dst_dir = AGENT_PATHS[target_agent]
+    print()
+    print("═" * 64)
+    print(f"  Skills Curator Platforms  ·  Detected {len(detected)} of {total}")
+    print("═" * 64)
+    if detected:
+        names = ", ".join(PLATFORMS[p]["display"] for p in sorted(detected))
+        print(f"\n  Detected on this machine: {names}\n")
+    else:
+        print("\n  No supported agents detected on this machine.\n")
+    print(f"  {'PLATFORM':22}  {'STATUS':10}  DIR")
+    print(f"  {'-' * 22}  {'-' * 10}  ---")
 
+    def _row(pid: str) -> str:
+        meta = PLATFORMS[pid]
+        status = "✓ detected" if pid in detected else ("default" if pid in primary else "")
+        path_str = str(meta["dir"]).replace(str(HOME), "~")
+        return f"  {meta['display']:22}  {status:10}  {path_str}"
+
+    # Primary first, then detected (non-primary), then everything else.
+    primary_rows = [pid for pid in PLATFORMS if pid in primary]
+    other_detected = [pid for pid in PLATFORMS if pid in detected and pid not in primary]
+    rest = [pid for pid in PLATFORMS if pid not in detected and pid not in primary]
+    ordered = primary_rows + other_detected + (rest if verbose else [])
+    for pid in ordered:
+        print(_row(pid))
+    if not verbose and rest:
+        print(f"\n  ({len(rest)} more not shown — use --platforms --verbose to list all)")
+    print()
+
+
+def cmd_migrate(target_spec: str | None = None, all_detected: bool = False) -> None:
+    """Copy installed Claude Code skills to one or more other agents.
+
+    Accepts:
+      - None / empty   → list platforms and prompt the user (TTY) or default to Claude Code
+      - "<id>"         → single target (e.g. "cursor")
+      - "<a>,<b>,<c>"  → multi-target
+      - "detected"     → every platform detected on this machine
+      - all_detected=True (from --all-detected flag) → same as "detected"
+    """
+    src_dir = PLATFORMS["claude-code"]["dir"]
     if not src_dir.exists():
         print(f"❌ Claude Code skills dir not found: {src_dir}")
+        return
+
+    detected = _detect_platforms()
+    valid = set(PLATFORMS.keys())
+
+    if all_detected or (target_spec and target_spec.strip().lower() == "detected"):
+        targets = [p for p in detected if p != "claude-code"] or DEFAULT_PLATFORMS
+    elif not target_spec:
+        # No target: show platforms then prompt (TTY) or fall back to defaults.
+        cmd_platforms(verbose=False)
+        if sys.stdin.isatty():
+            print("  Enter target platform(s) — comma-separated id(s), 'detected' for all installed,")
+            print(f"  or press Enter for default ({', '.join(DEFAULT_PLATFORMS)}):")
+            raw = input("  > ").strip()
+            if not raw:
+                targets = list(DEFAULT_PLATFORMS)
+            elif raw.lower() == "detected":
+                targets = [p for p in detected if p != "claude-code"] or list(DEFAULT_PLATFORMS)
+            else:
+                targets = [t.strip() for t in raw.split(",") if t.strip()]
+        else:
+            print(f"  No target specified, no TTY — defaulting to: {', '.join(DEFAULT_PLATFORMS)}\n")
+            targets = list(DEFAULT_PLATFORMS)
+    else:
+        targets = [t.strip() for t in target_spec.split(",") if t.strip()]
+
+    invalid = [t for t in targets if t not in valid]
+    if invalid:
+        print(f"❌ Unknown platform(s): {', '.join(invalid)}")
+        print(f"   Run --platforms to see all {len(valid)} supported platforms.")
+        return
+    if not targets:
+        print("⬜ No targets selected — nothing to migrate.")
         return
 
     import shutil
@@ -1734,22 +2019,26 @@ def cmd_migrate(target_agent: str) -> None:
         print(f"⬜ No skills found in {src_dir}")
         return
 
-    dst_dir.mkdir(parents=True, exist_ok=True)
-    print(f"\n📦 Migrating {len(skills)} skill(s) → {target_agent}\n")
-    migrated, skipped = [], []
+    print(f"\n📦 Migrating {len(skills)} skill(s) → {', '.join(targets)}\n")
+    summary: list[tuple[str, int, int]] = []
+    for tgt in targets:
+        dst_dir = PLATFORMS[tgt]["dir"]
+        dst_dir.mkdir(parents=True, exist_ok=True)
+        migrated, skipped = 0, 0
+        print(f"  → {PLATFORMS[tgt]['display']}  ({dst_dir})")
+        for skill_dir in skills:
+            dst = dst_dir / skill_dir.name
+            if dst.exists():
+                skipped += 1
+            else:
+                shutil.copytree(str(skill_dir), str(dst))
+                migrated += 1
+        summary.append((tgt, migrated, skipped))
+        print(f"     {migrated} copied, {skipped} skipped (already present)\n")
 
-    for skill_dir in skills:
-        dst = dst_dir / skill_dir.name
-        if dst.exists():
-            skipped.append(skill_dir.name)
-            print(f"  ⬜ Skip (exists): {skill_dir.name}")
-        else:
-            shutil.copytree(str(skill_dir), str(dst))
-            migrated.append(skill_dir.name)
-            print(f"  ✅ Copied: {skill_dir.name}")
-
-    print(f"\n  Done — {len(migrated)} migrated, {len(skipped)} skipped")
-    print(f"  Destination: {dst_dir}\n")
+    total_copied = sum(s[1] for s in summary)
+    total_skipped = sum(s[2] for s in summary)
+    print(f"  Done — {total_copied} copies across {len(targets)} platform(s), {total_skipped} skipped\n")
 
 
 # ─── Skill Authoring Scaffold ─────────────────────────────────────────────────
@@ -1895,7 +2184,14 @@ def main() -> None:
     p.add_argument("--audit",      action="store_true")
     p.add_argument("--health",     action="store_true")
     p.add_argument("--stale",      action="store_true")
-    p.add_argument("--migrate",    metavar="AGENT")
+    p.add_argument("--migrate",    nargs="?", const="", metavar="AGENT[,AGENT...]",
+                   help="Copy installed skills to one or more platforms (comma-separated, 'detected', or no arg to prompt)")
+    p.add_argument("--all-detected", action="store_true",
+                   help="With --migrate, target every platform detected on this machine")
+    p.add_argument("--platforms",  action="store_true",
+                   help="List supported agent platforms with detection status")
+    p.add_argument("--verbose",    action="store_true",
+                   help="With --platforms, show every platform (not just detected + primary)")
     p.add_argument("--author",     action="store_true")
     p.add_argument("--customize",  metavar="SOURCE",
                    help="Fork an external skill as a project-customized version (SOURCE = registered id, local path, or owner/repo@skill)")
@@ -1934,7 +2230,8 @@ def main() -> None:
     elif args.audit:                    cmd_audit()
     elif args.health:                   cmd_health()
     elif args.stale:                    cmd_stale()
-    elif args.migrate:                  cmd_migrate(args.migrate)
+    elif args.platforms:                cmd_platforms(verbose=args.verbose)
+    elif args.migrate is not None:      cmd_migrate(args.migrate or None, all_detected=args.all_detected)
     elif args.author:                   cmd_author()
     elif args.export_eval:              cmd_export_eval(args.export_eval)
     else:                               cmd_init()
