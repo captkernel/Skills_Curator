@@ -41,8 +41,25 @@ Other tools install skills. Skills Curator **persists your judgment** so you nev
 Read reference files on demand:
 - `references/commands.md` — all commands and flags
 - `references/evaluation.md` — evaluation format and principles
-- `references/discovery.md` — how recommendations work
+- `references/discovery.md` — how recommendations work, response templates, categories
 - `references/schema.md` — registry data model
+
+---
+
+## When to activate this skill
+
+Use Skills Curator when the user says any of:
+
+- "Should I install [skill]?" / "Is [skill] worth it?"
+- "Find a skill for X" / "Is there a skill that does X?"
+- "What skills fit this project?" / "Recommend skills"
+- "Audit my skills" / "Review my skills" / "Are any of my skills conflicting?"
+- "Is [skill] safe?" / "Check this skill"
+- "Migrate my skills to Cursor / Codex / Gemini"
+- "Have we evaluated [skill] before?" / "What did we decide about [skill]?"
+- Mentions a specific skill, plugin, or tool by name in a context that implies adoption
+
+If the request is "how do I do X?" and X is plausibly a skill domain (testing, deploy, design, scraping, docs, etc.), **search the registry and catalog before answering from general knowledge** — there may already be a battle-tested skill for it.
 
 ---
 
@@ -72,14 +89,48 @@ python "%USERPROFILE%\.claude\skills\skills-curator\scripts\registry.py"
 
 ---
 
-## Workflow when user mentions a skill
+## Workflow: discover → evaluate → install
 
-1. **Check the registry first.** If we've evaluated this skill before, surface the prior verdict + summary instead of re-evaluating from scratch.
-   ```bash
-   python registry.py --history <skill-id>
-   ```
-2. **If unevaluated:** run `/skill-evaluate` flow (security scan → project scan → CLAUDE.md read → structured verdict → save).
-3. **Always offer the export:** `python registry.py --export-eval <id>` produces a PR-ready markdown artifact.
+The full path from "what could help here?" to "decision saved" is six steps. Don't skip ahead — each step de-risks the next.
+
+**Step 1: Understand what the user actually needs.**
+What domain (React, testing, design, deployment, scraping, docs)? What specific task? Is this likely common enough that a skill exists?
+
+**Step 2: Check the registry first.**
+If we've evaluated this skill (or one like it) before, surface the prior verdict instead of re-evaluating.
+```bash
+python registry.py --history <skill-id>
+python registry.py --search <term>
+```
+
+**Step 3: If unevaluated, recommend or discover.**
+- Project-aware ranking (best signal): `python registry.py --recommend`
+- Free-text catalog search: `python registry.py --find <query>` (alias for `--discover`)
+
+**Step 4: Verify trust before recommending anything.**
+- 🏛️ Official (Anthropic, Vercel, Microsoft) → safe to surface
+- ✅ High (established orgs) → safe to surface
+- 🟡 Medium / ⬜ Community / ❓ Unknown → only after `--check <path>` security scan
+- Never recommend a skill from an unknown author without flagging it.
+
+**Step 5: Run the full evaluation (the only step that produces a verdict).**
+Trigger `/skill-evaluate` — runs security scan → project scan → reads CLAUDE.md → produces ADOPT/PARTIAL/SKIP with pros/cons/conflicts → persists. Use the output format below.
+
+**Step 6: Persist + offer the export.**
+```bash
+python registry.py --eval <id> <project> <verdict> "<summary>" --pros "..." --cons "..." --conflicts "..."
+python registry.py --export-eval <id>   # PR-ready markdown
+```
+
+### When no skill fits
+
+If `--recommend` returns nothing strong, OR `--find <query>` finds no matches, OR the top match has Medium/Unknown trust + zero evaluations, **don't manufacture a recommendation.** Instead:
+
+1. Tell the user no good match was found and explain *why* (no tag overlap, low trust, security flags).
+2. Offer to do the task directly with general capabilities.
+3. Offer to scaffold a custom skill: `python registry.py --author`.
+
+A "no recommendation" answer is a feature, not a failure — it's the whole point of judgment over popularity.
 
 ---
 
