@@ -4,7 +4,7 @@
 
 **Decide once. Re-decide never.**
 
-The first Claude Code skill that *evaluates* skills before you install them — and persists your verdict so you never re-decide.
+The first Claude Code skill with **judgment that activates without being asked**. It learns your project at session start, watches for drift, recommends only what fits — and persists every verdict so you never re-decide.
 
 [![Install](https://img.shields.io/badge/install-npx%20skills%20add-blue?style=flat-square)](https://github.com/captkernel/Skills_Curator)
 [![Version](https://img.shields.io/badge/version-4.0.0-green?style=flat-square)](https://github.com/captkernel/Skills_Curator/releases)
@@ -22,12 +22,20 @@ npx skills add captkernel/Skills_Curator
 
 ## Why Skills Curator is different
 
-> **Every other skill tool answers *"how do I install this?"*. Skills Curator answers *"should I?"* — and remembers the answer forever.**
+> **Every other skill tool answers *"how do I install this?"*. Skills Curator answers *"should I?"* — proactively, before you even ask, with a verdict persisted forever.**
 
-There are 90,000+ Claude skills and the catalog grows daily. Existing tools (`npx skills`, `asm`, `buzhangsan`, etc.) solve the *plumbing*: install, list, sync. None of them help with the part that actually wastes your time — **deciding** which skills belong in your project, and **remembering** what you decided last time.
+There are 90,000+ Claude skills and the catalog grows daily. Existing tools (`npx skills`, `asm`, `buzhangsan`, vercel-labs/find-skills, etc.) all wait for you to ask. They solve plumbing — install, list, sync — and rely on you to know what to look for. **That's the wrong default**, because:
+
+- You don't know what skills *exist* until you go searching.
+- Searching by popularity surfaces the same generic recommendations everyone else gets.
+- And you forget — six months later, you're re-evaluating a skill you already decided about.
+
+Skills Curator inverts the model: it watches the project, learns the stack, and tells *you* what's worth considering. The judgment runs in the background; you only see output when something actually changed or the user describes a pain point.
 
 | | Other skill managers | **Skills Curator** |
 |---|---|---|
+| **Auto-activates without being asked** (project fingerprint, drift detection) | ❌ | ✅ `--auto` |
+| **Listens for symptoms** (*"slow tests"* → recommends test-perf skills) | ❌ | ✅ `--symptoms` |
 | Install / list skills | ✅ | ✅ |
 | **Pre-install evaluation** with pros / cons / conflicts / verdict | ❌ | ✅ Persisted forever |
 | **Project-aware recommendation** (ranked by tag overlap × trust, not popularity) | ❌ | ✅ |
@@ -40,13 +48,28 @@ There are 90,000+ Claude skills and the catalog grows daily. Existing tools (`np
 | Stdlib-only Python — no `pip install` | varies | ✅ |
 | Honest about install counts (no fake popularity scraping) | ❌ | ✅ Refuses to lie |
 
-### The five things only Skills Curator does
+### The intelligence layer (the main USP)
+
+Skills Curator's distinguishing feature isn't the registry — it's **judgment that activates without prompting**.
+
+**`--auto` (project fingerprint + drift detection)**
+At session start, the agent runs `python registry.py --auto`. Skills Curator hashes the project's key files (`package.json`, `requirements.txt`, `CLAUDE.md`, lockfiles, framework configs) and compares against the last known state. If nothing changed, output is one line and nothing happens. If a dep was added, a framework adopted, or CLAUDE.md edited, it re-runs the recommendation engine and surfaces the top 3 — the agent then weaves those into the conversation as a quiet observation, not a sales pitch.
+
+**`--symptoms "<phrase>"` (complaint-driven recommendation)**
+When the user says *"my tests are slow"*, *"deploys are manual"*, *"the UI looks ugly"*, or *"no one writes good commit messages"*, the agent runs `--symptoms`. A built-in 17-pattern table maps complaints to skill categories: *testing+performance*, *ci-cd+deploy*, *frontend-design*, *commit-writer*. The user never has to know what skill to ask for — they describe the problem in their own words and Skills Curator matches it.
+
+**`--find / --discover` (free-text catalog search)**
+Familiar verb from `npx skills find` for power users who already know what they want.
+
+These three are the intelligence layer. Everything else (evaluate, audit, migrate, export) is execution on top.
+
+### The other things only Skills Curator does
 
 1. **Saves your judgment as a reviewable artifact.** Every evaluation produces a structured record (pros, cons, conflicts, verdict, partial-adoption plan) that exports as PR-ready markdown — paste it in an ADR, a PR, a team doc.
 2. **Recommends by *fit*, not popularity.** A 200-install skill that matches your stack beats a 50,000-install one that doesn't. We refuse to scrape skills.sh for fake popularity numbers.
-3. **Scans for danger before install.** 14 risk patterns including remote code execution, hardcoded secrets, GitHub PATs, base64 obfuscation, credential-store access. The `/skill-evaluate` command runs this automatically — you don't have to remember.
-4. **Audits your whole stack in one pass.** Duplicates, preference conflicts, security-unreviewed skills, version drift, low health scores — surfaced together, not one tool at a time.
-5. **Re-deciding is the bug, not the feature.** When the same skill resurfaces six months later, you read your past judgment in 5 seconds. No other tool persists *why* you decided what you decided.
+3. **Scans for danger before install.** 14 risk patterns including remote code execution, hardcoded secrets, GitHub PATs, base64 obfuscation, credential-store access. The `/skill-evaluate` command runs this automatically.
+4. **Audits your whole stack in one pass.** Duplicates, preference conflicts, security-unreviewed skills, version drift, low health scores — surfaced together.
+5. **Re-deciding is the bug, not the feature.** When the same skill resurfaces six months later, you read your past judgment in 5 seconds.
 
 ---
 
@@ -130,6 +153,10 @@ Scans for 14 patterns including remote code execution, hardcoded API keys, GitHu
 ```bash
 R="$HOME/.claude/skills/skills-curator/scripts/registry.py"
 
+# Intelligence layer (proactive — call at session start)
+python "$R" --auto                                # scan only on project drift
+python "$R" --symptoms "tests are slow"           # map complaint to skills
+
 # The three verbs
 python "$R" --recommend                           # what fits this project
 python "$R" --eval ID PROJECT VERDICT "summary" \
@@ -143,6 +170,7 @@ python "$R" --history <skill-id>                  # all past evaluations
 
 # Discovery
 python "$R" --discover [term]                     # search live catalog
+python "$R" --find [term]                         # alias for --discover
 python "$R" --scan                                # project tech signals only
 
 # Safety
