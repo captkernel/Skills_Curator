@@ -26,6 +26,7 @@ Usage:
   python registry.py --stale                    # Check for outdated installed skills
   python registry.py --migrate <agent>          # Copy skills to another agent
   python registry.py --author                   # Scaffold a new SKILL.md
+  python registry.py --customize SOURCE         # Fork an external skill as a project-customized version
   python registry.py --validate [--strict]
   python registry.py --add ID NAME SOURCE INSTALL [--skill-type capability|preference]
   python registry.py --eval ID PROJECT VERDICT SUMMARY
@@ -75,7 +76,7 @@ import urllib.error
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-VERSION = "4.1.0"
+VERSION = "4.2.0"
 SCHEMA_VERSION = "3.0"
 
 SKILL_DIR            = Path.home() / ".claude" / "skills" / "skills-curator"
@@ -1050,6 +1051,251 @@ def cmd_symptoms(symptom: str) -> None:
     print(f"  Next: /skill-evaluate <id> before installing.")
 
 
+# ─── Customization (skill-fork-for-this-project) ──────────────────────────────
+# Take an external skill, read its SKILL.md, score sections by relevance to
+# the project, and emit a customization plan + a fork at
+# ~/.claude/skills/<name>-for-<project>/SKILL.md. The actual content rewriting
+# (e.g. swapping Vue examples for React) is done by the agent — this engine
+# produces the structured plan so the rewrite is grounded.
+
+CUSTOMIZE_DIR = Path.home() / ".claude" / "skills"
+
+
+def _split_skill_sections(skill_md_text: str) -> list[tuple[str, str]]:
+    """Split a SKILL.md body into (heading, content) pairs. Frontmatter is
+    extracted as a separate ('__frontmatter__', text) tuple if present."""
+    sections: list[tuple[str, str]] = []
+    body = skill_md_text
+
+    # Strip and capture YAML frontmatter
+    m = re.match(r"^---\n(.*?)\n---\n", body, flags=re.DOTALL)
+    if m:
+        sections.append(("__frontmatter__", m.group(1)))
+        body = body[m.end():]
+
+    # Split on H1/H2 headings. Keep the heading line attached to its content.
+    parts = re.split(r"^(#{1,2} .+)$", body, flags=re.MULTILINE)
+    # parts[0] is preamble before any heading; parts[1::2] are headings; parts[2::2] are bodies
+    if parts[0].strip():
+        sections.append(("__preamble__", parts[0].strip()))
+    for heading, content in zip(parts[1::2], parts[2::2]):
+        sections.append((heading.strip(), content.strip()))
+    return sections
+
+
+def _section_relevance(content: str, project_tags: set[str], project_languages: list[str]) -> tuple[int, list[str]]:
+    """Cheap scoring: count tag/language mentions in the section. Returns
+    (score, matched_terms). Higher = more relevant to this project."""
+    if not content:
+        return 0, []
+    text = content.lower()
+    matched: list[str] = []
+    score = 0
+    for tag in project_tags:
+        if tag.lower() in text:
+            score += 2
+            matched.append(tag)
+    for lang in project_languages:
+        if lang.lower() in text:
+            score += 3  # languages are stronger signals than abstract tags
+            matched.append(lang)
+    # Boost for sections that look immediately actionable
+    if any(k in text for k in ("install:", "usage:", "example", "```")):
+        score += 1
+    return score, matched
+
+
+def _read_external_skill(source: str) -> tuple[str, str] | None:
+    """Resolve an external skill identifier to (skill_name, SKILL.md text).
+    Accepts: a registered skill id, a local folder path, an owner/repo[@skill]
+    string (fetched from GitHub raw)."""
+    # Local path?
+    p = Path(source).expanduser()
+    if p.is_dir() and (p / "SKILL.md").exists():
+        return (p.name, (p / "SKILL.md").read_text(encoding="utf-8", errors="replace"))
+
+    # Registered skill?
+    reg = load_registry()
+    for sk in reg.get("skills", []):
+        if sk.get("id") == source:
+            # Try the install path
+            install_path = Path.home() / ".claude" / "skills" / sk["id"]
+            if (install_path / "SKILL.md").exists():
+                return (sk["id"], (install_path / "SKILL.md").read_text(encoding="utf-8", errors="replace"))
+            # Fall back to fetching from source URL if it's a GitHub repo
+            url = sk.get("source", "")
+            if "github.com" in url:
+                source = url.replace("https://github.com/", "").rstrip("/")
+                # Continue to GitHub fetch path below
+
+    # owner/repo[@skill] form
+    if "/" in source and not source.startswith("/"):
+        owner_repo, _, sub = source.partition("@")
+        for branch in ("main", "master"):
+            for path_pattern in (f"skills/{sub}/SKILL.md", f"skills/{owner_repo.split('/')[-1]}/SKILL.md", "SKILL.md"):
+                if not sub and "/SKILL.md" not in path_pattern.replace("/SKILL.md", ""):
+                    continue
+                try:
+                    raw_url = f"https://raw.githubusercontent.com/{owner_repo}/{branch}/{path_pattern}"
+                    text = _http_get(raw_url, timeout=10)
+                    if text and text.startswith("---"):
+                        return (sub or owner_repo.split("/")[-1], text)
+                except Exception:
+                    continue
+    return None
+
+
+def cmd_customize(source: str, project_dir: Path | None = None,
+                  emit_fork: bool = True) -> None:
+    """Take an external skill and produce a project-tailored customization
+    plan + (optionally) a forked SKILL.md the agent can rewrite for this
+    specific project."""
+    project_dir = project_dir or Path.cwd()
+    project_name = project_dir.name
+
+    print(f"🔧 Customizing '{source}' for project: {project_name}\n")
+
+    fetched = _read_external_skill(source)
+    if not fetched:
+        print(f"❌ Could not resolve '{source}' to a SKILL.md.")
+        print(f"   Try a local path, a registered skill id, or owner/repo@skill-name.")
+        return
+    skill_id, skill_md = fetched
+    print(f"   Loaded SKILL.md ({len(skill_md):,} chars)")
+
+    signals = _scan_project(project_dir)
+    if not signals.get("tags"):
+        print(f"⚠️  No project signals — add a CLAUDE.md or README.md so customization has something to specialize against.")
+        return
+    project_tags = set(signals["tags"])
+    languages = signals.get("languages", [])
+    print(f"   Project signals: {', '.join(sorted(project_tags)[:8])}\n")
+
+    sections = _split_skill_sections(skill_md)
+    if not sections:
+        print(f"⚠️  Could not parse SKILL.md sections.")
+        return
+
+    # Score each section
+    plan: list[dict] = []
+    for heading, content in sections:
+        if heading == "__frontmatter__":
+            plan.append({"heading": heading, "action": "rewrite-frontmatter",
+                         "score": -1, "matched": [],
+                         "note": "Update name to '<original>-for-<project>', point homepage to fork"})
+            continue
+        if heading == "__preamble__":
+            plan.append({"heading": heading, "action": "keep",
+                         "score": 0, "matched": [], "note": "Pre-heading text — usually safe to keep"})
+            continue
+        score, matched = _section_relevance(content, project_tags, languages)
+        if score >= 5:
+            action = "keep-emphasize"
+            note = "High project fit — keep verbatim and reinforce relevant examples"
+        elif score >= 2:
+            action = "keep-trim"
+            note = "Some fit — keep the matching parts, trim the rest"
+        elif score == 0 and any(k in content.lower() for k in ("vue", "angular", "svelte", "rails", "django")) \
+             and any(t in project_tags for t in ("react", "nextjs", "fastapi", "express")):
+            action = "rewrite-stack"
+            note = "Examples target a stack the project doesn't use — agent should rewrite for project's stack"
+        elif score == 0:
+            action = "drop-or-rewrite"
+            note = "Zero project relevance signals — agent should drop or rewrite for this project"
+        else:
+            action = "keep-trim"
+            note = "Marginal fit — keep but consider trimming"
+        plan.append({"heading": heading, "action": action,
+                     "score": score, "matched": matched, "note": note,
+                     "preview": content[:200].replace("\n", " ")})
+
+    # Print the plan
+    print(f"╔══════════════════════════════════════════════════════════════╗")
+    print(f"║  Customization plan: {skill_id} → {project_name:<32}║")
+    print(f"╚══════════════════════════════════════════════════════════════╝\n")
+    for i, p in enumerate(plan, 1):
+        h = p['heading']
+        if h == "__frontmatter__":
+            h = "(YAML frontmatter)"
+        elif h == "__preamble__":
+            h = "(preamble)"
+        action_icon = {"keep-emphasize": "🟢", "keep": "🟢", "keep-trim": "🟡",
+                       "rewrite-frontmatter": "✏️", "rewrite-stack": "🔄",
+                       "drop-or-rewrite": "🔴"}.get(p["action"], "•")
+        print(f"  {i:02}. {action_icon} [{p['action']:<18}] score={p['score']:<3} {h}")
+        if p.get("matched"):
+            print(f"      Matched : {', '.join(p['matched'][:5])}")
+        print(f"      Action  : {p['note']}")
+        print()
+
+    if not emit_fork:
+        return
+
+    # Emit the fork
+    fork_id = f"{skill_id}-for-{project_name}".lower().replace(" ", "-")
+    fork_dir = CUSTOMIZE_DIR / fork_id
+    fork_dir.mkdir(parents=True, exist_ok=True)
+    fork_path = fork_dir / "SKILL.md"
+
+    fork_lines = ["---",
+                  f"name: {fork_id}",
+                  f"description: |",
+                  f"  Project-customized fork of '{skill_id}' for '{project_name}'.",
+                  f"  Generated by Skills Curator. Tailored to: {', '.join(sorted(project_tags)[:5])}",
+                  f"metadata:",
+                  f"  derived_from: {skill_id}",
+                  f"  customized_for: {project_name}",
+                  f"  customized_at: {date.today()}",
+                  f"  customized_by: skills-curator/{VERSION}",
+                  "---",
+                  "",
+                  f"# {fork_id}",
+                  "",
+                  f"> **Customization in progress.** This fork was generated by `skills-curator --customize`.",
+                  f"> The agent should now rewrite each section per the plan below.",
+                  "",
+                  "## Customization plan",
+                  "",
+                  "| # | Section | Action | Why |",
+                  "|---|---|---|---|"]
+
+    for i, p in enumerate(plan, 1):
+        h = p['heading'].replace("__frontmatter__", "(frontmatter)").replace("__preamble__", "(preamble)")
+        fork_lines.append(f"| {i} | {h[:60]} | `{p['action']}` | {p['note'][:80]} |")
+
+    fork_lines.extend([
+        "",
+        "---",
+        "",
+        "## Original skill source",
+        "",
+        f"```",
+        skill_md[:2000] + ("..." if len(skill_md) > 2000 else ""),
+        "```",
+        "",
+        "---",
+        "",
+        "## Agent: rewrite this section",
+        "",
+        "Walk through each row of the plan above. For each section:",
+        "",
+        "- `keep` / `keep-emphasize` → copy the original section verbatim into this file under its heading",
+        "- `keep-trim` → copy the parts that match this project's signals; drop the rest",
+        "- `rewrite-stack` → rewrite examples to use this project's stack (replace Vue/Angular/etc. with the project's framework)",
+        "- `rewrite-frontmatter` → write a fresh frontmatter block with the fork id and updated metadata",
+        "- `drop-or-rewrite` → drop or rewrite from scratch in a project-specific way",
+        "",
+        "When done, replace this whole 'Customization plan' section with the rewritten content.",
+        ""
+    ])
+
+    fork_path.write_text("\n".join(fork_lines), encoding="utf-8")
+    print(f"  ✅ Fork scaffolded at: {fork_path}")
+    print(f"     Next: ask the agent to rewrite sections per the plan above.")
+    print(f"     The agent should read the original SKILL.md, follow the action column, and replace")
+    print(f"     the 'Customization plan' section with the rewritten content.")
+
+
 def cmd_recommend(project_dir: Path | None = None,
                   refresh: bool = False, max_n: int = 8) -> None:
     project_dir = project_dir or Path.cwd()
@@ -1651,6 +1897,10 @@ def main() -> None:
     p.add_argument("--stale",      action="store_true")
     p.add_argument("--migrate",    metavar="AGENT")
     p.add_argument("--author",     action="store_true")
+    p.add_argument("--customize",  metavar="SOURCE",
+                   help="Fork an external skill as a project-customized version (SOURCE = registered id, local path, or owner/repo@skill)")
+    p.add_argument("--no-fork",    action="store_true",
+                   help="With --customize, only print the plan; don't write the fork")
     p.add_argument("--export-eval", dest="export_eval", metavar="SKILL_ID",
                    help="Emit latest evaluation as shareable markdown")
     p.add_argument("--version",    action="version", version=f"%(prog)s {VERSION}")
@@ -1675,6 +1925,7 @@ def main() -> None:
                                                  conflicts=_split_csv(args.conflicts))
     elif args.auto:                     cmd_auto(proj, args.refresh)
     elif args.symptoms:                 cmd_symptoms(args.symptoms)
+    elif args.customize:                cmd_customize(args.customize, proj, emit_fork=not args.no_fork)
     elif args.recommend:                cmd_recommend(proj, args.refresh, args.max)
     elif args.discover is not None:     cmd_discover(args.discover or None, args.refresh)
     elif args.find is not None:         cmd_discover(args.find or None, args.refresh)
