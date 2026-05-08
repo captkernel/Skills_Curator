@@ -1,0 +1,47 @@
+name: Report a malicious / risky skill
+description: A Claude skill that exfiltrates data, contains hardcoded secrets, or otherwise should be flagged
+labels: ["security", "skill-report"]
+body:
+  - type: input
+    id: skill-source
+    attributes:
+      label: Skill source URL
+      placeholder: https://github.com/...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - CRITICAL — credential theft, RCE, data exfiltration
+        - HIGH — dynamic exec, hardcoded passwords
+        - MEDIUM — suspicious network calls, base64 obfuscation
+    validations:
+      required: true
+
+  - type: textarea
+    id: scan-output
+    attributes:
+      label: --check output
+      description: Paste the output of `python registry.py --check <path-to-skill>`
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Additional context
+      description: Specific files, network endpoints, or behaviour you observed
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: upstream
+    attributes:
+      label: Upstream notification
+      options:
+        - label: I have also reported this to the skill author
+        - label: I have also reported this to skills@vercel.com (for catalog removal)
