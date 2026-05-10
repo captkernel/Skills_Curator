@@ -67,7 +67,7 @@ Skills_Curator/                             ← repo root
 │   │   └── schema.md
 │   └── scripts/
 │       └── registry.py                     ← stdlib-only engine, ~1k lines
-└── tests/                                  ← 26 pytest cases
+└── tests/                                  ← 37 pytest cases
     ├── conftest.py                         ← isolated tmp_path fixture
     ├── test_registry_core.py
     ├── test_migration.py
@@ -84,7 +84,7 @@ Skills_Curator/                             ← repo root
 
 Before running `deploy.py`:
 
-1. `python -m pytest tests/` — all 26 pass
+1. `python -m pytest tests/` — all 37 pass
 2. `python skills/skills-curator/scripts/registry.py --validate --strict` — exit 0
 3. `python skills/skills-curator/scripts/registry.py --version` — matches `VERSION`, `plugin.json`, `SKILL.md` metadata, `CHANGELOG.md`
 4. README claims match what's actually shipped (especially command lists)

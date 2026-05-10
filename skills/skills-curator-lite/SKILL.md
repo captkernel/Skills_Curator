@@ -862,6 +862,7 @@ Cache TTL: 24 hours. On subsequent calls, prefer cached catalog.json if its mtim
 
 When evaluating a local skill folder, the agent runs Grep with these patterns. Any HIGH or CRITICAL match should halt the install pending review.
 
+<!-- scanner:ignore-block-start -->
 | Severity | Pattern (regex) | Why |
 |---|---|---|
 | CRITICAL | `curl\s+\S+\|\s*(sh\|bash)` | Remote code execution: pipe-to-shell |
@@ -887,8 +888,9 @@ grep -rE 'curl\s+\S+\|\s*(sh|bash)' "$SKILL_PATH" && echo "CRITICAL: pipe-to-she
 grep -rE 'sk-[A-Za-z0-9]{32,}'      "$SKILL_PATH" && echo "HIGH: hardcoded API key"
 # ...etc
 ```
+<!-- scanner:ignore-block-end -->
 
-The agent should run each pattern via the Grep tool (preferred over Bash for performance and permissions).
+The agent should run each pattern via the Grep tool (preferred over Bash for performance and permissions). Documentation that lists pattern definitions verbatim should be wrapped in `<!-- scanner:ignore-block-start -->` / `<!-- scanner:ignore-block-end -->` (or `# scanner:ignore` for single-line Python) so the engine and agent skip them during self-scans.
 
 ---
 

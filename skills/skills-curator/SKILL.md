@@ -1,17 +1,8 @@
 ---
 name: skills-curator
-description: >
-  The intelligence layer for Claude skills. Maintains a trust-rated catalog
-  (curated entries + live GitHub topic search), identifies what fits your
-  project (stack, deps, CLAUDE.md), recommends with pros/cons and per-project
-  customization advice, persists every decision so you never re-evaluate, and
-  migrates across 55 supported agent platforms.
-  Use when the user mentions a skill, asks "should I install X", asks to
-  evaluate / recommend / audit / check a skill, asks "what skills fit this
-  project", asks for a list of supported platforms, or wants to migrate skills
-  to another agent.
+description: Use when the user mentions a skill/plugin by name, asks "should I install X", asks for skill recommendations, wants a security check on a skill, asks about duplicates or conflicts, wants to create a new skill, or wants to migrate skills across agent platforms (Cursor, Codex, Gemini, etc.).
 metadata:
-  version: "4.4.0"
+  version: "4.4.1"
   author: captkernel
   homepage: https://github.com/captkernel/Skills_Curator
   license: MIT
@@ -98,18 +89,9 @@ This maps complaints to skill categories using a built-in symptom→tag table an
 
 ---
 
-## When to activate this skill
+## When to activate
 
-Use Skills Curator when the user says any of:
-
-- "Should I install [skill]?" / "Is [skill] worth it?"
-- "Find a skill for X" / "Is there a skill that does X?"
-- "What skills fit this project?" / "Recommend skills"
-- "Audit my skills" / "Review my skills" / "Are any of my skills conflicting?"
-- "Is [skill] safe?" / "Check this skill"
-- "Migrate my skills to Cursor / Codex / Gemini"
-- "Have we evaluated [skill] before?" / "What did we decide about [skill]?"
-- Mentions a specific skill, plugin, or tool by name in a context that implies adoption
+The frontmatter `when_to_use` covers the explicit triggers. One additional rule worth surfacing here:
 
 If the request is "how do I do X?" and X is plausibly a skill domain (testing, deploy, design, scraping, docs, etc.), **search the registry and catalog before answering from general knowledge** — there may already be a battle-tested skill for it.
 
@@ -230,72 +212,43 @@ If the skill isn't registered yet, `--add` it first.
 
 ---
 
-## Customizing an external skill for this project (`--customize`)
+## Customizing an external skill (`--customize`)
 
-When the user wants to install a skill but it ships examples from a stack they don't use (Vue examples in a React project, Django in a FastAPI project), use `--customize` to fork it as a project-tailored version:
+When a skill is good but its examples don't match the user's stack (Vue examples in a React project, Django in a FastAPI project), fork it as a project-tailored version:
 
 ```bash
-python registry.py --customize <source>        # source = registered id, local path, or owner/repo@skill
+python registry.py --customize <source>   # source = registered id, local path, or owner/repo@skill
 ```
 
-The engine:
-1. Loads the external `SKILL.md`
-2. Scans this project (same signals as `--scan`)
-3. Scores each section by relevance to the project
-4. Emits a customization plan with per-section actions: `keep`, `keep-trim`, `rewrite-stack`, `drop-or-rewrite`, `rewrite-frontmatter`
-5. Writes a fork at `~/.claude/skills/<name>-for-<project>/SKILL.md` containing the plan
-
-**The agent then rewrites each section** per the action column. Sections marked `rewrite-stack` should have their examples rewritten to use this project's framework. Sections marked `drop-or-rewrite` should be dropped or rewritten from scratch. The engine produces the structured plan; the agent does the prose.
-
-Use `--no-fork` to print only the plan without writing the file.
+The engine emits a per-section plan (`keep`, `keep-trim`, `rewrite-stack`, `drop-or-rewrite`, `rewrite-frontmatter`) and writes a fork at `~/.claude/skills/<name>-for-<project>/SKILL.md`. **The agent then rewrites each section** per the action column — engine produces the plan, agent does the prose. Use `--no-fork` to preview the plan without writing.
 
 ---
 
 ## Platform management
 
-Skills Curator knows about every agent platform `skills.sh` supports — 55 in total. Primary first-class support is **Claude Code** and **GitHub Copilot**; everything else is reachable via the same migration verbs.
+Skills Curator supports 55 agent platforms (`claude-code` and `github-copilot` are first-class; the rest are reachable via the same migration verbs).
 
-When the user asks *"where can I install this?"*, *"what agents do I have?"*, or wants to copy a skill across platforms:
+When the user asks *"where can I install this?"* or wants to copy a skill across platforms, use `--platforms` and `--migrate <target[,...]>`. Targets accept a single id, a comma list, or `detected` (every platform on this machine). Without an explicit target in a non-TTY context, migration defaults to `claude-code`; in a TTY it prompts.
 
-```bash
-python registry.py --platforms                  # show detected + primary platforms
-python registry.py --platforms --verbose        # show all 55
-python registry.py --migrate                    # interactive: prints platforms, prompts
-python registry.py --migrate cursor             # single target
-python registry.py --migrate cursor,codex,roo   # multi-target
-python registry.py --migrate detected           # every platform on this machine
-python registry.py --migrate --all-detected     # equivalent flag form
-```
-
-When migrating without an explicit target in a non-TTY context, Skills Curator defaults to `claude-code` (the primary ecosystem). In TTY, it prompts.
-
-If the user asks *"list all supported platforms"*, run `--platforms --verbose`. Don't read the `PLATFORMS` dict by hand — the engine renders it consistently.
+For *"list all supported platforms"*, run `--platforms --verbose` — never read the `PLATFORMS` dict by hand. Full flag reference: `references/commands.md`.
 
 ---
 
-## Common other commands
+## Common Mistakes
 
-```bash
-python registry.py --check <path>              # security scan a folder
-python registry.py --list                      # all registered skills
-python registry.py --discover [term]           # search live catalog
-python registry.py --find [term]               # alias for --discover
-python registry.py --health                    # A-D health per skill
-python registry.py --stale                     # GitHub release version drift
-python registry.py --platforms [--verbose]     # supported agent platforms
-python registry.py --migrate [target[,...]]    # cross-agent copy (multi-target)
-python registry.py --author                    # scaffold new SKILL.md
-python registry.py --customize <source>        # fork external skill for this project
-python registry.py --sync   |   --push         # cross-device Gist sync
-python registry.py --validate --strict         # CI integrity check
-```
-
-**`skills-curator-lite` is the default tier** — same intelligence layer, no Python. The agent does everything via Bash/Read/Glob/Grep using embedded catalogs and rules. Use this Python version when you have 100+ skills (single-pass speed beats N agent steps), need cross-device Gist sync, or want regression-tested behavior. Both ship in the plugin and don't conflict (different registry paths).
-
-Full reference: `references/commands.md`.
+| Mistake | What to do instead |
+|---|---|
+| Recommending a Medium/Unknown-trust skill without `--check` first | Trust gate is non-negotiable — security-scan first, flag findings to user |
+| Manufacturing a recommendation when no skill fits | Say no good match was found, explain *why*, offer to do the task directly or scaffold via `--author` |
+| Re-evaluating a skill the registry already has a verdict for | Run `--history <id>` first; surface the prior verdict instead of re-deciding |
+| Running `--auto` more than once per session | Fingerprint-based; one call is enough until the project changes |
+| Padding the evaluation output with prose | Use the locked output format exactly — `--export-eval` reproduces it |
+| Reading `references/commands.md` by hand to list flags | Run the engine (`--platforms --verbose`, etc.) — it renders consistently |
 
 ---
 
-## Why no install counts
+## Other commands and tier choice
 
-skills.sh has no public JSON API for per-skill telemetry. Skills Curator deliberately ranks on tag overlap × trust tier rather than fake popularity numbers. A skill that fits this project's stack with 200 installs is a better match than one with 50,000 that doesn't. If the user explicitly asks for popularity, point them at skills.sh.
+Full CLI reference: `references/commands.md` (covers `--check`, `--list`, `--discover`/`--find`, `--health`, `--stale`, `--platforms`, `--migrate`, `--author`, `--customize`, `--sync`/`--push`, `--validate`).
+
+**Tier choice:** `skills-curator-lite` is the default — same intelligence layer, no Python (Bash/Read/Glob/Grep + embedded catalogs). Use the Python version when you have 100+ skills (single-pass speed beats N agent steps), need cross-device Gist sync, or want regression-tested behavior. Both ship in the plugin and use different registry paths — they don't conflict.

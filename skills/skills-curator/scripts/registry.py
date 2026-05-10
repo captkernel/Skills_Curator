@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Skills Curator v4.0.0 — registry.py
+Skills Curator — registry.py (see VERSION constant for current version)
 The only Claude skill tool with built-in judgment: evaluate before installing,
 persist your decisions forever, get project-aware recommendations.
 
@@ -76,7 +76,7 @@ import urllib.error
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-VERSION = "4.4.0"
+VERSION = "4.4.1"
 SCHEMA_VERSION = "3.0"
 
 SKILL_DIR            = Path.home() / ".claude" / "skills" / "skills-curator"
@@ -179,23 +179,26 @@ def _detect_platforms() -> list[str]:
     return [pid for pid, meta in PLATFORMS.items() if meta["detect"].exists()]
 
 # ─── Security scan patterns ───────────────────────────────────────────────────
-SECURITY_RISK_PATTERNS = [
+# Lines below contain the literal trigger strings inside regex patterns; the
+# `scanner:ignore` marker tells cmd_check() to skip these lines so the scanner
+# does not flag its own pattern definitions as risks.
+SECURITY_RISK_PATTERNS = [  # scanner:ignore-block-start
     (r'curl\s+.*\|\s*(bash|sh)',        "🔴 CRITICAL", "Remote code execution via curl pipe"),
     (r'wget\s+.*\|\s*(bash|sh)',        "🔴 CRITICAL", "Remote code execution via wget pipe"),
-    (r'rm\s+-rf?\s+[/~]',               "🔴 CRITICAL", "Destructive rm -rf on root/home"),
-    (r'\beval\s*\(',                    "🔴 CRITICAL", "eval() — arbitrary code execution risk"),
-    (r'\bexec\s*\(',                    "🟠 HIGH",     "exec() — code execution risk"),
+    (r'rm\s+-rf?\s+[/~]',               "🔴 CRITICAL", "Destructive recursive delete on root/home"),
+    (r'\beval\s*\(',                    "🔴 CRITICAL", "Dynamic code execution call (CWE-95)"),
+    (r'\bexec\s*\(',                    "🟠 HIGH",     "Code execution function call (CWE-95)"),
     (r'OPENAI_API_KEY\s*=\s*["\']sk-',  "🔴 CRITICAL", "Hardcoded OpenAI API key"),
     (r'ANTHROPIC_API_KEY\s*=\s*["\']sk-',"🔴 CRITICAL","Hardcoded Anthropic API key"),
     (r'ghp_[A-Za-z0-9]{36}',            "🔴 CRITICAL", "Hardcoded GitHub PAT"),
-    (r'password\s*=\s*["\'][^"\']{6,}["\']',"🟠 HIGH", "Hardcoded password"),
+    (r'password\s*=\s*["\'][^"\']{6,}["\']',"🟠 HIGH", "Hardcoded password literal"),
     (r'https?://[^\s"\']+/exfil',       "🔴 CRITICAL", "Suspected data exfiltration endpoint"),
     (r'subprocess\.call\s*\(|os\.system\s*\(',"🟡 MEDIUM","Shell execution — review carefully"),
-    (r'requests\.post.*secret',         "🟡 MEDIUM",   "HTTP POST with 'secret' — verify endpoint"),
+    (r'requests\.post.*secret',         "🟡 MEDIUM",   "HTTP POST with sensitive token — verify endpoint"),
     (r'__import__\s*\(',                "🟠 HIGH",     "Dynamic import — obfuscation risk"),
     (r'base64\.b64decode',              "🟡 MEDIUM",   "Base64 decode — check for obfuscated payload"),
-    (r'keychain|credentials\s*store',   "🟡 MEDIUM",   "Credential store access"),
-]
+    (r'keychain|credentials\s*store',   "🟡 MEDIUM",   "OS credential store access"),
+]  # scanner:ignore-block-end
 
 # ─── Health scoring weights ───────────────────────────────────────────────────
 HEALTH_WEIGHTS = {
@@ -1631,6 +1634,31 @@ def cmd_scan(project_dir: Path | None = None) -> None:
 
 # ─── Security Scan ────────────────────────────────────────────────────────────
 
+def _strip_scanner_ignored(text: str) -> str:
+    """Remove lines or blocks the author has explicitly opted out of scanning.
+
+    Markers (case-insensitive) recognized in any source/markdown file:
+      - `scanner:ignore`             → strip just the line containing it
+      - `scanner:ignore-block-start` → strip lines until `scanner:ignore-block-end`
+    """
+    out: list[str] = []
+    in_block = False
+    for line in text.splitlines(keepends=True):
+        low = line.lower()
+        if "scanner:ignore-block-start" in low:
+            in_block = True
+            continue
+        if "scanner:ignore-block-end" in low:
+            in_block = False
+            continue
+        if in_block:
+            continue
+        if "scanner:ignore" in low:
+            continue
+        out.append(line)
+    return "".join(out)
+
+
 def cmd_check(skill_path: str) -> None:
     """Scan a skill folder for security risks before installing."""
     path = Path(skill_path).expanduser()
@@ -1651,7 +1679,10 @@ def cmd_check(skill_path: str) -> None:
         if fpath.suffix not in scannable_exts:
             continue
         try:
-            content = fpath.read_text(errors="ignore")
+            raw = fpath.read_text(errors="ignore")
+            # Strip lines/blocks marked scanner:ignore so docs and pattern
+            # definitions don't trigger false positives on their own literals.
+            content = _strip_scanner_ignored(raw)
             files_scanned += 1
             for pattern, severity, description in SECURITY_RISK_PATTERNS:
                 if re.search(pattern, content, re.IGNORECASE):

@@ -45,7 +45,42 @@ def test_check_flags_eval(isolated_registry, tmp_path, capsys):
     })
     isolated_registry.cmd_check(str(folder))
     out = capsys.readouterr().out
-    assert "eval" in out
+    assert "CRITICAL" in out
+    assert "Dynamic code execution" in out
+    assert "naughty.py" in out
+
+
+def test_scanner_ignore_block_suppresses_findings(isolated_registry, tmp_path, capsys):
+    """Lines wrapped in scanner:ignore-block markers are skipped — this is what
+    lets the scanner avoid flagging its own pattern definitions and prevents
+    documentation that references patterns from triggering false positives."""
+    folder = _create_skill_folder(tmp_path, {
+        "doc.md": (
+            "Normal text with no risks.\n"
+            "<!-- scanner:ignore-block-start -->\n"
+            "Pattern documentation: eval(), exec(), rm -rf /, ghp_abcdefghijklmnopqrstuvwxyz0123456789\n"
+            "<!-- scanner:ignore-block-end -->\n"
+            "More normal text.\n"
+        ),
+    })
+    isolated_registry.cmd_check(str(folder))
+    out = capsys.readouterr().out
+    assert "DO NOT INSTALL" not in out
+    assert "No risks detected" in out or "not registered" in out.lower()
+
+
+def test_scanner_ignore_single_line(isolated_registry, tmp_path, capsys):
+    """A single-line `scanner:ignore` marker on the same line skips just that line."""
+    folder = _create_skill_folder(tmp_path, {
+        "patterns.py": (
+            "PATTERNS = [\n"
+            '    (r"\\beval\\s*\\(", "Dynamic code execution"),  # scanner:ignore\n'
+            "]\n"
+        ),
+    })
+    isolated_registry.cmd_check(str(folder))
+    out = capsys.readouterr().out
+    assert "DO NOT INSTALL" not in out
 
 
 def test_check_warns_when_folder_unmatched(isolated_registry, tmp_path, capsys):

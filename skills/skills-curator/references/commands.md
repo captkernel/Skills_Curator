@@ -129,4 +129,6 @@ You can also just talk to Claude in natural language — the skill auto-activate
 
 ## Security scan patterns checked by `--check`
 
+<!-- scanner:ignore-block-start -->
 Remote code execution (curl/wget pipe), destructive commands (`rm -rf /`), hardcoded secrets (OpenAI key, Anthropic key, GitHub PAT, passwords), `eval()` / `exec()`, suspicious HTTP endpoints, dynamic imports, base64 obfuscation, credential store access. See `SECURITY_RISK_PATTERNS` in `scripts/registry.py` for the full list.
+<!-- scanner:ignore-block-end -->

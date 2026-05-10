@@ -2,6 +2,28 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.1] — 2026-05-11
+
+Quality + dogfooding pass. The biggest fix is that running `--check` on Skills Curator itself no longer returns "DO NOT INSTALL" — the scanner was matching its own pattern definitions. Plus a CSO-compliant frontmatter rewrite, SKILL.md trim, and a small additive `scanner:ignore` mechanism documentation can use to opt out of self-scans.
+
+### Fixed
+- **Scanner no longer flags itself.** `cmd_check` against the Python tier returned 6 findings (3 CRITICAL + 2 HIGH + 1 MEDIUM); against Lite, 1 MEDIUM. Both were false positives caused by descriptions like `"eval() — arbitrary code execution risk"` echoing the literal trigger they detect, and by documentation tables that legitimately list patterns. Both tiers now return "✅ No risks detected" on self-scan.
+- **`SKILL.md` frontmatter description rewritten** to remove the workflow-summary CSO trap (was: "Maintains a trust-rated catalog… recommends with pros/cons… persists every decision…"). The summary form caused agents to follow the description instead of reading the body. Now strict "Use when…" triggering conditions only. Pressure-tested via subagent: 5/5 true positives, 3/3 true negatives across 8 user prompts.
+- **`deploy.py` commit message hardcoded** as "Release v4.0.0 — Skills Curator" since v4.0.0; every push since shipped with a stale title. Now reads the current `VERSION` from `registry.py` and pulls the matching one-paragraph summary from `CHANGELOG.md`. Tag-suggestion next-step also uses the dynamic version.
+- **`registry.py` docstring** said "Skills Curator v4.0.0" while `VERSION = "4.4.0"`. Replaced with "see VERSION constant" so it can't drift again.
+- **README + CLAUDE.md doc freshness** — test count was 26/35 in different places, engine was "1944 LOC". Now consistent: 37 tests, ~2.3k LOC.
+
+### Added
+- **`scanner:ignore` line/block markers.** Lines containing `scanner:ignore` (anywhere in the line) are skipped during `--check`. Blocks bounded by `scanner:ignore-block-start` / `scanner:ignore-block-end` (works as `<!-- … -->` in markdown) are skipped wholesale. Used internally to mark `SECURITY_RISK_PATTERNS` and the pattern-listing tables in `references/commands.md` and `skills-curator-lite/SKILL.md`. Available to skill authors who legitimately need to reference patterns in docs.
+- 2 new pytest cases (`test_scanner_ignore_block_suppresses_findings`, `test_scanner_ignore_single_line`) → total 37 (was 35).
+
+### Changed
+- **`SKILL.md` trimmed** from 2073 → 1800 words. Removed command-list duplication that already lived in `references/commands.md`, removed "Why no install counts" from SKILL.md (lives in CLAUDE.md as maintainer-facing rationale), tightened `--customize` and Platform Management sections, replaced the duplicated "When to activate" block with a one-line non-redundant note. Added "Common Mistakes" table.
+- **Pattern descriptions in `SECURITY_RISK_PATTERNS`** rewritten to use CWE references rather than echoing the literal trigger (`"Dynamic code execution call (CWE-95)"` instead of `"eval() — arbitrary code execution risk"`). Detection behavior unchanged.
+
+### Notes
+- Local-install copies in `~/.claude/skills/skills-curator/` were synced with the source during this work; future installs from npm/skills.sh will pick up the changes automatically.
+
 ## [4.4.0] — 2026-05-08
 
 The Lite-promotion release. `skills-curator-lite` is now feature-parity with the v4.3 Python engine and ships as the default tier. The Python full version remains available as the performance/regression-tested tier.
