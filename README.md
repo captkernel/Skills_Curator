@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/images/brand-curator-portrait.png" alt="Skills Curator — a Belle Époque oil-painted portrait of a curator examining a gilded frame, surrounded by floating miniatures, in the painterly aesthetic of Clair Obscur Expedition 33" width="70%" />
+<img src="docs/images/hero.png" alt="Skills Curator — context-aware Claude skill curator" width="100%" />
 
 # Skills Curator
 

@@ -2,6 +2,20 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.3] — 2026-05-11
+
+Image set tightened. README hero reverted to the editorial cover. Every diagram regenerated with real data — no AI-hallucinated platform names, no abstract block diagrams that don't carry information.
+
+### Changed
+- **README hero is the editorial cover again** (`docs/images/hero.png`). The Clair Obscur painterly direction lived briefly in v4.4.2 — pulled back in favor of the cleaner brand identity.
+- **`docs/images/customize-workflow.png` regenerated as a three-lane diagram.** Source column shows the external skill as authored (6 sections). Plan column scores each section and tags it `keep`, `keep-trim`, `rewrite`, `rewrite-fm`, or `drop` — with `drop` sections visibly struck through and excluded. Final column ("Your Project") contains only the surviving sections; dropped sections are physically absent, with a footer noting their exclusion. Visually proves "infuse, don't invoke" in a single image.
+
+### Removed
+- `docs/images/brand-curator-portrait.png` and `docs/images/brand-gallery-hallway.png` — the Clair Obscur brand imagery is no longer in the public repo. README banner uses the editorial cover.
+
+### Notes
+- The local `.share/` gallery (not shipped) was also reorganized: engine concept replaced with a live-state dashboard view, cross-agent migration replaced with a real-data platform matrix (55 platforms, organized by tier, every install path shown), decision history replaced with an actual evaluation-record artifact (pros / cons / conflicts / adoption plan). Local gallery at `.share/gallery.html`.
+
 ## [4.4.2] — 2026-05-11
 
 Visual identity refresh. No engine or behaviour changes — purely the README, brand imagery, and image manifest.
