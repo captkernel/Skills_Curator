@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="docs/images/hero.png" alt="Skills Curator — context-aware Claude skill curator" width="100%" />
-
 # Skills Curator
 
 **Decide once. Re-decide never.**

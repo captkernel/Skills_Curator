@@ -2,7 +2,7 @@
 name: skills-curator
 description: Use when the user mentions a skill/plugin by name, asks "should I install X", asks for skill recommendations, wants a security check on a skill, asks about duplicates or conflicts, wants to create a new skill, or wants to migrate skills across agent platforms (Cursor, Codex, Gemini, etc.).
 metadata:
-  version: "4.4.3"
+  version: "4.4.4"
   author: captkernel
   homepage: https://github.com/captkernel/Skills_Curator
   license: MIT

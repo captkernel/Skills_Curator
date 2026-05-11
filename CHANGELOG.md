@@ -2,6 +2,17 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.4] — 2026-05-11
+
+README banner removed. The repo now opens with the title + badges (no hero image above the title). Cleaner first impression that matches what most well-designed CLI-tool repos do (HTTPie, DVC, Bun, etc.) — the value-prop tagline carries the opening, with content-rich images (the Claude Code session screenshot, the `--customize` flow) reserved for the Demo and feature sections below.
+
+### Removed
+- `docs/images/hero.png` no longer ships in the repo. It was the warm-cream editorial cover; useful as a separate brand asset but unnecessary as a banner. The README opens with the title and badges directly.
+
+### Notes
+- `docs/images/` is now six files: `customize-workflow.png` + the five `screenshot-*.png`. Every shipped image is content (a diagram or a real product screenshot), not pure branding.
+- The local `.share/images/hero.png` is retained as a social asset (X tweet attachments, LinkedIn share, manual GitHub Settings "Social preview" upload), but it lives only in the local social-launch folder.
+
 ## [4.4.3] — 2026-05-11
 
 Image set tightened. README hero reverted to the editorial cover. Every diagram regenerated with real data — no AI-hallucinated platform names, no abstract block diagrams that don't carry information.
