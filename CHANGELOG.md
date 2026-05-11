@@ -2,6 +2,24 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.2] — 2026-05-11
+
+Visual identity refresh. No engine or behaviour changes — purely the README, brand imagery, and image manifest.
+
+### Added
+- **Clair Obscur brand direction.** Two new oil-painted Belle Époque brand images named after the painterly aesthetic of *Clair Obscur · Expedition 33* — appropriate for a project literally called "Curator." `docs/images/brand-curator-portrait.png` (a bearded curator in a dark coat and burgundy vest examining a small gilded frame, surrounded by floating gilded miniatures) replaces the editorial-cover hero in the README. `docs/images/brand-gallery-hallway.png` (a long museum hallway with salon-style hangings and a single figure at the far end) ships as a secondary banner option.
+- **Real product screenshots ship to the repo.** Five styled-HTML terminal/IDE captures (Edge headless): `screenshot-claude-session.png` (the agent activating Skills Curator in a Claude Code chat), `screenshot-customize.png` (real `--customize` per-section plan output), `screenshot-recommend.png`, `screenshot-symptoms.png`, `screenshot-check.png` (split-panel: self-clean scan vs flagged community skill).
+- **New modern technical diagrams.** `customize-workflow.png` is now a sleek isometric block diagram on midnight navy (replacing the hand-drawn version). All ship under `docs/images/`.
+
+### Changed
+- **README hero is now the Clair Obscur curator portrait** — stronger first impression than the editorial cover, ties the visual identity to the project's naming.
+- **`--customize` section in README** now embeds the real terminal screenshot of the per-section decomposition output, replacing the hand-drawn workflow diagram.
+- **Demo section in README** opens with the Claude Code session screenshot — proves what the tool does in one image.
+
+### Notes
+- Original `hero.png` editorial cover remains in the manifest as an alternate for users who prefer the cleaner brand option.
+- `deploy.py` `FILES_TO_PUSH` expanded with the eight new image paths.
+
 ## [4.4.1] — 2026-05-11
 
 Quality + dogfooding pass. The biggest fix is that running `--check` on Skills Curator itself no longer returns "DO NOT INSTALL" — the scanner was matching its own pattern definitions. Plus a CSO-compliant frontmatter rewrite, SKILL.md trim, and a small additive `scanner:ignore` mechanism documentation can use to opt out of self-scans.

@@ -2,7 +2,7 @@
 name: skills-curator
 description: Use when the user mentions a skill/plugin by name, asks "should I install X", asks for skill recommendations, wants a security check on a skill, asks about duplicates or conflicts, wants to create a new skill, or wants to migrate skills across agent platforms (Cursor, Codex, Gemini, etc.).
 metadata:
-  version: "4.4.1"
+  version: "4.4.2"
   author: captkernel
   homepage: https://github.com/captkernel/Skills_Curator
   license: MIT
@@ -51,7 +51,7 @@ Skip the orientation entirely if `--auto` (next section) is about to surface con
 
 ## Proactive activation (the intelligence layer)
 
-**Skills Curator's main USP is judgment that activates without being asked.** Don't wait for the user to say "evaluate this skill" — surface relevant skills the moment a project context implies one would help.
+**Skills Curator's main USP is context-aware judgment.** Don't wait for the user to say "evaluate this skill" — surface relevant skills when project context implies one would help.
 
 ### Run this at the start of any session in a real project
 

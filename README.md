@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/images/brand-curator-portrait.png" alt="Skills Curator — a Belle Époque oil-painted portrait of a curator examining a gilded frame, surrounded by floating miniatures, in the painterly aesthetic of Clair Obscur Expedition 33" width="70%" />
+
 # Skills Curator
 
 **Decide once. Re-decide never.**
@@ -110,6 +112,12 @@ The two skills don't conflict — they use different registry paths. Install bot
 
 ## Demo
 
+### The moment — Skills Curator activates in a Claude Code session
+
+<img src="docs/images/screenshot-claude-session.png" alt="Claude Code session — Skills Curator activates, scans the project, and surfaces ranked recommendations with pros, cons, and install commands inline" width="100%" />
+
+The user asks *"what skills fit this project?"*. The skill activates, reads the project context, and weaves a ranked list with trust-tier icons, pros/cons, and install commands into the response. No prompting, no manual lookup.
+
 ### What you see on first activation
 
 ```
@@ -182,7 +190,7 @@ Existing skill tools (`npx skills`, `asm`, `vercel-labs/find-skills`, etc.) all 
 - You forget — six months later, you're re-evaluating a skill you already decided about.
 - And every skill you bolt on imports its author's voice. Stack five external skills and your project speaks in five accents — examples drawn from stacks you don't use, opinions you didn't endorse, vocabulary that isn't yours.
 
-Skills Curator inverts the model on all four counts. It watches the project, learns the stack, and tells *you* what's worth considering — judgment runs in the background, output only when something actually changed or you described a pain point. And when you do adopt a skill, the customization flow ensures it arrives in your project's voice, not the author's.
+Skills Curator inverts the model on all four counts. It's context-aware — it reads what you're already building, learns the stack, and tells *you* what's worth considering. Recommendations refresh only when your project actually changes or you describe a pain point. And when you do adopt a skill, the customization flow ensures it arrives in your project's voice, not the author's.
 
 **The mental model shift: stop treating external skills as monolithic plugins to invoke. Treat them as capability libraries to absorb selectively.** Your project keeps one author. Yourself.
 
@@ -193,7 +201,7 @@ Skills Curator inverts the model on all four counts. It watches the project, lea
 | | Other skill managers | **Skills Curator** |
 |---|---|---|
 | Install / list skills | ✅ | ✅ |
-| **Auto-activates without being asked** (project fingerprint, drift detection) | ❌ | ✅ `--auto` |
+| **Context-aware** (recommendations match your stack, refresh on project change) | ❌ | ✅ `--auto` |
 | **Listens for symptoms** (*"slow tests"* → recommends test-perf skills) | ❌ | ✅ `--symptoms` |
 | **Trust-rated catalog** (curated + live GitHub topic search) | ⚠️ varies | ✅ 19 curated + live |
 | **Pre-install evaluation** with pros / cons / conflicts / verdict | ❌ | ✅ Persisted forever |
@@ -213,7 +221,7 @@ Skills Curator inverts the model on all four counts. It watches the project, lea
 
 ## The intelligence layer
 
-Half of what makes Skills Curator distinctive is **judgment that activates without prompting** — the engine watches the project and surfaces what's relevant before you ask. The other half (the `--customize` flow below) ensures what you adopt arrives in your project's voice. Both are required for the pitch to hold; either one alone reduces to a lesser tool.
+Half of what makes Skills Curator distinctive is **context-aware judgment** — the engine reads your project context and surfaces what's relevant so you don't have to search for it. The other half (the `--customize` flow below) ensures what you adopt arrives in your project's voice. Both are required for the pitch to hold; either one alone reduces to a lesser tool.
 
 #### `--auto` — project fingerprint + drift detection
 At session start, the agent runs `python registry.py --auto`. Skills Curator hashes the project's key files (`package.json`, `requirements.txt`, `CLAUDE.md`, lockfiles, framework configs) and compares against the last known state. If nothing changed, output is one line and nothing happens. If a dep was added, a framework adopted, or CLAUDE.md edited, it re-runs the recommendation engine and surfaces the top 3.
@@ -230,12 +238,14 @@ These three are the intelligence layer. Everything else (evaluate, audit, migrat
 
 ## `--customize` — infuse, don't invoke
 
+<img src="docs/images/screenshot-customize.png" alt="Terminal screenshot — python registry.py --customize against superpowers:test-driven-development. Each section gets a per-relevance score and an action tag: keep-emphasize, keep-trim, drop-or-rewrite, rewrite-frontmatter" width="100%" />
+
 This is the unlock that separates Skills Curator from every other skill manager. The standard model — `npx skills add <author/skill>` — installs an external skill *as-is*: their examples, their stack assumptions, their opinions, their voice. Then your project speaks with their accent.
 
 Skills Curator's `--customize` flow runs differently:
 
 1. **Decomposes the source SKILL.md** into its constituent sections (frontmatter, overview, when-to-use, patterns, examples, anti-patterns, etc.).
-2. **Fingerprints your project** — languages, frameworks, deps, goals from CLAUDE.md.
+2. **Reads your project's stack** — languages, frameworks, deps, goals from CLAUDE.md.
 3. **Scores every section** against that fingerprint and tags the action: `keep-emphasize`, `keep-trim`, `rewrite-stack`, `drop-or-rewrite`, or `rewrite-frontmatter`.
 4. **Writes a forked SKILL.md** at `~/.claude/skills/<name>-for-<project>/SKILL.md` containing the plan.
 5. **The agent rewrites each section in your project's voice** — keep the high-fit material verbatim, rewrite stack-mismatched examples in your stack, drop the irrelevant parts entirely.
@@ -445,7 +455,7 @@ For the full version, yes — Python 3.10+ (stdlib only, no `pip install`). For 
 <details>
 <summary><b>How is this different from `npx skills`?</b></summary>
 
-`npx skills` is install plumbing — find, install, list, sync. Skills Curator is the layer above it: *should* you install, does it conflict with what you already have, and **how do you adopt it without inheriting the author's voice**. We use `npx skills` underneath; we add the intelligence layer that watches your project, surfaces what's relevant, and the customize layer that decomposes the skill before you adopt it.
+`npx skills` is install plumbing — find, install, list, sync. Skills Curator is the layer above it: *should* you install, does it conflict with what you already have, and **how do you adopt it without inheriting the author's voice**. We use `npx skills` underneath; we add the intelligence layer that's context-aware to your project, surfaces what's relevant, and the customize layer that decomposes the skill before you adopt it.
 
 </details>
 

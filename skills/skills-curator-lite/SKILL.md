@@ -63,7 +63,7 @@ Skip the orientation entirely if proactive activation (next section) is about to
 
 ## Proactive activation (the intelligence layer)
 
-**Lite's USP, like the full version, is judgment that activates without being asked.** Don't wait for the user to say "evaluate this skill" — surface relevant skills the moment a project context implies one would help.
+**Lite's USP, like the full version, is context-aware judgment.** Don't wait for the user to say "evaluate this skill" — surface relevant skills when project context implies one would help.
 
 ### Run this at the start of any session in a real project
 
