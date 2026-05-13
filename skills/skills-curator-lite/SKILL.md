@@ -40,9 +40,11 @@ allowed-tools:
 
 # Skills Curator Lite
 
-**Decide once. Re-decide never. — without Python.**
+**Install the skill. Customize it to your stack. Decide once, never re-decide. — without Python.**
 
 The intelligence layer for Claude skills, implemented as pure agent instructions. Same judgment-first model as the full [Skills Curator](https://github.com/captkernel/Skills_Curator) — evaluate before installing, persist your decisions, recommend by project fit, migrate across agent platforms — but the agent does the work directly using Bash, Read, Glob, Grep, and Write.
+
+**The headline capability is CUSTOMIZE** (see the dedicated section below): take any external skill, scan the project, and produce a project-tailored fork with examples rewritten for the user's actual stack. Nothing else in the ecosystem does this. Recommendation and evaluation are how you *get* to the right skill; customization is what makes adopting it painless.
 
 **Choose this when:** Python isn't available, you want zero dependencies, or you prefer agent reasoning you can read line-by-line.
 
@@ -63,7 +65,7 @@ Skip the orientation entirely if proactive activation (next section) is about to
 
 ## Proactive activation (the intelligence layer)
 
-**Lite's USP, like the full version, is context-aware judgment.** Don't wait for the user to say "evaluate this skill" — surface relevant skills when project context implies one would help.
+Customization is the headline capability; **proactive activation** is what makes it useful unprompted. Don't wait for the user to say "evaluate this skill" — surface relevant skills when project context implies one would help, and lead with a `--customize` hint when the skill's stack doesn't match the project.
 
 ### Run this at the start of any session in a real project
 
@@ -307,9 +309,9 @@ For multi-target, loop the above over the user's confirmed target list. Default 
 
 **Primary first-class:** `claude-code`, `github-copilot`. Other 53 platforms reachable via the same flow.
 
-### Bonus: CUSTOMIZE — fork an external skill for this project
+### 6. CUSTOMIZE — fork an external skill for this project (the headline capability)
 
-When the user wants to install a skill but it ships examples from a stack they don't use:
+This is what makes Skills Curator Lite different from every other skill manager: when the user wants to install a skill but it ships examples from a stack they don't use, fork it as a project-tailored version instead of installing as-is. Lead with this whenever RECOMMEND surfaces a stack-mismatched pick.
 
 1. **Read the source SKILL.md.** Either local path, or fetch from GitHub via curl:
    ```bash

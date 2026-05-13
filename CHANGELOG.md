@@ -2,6 +2,25 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.5] — 2026-05-13
+
+USP repositioning + empirical token-cost docs. `--customize` is now the headline capability in both SKILL.md files; the intelligence-layer messaging is reframed as the activation model that surfaces the right skill, not the USP itself. New reproducible token-cost audit ships in `docs/audit/`, with two self-contained HTML reports for transparency. No engine or CLI behavior changes.
+
+### Added
+- **`docs/token-cost-report.html`** — empirical token-cost measurements across 5 real projects (1 file → 17,680 files), every CLI command, both tiers. Single-file HTML with inline CSS and SVG charts. Demonstrates that engine output is bounded regardless of project size (the engine reads project files in a Python subprocess; only stdout enters Claude's context).
+- **`docs/how-it-works.html`** — feature-by-feature walkthrough with architecture diagram, glossary (command/verb, tier, subprocess vs agent), and honest per-command token accounting. Includes the 17 symptom patterns, 15 security patterns, and 31 framework signals, rendered from source. Cross-linked with the token-cost report.
+- **`docs/token-cost-analysis.md`** — concise markdown summary of the audit findings for readers who don't want HTML.
+- **`docs/audit/`** — reproducibility scripts: `deep_token_audit.py` (runs every CLI command against configurable test projects, counts stdout tokens with `tiktoken`), `generate_html.py` and `generate_walkthrough.py` (emit the two HTML reports), plus `audit_results.json` for the committed measurements. Override default projects via `--projects path1,path2,...`.
+
+### Changed
+- **`--customize` repositioned as the headline USP in both SKILL.md files.** The Python tier opens with "Install the skill. Customize it to your stack. Decide once, never re-decide." and expands the customize section with a 6-step pipeline breakdown. The Lite tier's "Bonus: CUSTOMIZE" framing is gone — it's now section 6, "the headline capability." The intelligence-layer language stays but is reframed as the activation model. Pressure test of the framing is in the new HTML reports.
+- **README rewritten and tightened — 607 → 483 lines.** Adds a side-by-side USP block right after the TL;DR (qualitative `--customize` framing on the left, quantitative token-cost evidence on the right), a new "Token cost" section with hero numbers and links to the HTML reports, and a tightened FAQ that answers the most-missed conceptual question: "if the skill reads my project, doesn't that cost tokens?" Architecture diagram simplified; command reference halved (full reference still in `references/commands.md`).
+- **`deploy.py` `FILES_TO_PUSH`** extended with the new `docs/` and `docs/audit/` files so they ship to the public repo.
+
+### Notes
+- Token counts use `tiktoken` `cl100k_base` (OpenAI's BPE tokenizer). Anthropic's tokenizer is also BPE with similar vocabulary scale — measured counts are within ~5–10% of what Claude actually sees. External SKILL.md size assumption was validated against 42 real installed `SKILL.md` files: average 11,057 bytes / 2,623 tokens, median 2,280 tokens — within 5% of the audit's 10 KB / 2,560-token reference.
+- No engine, CLI, or schema changes. All `pytest tests/` cases continue to pass.
+
 ## [4.4.4] — 2026-05-11
 
 README banner removed. The repo now opens with the title + badges (no hero image above the title). Cleaner first impression that matches what most well-designed CLI-tool repos do (HTTPie, DVC, Bun, etc.) — the value-prop tagline carries the opening, with content-rich images (the Claude Code session screenshot, the `--customize` flow) reserved for the Demo and feature sections below.

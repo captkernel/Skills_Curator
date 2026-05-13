@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Skills Curator — Token Cost Analysis</title>
+<meta name="description" content="Empirical token-cost measurement for the Skills Curator Claude Code plugin. Tested across 5 real projects from empty to 17,680 files.">
+<style>
+  :root {
+    --bg: #fafaf9;
+    --fg: #18181b;
+    --muted: #71717a;
+    --line: #e4e4e7;
+    --card: #ffffff;
+    --accent: #7c3aed;
+    --accent-soft: #f5f3ff;
+    --good: #16a34a;
+    --bad: #ef4444;
+  }
+  *,*::before,*::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55; font-size: 16px; }
+  main { max-width: 880px; margin: 0 auto; padding: 24px; }
+  h1, h2, h3 { line-height: 1.2; letter-spacing: -0.01em; }
+  h1 { font-size: 2.2rem; margin: 0 0 8px; }
+  h2 { font-size: 1.5rem; margin: 48px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+  h3 { font-size: 1.1rem; margin: 24px 0 8px; }
+  p { margin: 0 0 12px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: 0.92em;
+    background: var(--accent-soft); padding: 2px 5px; border-radius: 4px; color: #5b21b6; }
+  pre { background: var(--accent-soft); padding: 14px; border-radius: 8px; overflow-x: auto;
+    border: 1px solid var(--line); }
+  pre code { background: transparent; padding: 0; }
+  .hero { background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+    color: white; padding: 36px 28px; border-radius: 16px; margin-bottom: 28px;
+    box-shadow: 0 8px 32px rgba(124,58,237,0.18); }
+  .hero h1 { color: white; }
+  .hero .tagline { font-size: 1.05rem; opacity: 0.92; margin: 4px 0 18px; }
+  .hero .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px; margin-top: 18px; }
+  .stat { background: rgba(255,255,255,0.12); padding: 14px; border-radius: 10px;
+    backdrop-filter: blur(6px); }
+  .stat .n { font-size: 1.9rem; font-weight: 700; line-height: 1; display: block; }
+  .stat .l { font-size: 0.82rem; opacity: 0.88; }
+  .lede { font-size: 1.08rem; color: #3f3f46; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+  th { background: var(--accent-soft); font-weight: 600; color: #3f3f46; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px 22px; margin: 14px 0; }
+  .callout { background: #ecfdf5; border-left: 4px solid var(--good); padding: 14px 16px;
+    border-radius: 8px; margin: 14px 0; }
+  .callout.warn { background: #fffbeb; border-left-color: #f59e0b; }
+  .callout.bad { background: #fef2f2; border-left-color: var(--bad); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem;
+    font-weight: 600; }
+  .badge-const { background: #dcfce7; color: #15803d; }
+  .badge-low { background: #ddd6fe; color: #6d28d9; }
+  .badge-mid { background: #fed7aa; color: #c2410c; }
+  .meta { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+  .pill { display: inline-block; padding: 3px 10px; background: var(--accent-soft);
+    color: #5b21b6; border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.02em; }
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 0.86rem; }
+  @media (max-width: 640px) {
+    h1 { font-size: 1.7rem; }
+    main { padding: 16px; }
+    .hero { padding: 24px 18px; }
+    .stat .n { font-size: 1.5rem; }
+    table { font-size: 0.82rem; }
+    th, td { padding: 7px 6px; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<section class="hero">
+  <span class="pill" style="background:rgba(255,255,255,0.18); color:#fff;">Empirical measurement</span>
+  <h1>Skills Curator — Token Cost Report</h1>
+  <p class="tagline">What this plugin actually costs Claude — across 5 real projects, every command, both tiers. No estimates. No hand-waving.</p>
+  <p style="margin:0;opacity:0.9;font-size:0.95rem"><a href="how-it-works.html" style="color:white;text-decoration:underline">→ Read "How it works" for the feature-by-feature breakdown, glossary, and architecture diagram</a></p>
+  <div class="stats">
+    <div class="stat">
+      <span class="n">249</span>
+      <span class="l">tokens always-on per session<br>(both tiers combined)</span>
+    </div>
+    <div class="stat">
+      <span class="n">1,140</span>
+      <span class="l">max single-command output<br>(on a 48-file repo)</span>
+    </div>
+    <div class="stat">
+      <span class="n">965</span>
+      <span class="l">max single-command output<br>(on a 17,680-file project)</span>
+    </div>
+    <div class="stat">
+      <span class="n">71%</span>
+      <span class="l">savings over ad-hoc<br>across 7 skill interactions</span>
+    </div>
+  </div>
+</section>
+
+<p class="lede">
+  Most plugin pitches estimate context cost. We measured it. Every CLI command was run against
+  5 real projects ranging from <strong>1 file (empty)</strong> to <strong>17,680 files
+  (a Next.js codebase with a 20&nbsp;KB CLAUDE.md)</strong>, then token-counted with
+  <code>tiktoken</code> — a BPE tokenizer within ~5–10% of Claude's own.
+</p>
+
+<div class="callout">
+  <strong>The headline finding:</strong> the engine output is <em>bounded</em>. Project size,
+  file count, and CLAUDE.md length have <em>no meaningful effect</em> on what enters Claude's
+  context. A 17,680-file project costs the same as a 30-file folder.
+</div>
+
+<h2>1 · Always-on cost</h2>
+<p>
+  Claude Code loads a skill in three layers. Only the first one is paid for on every session —
+  even if the skill never activates.
+</p>
+<svg viewBox="0 0 720 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="bar chart" style="width:100%;height:auto;display:block">
+<rect x="0" y="0" width="720" height="160" fill="white"/>
+<text x="362" y="25.0" text-anchor="end" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">Always-on description (both tiers)</text>
+<rect x="370" y="10" width="2.5" height="22" fill="#22c55e" rx="4"/>
+<text x="378.4989247311828" y="25.0" font-size="12" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">249</text>
+<text x="362" y="53.0" text-anchor="end" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">SKILL.md (Python tier — on activation)</text>
+<rect x="370" y="38" width="33.7" height="22" fill="#7c3aed" rx="4"/>
+<text x="409.710394265233" y="53.0" font-size="12" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">3,359</text>
+<text x="362" y="81.0" text-anchor="end" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">SKILL.md (Lite tier — on activation)</text>
+<rect x="370" y="66" width="110.3" height="22" fill="#a78bfa" rx="4"/>
+<text x="486.27383512544804" y="81.0" font-size="12" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">10,988</text>
+<text x="362" y="109.0" text-anchor="end" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">All references/ files combined (rare)</text>
+<rect x="370" y="94" width="53.8" height="22" fill="#06b6d4" rx="4"/>
+<text x="429.77204301075267" y="109.0" font-size="12" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">5,358</text>
+<text x="362" y="137.0" text-anchor="end" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">registry.py engine (subprocess — NOT in context)</text>
+<rect x="370" y="122" width="280.0" height="22" fill="#ef4444" rx="4"/>
+<text x="656.0" y="137.0" font-size="12" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">27,900</text>
+</svg>
+<p class="meta">
+  The <strong>27,900-token Python engine never enters context</strong>.
+  It runs as a Bash subprocess; Claude reads only its <code>stdout</code> (typically
+  10–1,200 tokens per call, as the table below shows). The Lite tier embeds the catalog inline,
+  trading a larger one-time SKILL.md load for zero subprocess dependency.
+</p>
+
+<h2>2 · The 5 test projects</h2>
+<p>Selected to span the full size range of typical Claude Code workloads.</p>
+<table>
+  <thead>
+    <tr><th>Project</th><th>Description</th>
+        <th class="num">Files</th>
+        <th class="num">CLAUDE.md (B)</th>
+        <th class="num">pkg.json (B)</th>
+        <th class="num">Max command tokens</th></tr>
+  </thead>
+  <tbody>
+    
+            <tr>
+              <td><strong>Empty</strong></td>
+              <td>Bare directory, 1 file, no signals</td>
+              <td class="num">1</td>
+              <td class="num">0</td>
+              <td class="num">0</td>
+              <td class="num">774</td>
+            </tr>
+            <tr>
+              <td><strong>Small</strong></td>
+              <td>Notes folder with CLAUDE.md, ~34 root files</td>
+              <td class="num">1,560</td>
+              <td class="num">8,236</td>
+              <td class="num">0</td>
+              <td class="num">926</td>
+            </tr>
+            <tr>
+              <td><strong>Medium</strong></td>
+              <td>React Native app, no CLAUDE.md, ~30 files</td>
+              <td class="num">14,670</td>
+              <td class="num">0</td>
+              <td class="num">1,056</td>
+              <td class="num">976</td>
+            </tr>
+            <tr>
+              <td><strong>Large</strong></td>
+              <td>Next.js project, 20 KB CLAUDE.md, ~50 files</td>
+              <td class="num">17,680</td>
+              <td class="num">20,859</td>
+              <td class="num">835</td>
+              <td class="num">965</td>
+            </tr>
+            <tr>
+              <td><strong>XL</strong></td>
+              <td>Skills Curator&#x27;s own repo: Python + skill files + tests + docs</td>
+              <td class="num">48</td>
+              <td class="num">5,310</td>
+              <td class="num">0</td>
+              <td class="num">1,140</td>
+            </tr>
+  </tbody>
+</table>
+<p class="meta">
+  "Max command tokens" is the largest single stdout any command produced on that project.
+  Note that the <strong>Large</strong> project (17,680 files, biggest CLAUDE.md) does not
+  generate larger output than the <strong>XL</strong> project (48 files). The engine caps
+  doc reads at 4&nbsp;KB and rglob is used only for language detection, not content emission.
+</p>
+
+<h2>3 · Project size does not scale token cost</h2>
+<p>
+  Three of the most context-sensitive commands, plotted across every project. If project size
+  mattered, the bars would grow left-to-right. They don't.
+</p>
+<div class="card" style="padding:18px">
+  <svg viewBox="0 0 740 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+<rect x="200" y="6" width="12" height="12" fill="#7c3aed" rx="2"/>
+<text x="218" y="16" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">--auto</text>
+<rect x="278" y="6" width="12" height="12" fill="#06b6d4" rx="2"/>
+<text x="296" y="16" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">--recommend</text>
+<rect x="391" y="6" width="12" height="12" fill="#f59e0b" rx="2"/>
+<text x="409" y="16" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">--customize</text>
+<line x1="200" y1="40" x2="200" y2="320" stroke="#e5e7eb" stroke-width="1"/>
+<text x="200" y="334" text-anchor="middle" font-size="11" fill="#6b7280" font-family="ui-sans-serif,system-ui,sans-serif">0</text>
+<line x1="315.0" y1="40" x2="315.0" y2="320" stroke="#e5e7eb" stroke-width="1"/>
+<text x="315.0" y="334" text-anchor="middle" font-size="11" fill="#6b7280" font-family="ui-sans-serif,system-ui,sans-serif">285</text>
+<line x1="430.0" y1="40" x2="430.0" y2="320" stroke="#e5e7eb" stroke-width="1"/>
+<text x="430.0" y="334" text-anchor="middle" font-size="11" fill="#6b7280" font-family="ui-sans-serif,system-ui,sans-serif">570</text>
+<line x1="545.0" y1="40" x2="545.0" y2="320" stroke="#e5e7eb" stroke-width="1"/>
+<text x="545.0" y="334" text-anchor="middle" font-size="11" fill="#6b7280" font-family="ui-sans-serif,system-ui,sans-serif">855</text>
+<line x1="660.0" y1="40" x2="660.0" y2="320" stroke="#e5e7eb" stroke-width="1"/>
+<text x="660.0" y="334" text-anchor="middle" font-size="11" fill="#6b7280" font-family="ui-sans-serif,system-ui,sans-serif">1,140</text>
+<text x="192" y="67.0" text-anchor="end" font-size="13" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">Empty</text>
+<rect x="200" y="42.0" width="14.9" height="12.0" fill="#7c3aed" rx="3"/>
+<text x="218.9298245614035" y="52.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">37</text>
+<rect x="200" y="56.0" width="11.7" height="12.0" fill="#06b6d4" rx="3"/>
+<text x="215.7017543859649" y="66.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">29</text>
+<rect x="200" y="70.0" width="20.2" height="12.0" fill="#f59e0b" rx="3"/>
+<text x="224.17543859649123" y="80.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">50</text>
+<text x="192" y="123.0" text-anchor="end" font-size="13" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">Small</text>
+<rect x="200" y="98.0" width="93.6" height="12.0" fill="#7c3aed" rx="3"/>
+<text x="297.6140350877193" y="108.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">232</text>
+<rect x="200" y="112.0" width="367.6" height="12.0" fill="#06b6d4" rx="3"/>
+<text x="571.5964912280701" y="122.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">911</text>
+<rect x="200" y="126.0" width="373.6" height="12.0" fill="#f59e0b" rx="3"/>
+<text x="577.6491228070175" y="136.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">926</text>
+<text x="192" y="179.0" text-anchor="end" font-size="13" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">Medium</text>
+<rect x="200" y="154.0" width="101.7" height="12.0" fill="#7c3aed" rx="3"/>
+<text x="305.6842105263158" y="164.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">252</text>
+<rect x="200" y="168.0" width="393.8" height="12.0" fill="#06b6d4" rx="3"/>
+<text x="597.8245614035088" y="178.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">976</text>
+<rect x="200" y="182.0" width="382.1" height="12.0" fill="#f59e0b" rx="3"/>
+<text x="586.1228070175439" y="192.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">947</text>
+<text x="192" y="235.0" text-anchor="end" font-size="13" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">Large</text>
+<rect x="200" y="210.0" width="104.9" height="12.0" fill="#7c3aed" rx="3"/>
+<text x="308.9122807017544" y="220.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">260</text>
+<rect x="200" y="224.0" width="387.8" height="12.0" fill="#06b6d4" rx="3"/>
+<text x="591.7719298245613" y="234.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">961</text>
+<rect x="200" y="238.0" width="389.4" height="12.0" fill="#f59e0b" rx="3"/>
+<text x="593.3859649122808" y="248.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">965</text>
+<text x="192" y="291.0" text-anchor="end" font-size="13" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">XL</text>
+<rect x="200" y="266.0" width="100.9" height="12.0" fill="#7c3aed" rx="3"/>
+<text x="304.8771929824561" y="276.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">250</text>
+<rect x="200" y="280.0" width="460.0" height="12.0" fill="#06b6d4" rx="3"/>
+<text x="664.0" y="290.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">1,140</text>
+<rect x="200" y="294.0" width="391.0" height="12.0" fill="#f59e0b" rx="3"/>
+<text x="595.0" y="304.0" font-size="11" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">969</text>
+</svg>
+</div>
+<p class="meta">
+  <code>--auto</code> stays under 260 tokens regardless of file count. <code>--recommend</code>
+  is bounded by the number of <em>matches</em> it finds in the catalog, not the project size.
+  <code>--customize</code> is bounded by the source SKILL.md's section count, not the host project.
+</p>
+
+<h2>4 · Per-command output: every CLI command measured</h2>
+<p>
+  All 24 commands, sorted by largest output. The "Range" column shows the difference
+  between the smallest and largest output across the 5 projects — <strong>most commands are
+  effectively constant</strong>. <em>("Verb" in earlier versions of this report meant "command" — same thing, clearer now.)</em>
+</p>
+<table>
+  <thead>
+    <tr><th>Command</th>
+        <th class="num">Min tokens</th>
+        <th class="num">Max tokens</th>
+        <th class="num">Avg tokens</th>
+        <th>Variance across projects</th></tr>
+  </thead>
+  <tbody>
+    
+            <tr>
+              <td><code>--recommend</code></td>
+              <td class="num">29</td>
+              <td class="num">1,140</td>
+              <td class="num">803</td>
+              <td><span class="badge badge-mid">±1,111</span></td>
+            </tr>
+            <tr>
+              <td><code>--customize skills-curator --no-fork</code></td>
+              <td class="num">50</td>
+              <td class="num">969</td>
+              <td class="num">771</td>
+              <td><span class="badge badge-mid">±919</span></td>
+            </tr>
+            <tr>
+              <td><code>--platforms --verbose</code></td>
+              <td class="num">774</td>
+              <td class="num">774</td>
+              <td class="num">774</td>
+              <td><span class="badge badge-const">constant</span></td>
+            </tr>
+            <tr>
+              <td><code>--auto</code></td>
+              <td class="num">37</td>
+              <td class="num">260</td>
+              <td class="num">206</td>
+              <td><span class="badge badge-mid">±223</span></td>
+            </tr>
+            <tr>
+              <td><code>--auto --refresh</code></td>
+              <td class="num">37</td>
+              <td class="num">254</td>
+              <td class="num">201</td>
+              <td><span class="badge badge-mid">±217</span></td>
+            </tr>
+            <tr>
+              <td><code>--health</code></td>
+              <td class="num">7</td>
+              <td class="num">233</td>
+              <td class="num">124</td>
+              <td><span class="badge badge-mid">±226</span></td>
+            </tr>
+            <tr>
+              <td><code>--list</code></td>
+              <td class="num">7</td>
+              <td class="num">205</td>
+              <td class="num">116</td>
+              <td><span class="badge badge-mid">±198</span></td>
+            </tr>
+            <tr>
+              <td><code>--list --type capability</code></td>
+              <td class="num">10</td>
+              <td class="num">205</td>
+              <td class="num">117</td>
+              <td><span class="badge badge-mid">±195</span></td>
+            </tr>
+            <tr>
+              <td><code>--audit</code></td>
+              <td class="num">101</td>
+              <td class="num">205</td>
+              <td class="num">150</td>
+              <td><span class="badge badge-mid">±104</span></td>
+            </tr>
+            <tr>
+              <td><code>--symptoms &#x27;slow tests&#x27;</code></td>
+              <td class="num">189</td>
+              <td class="num">189</td>
+              <td class="num">189</td>
+              <td><span class="badge badge-const">constant</span></td>
+            </tr>
+            <tr>
+              <td><code>--platforms</code></td>
+              <td class="num">176</td>
+              <td class="num">176</td>
+              <td class="num">176</td>
+              <td><span class="badge badge-const">constant</span></td>
+            </tr>
+            <tr>
+              <td><code>--find testing</code></td>
+              <td class="num">157</td>
+              <td class="num">157</td>
+              <td class="num">157</td>
+              <td><span class="badge badge-const">constant</span></td>
+            </tr>
+            <tr>
+              <td><code>--scan</code></td>
+              <td class="num">93</td>
+              <td class="num">130</td>
+              <td class="num">120</td>
+              <td><span class="badge badge-low">±37</span></td>
+            </tr>
+            <tr>
+              <td><code>--discover design</code></td>
+              <td class="num">114</td>
+              <td class="num">114</td>
+              <td class="num">114</td>
+              <td><span class="badge badge-const">constant</span></td>
+            </tr>
+            <tr>
+              <td><code>--validate</code></td>
+              <td class="num">81</td>
+              <td class="num">108</td>
+              <td class="num">89</td>
+              <td><span class="badge badge-low">±27</span></td>
+            </tr>
+            <tr>
+              <td><code>--symptoms &#x27;ugly UI&#x27;</code></td>
+              <td class="num">87</td>
+              <td class="num">87</td>
+              <td class="num">87</td>
+              <td><span class="badge badge-const">constant</span></td>
+            </tr>
+            <tr>
+              <td><code>--check (skill folder)</code></td>
+              <td class="num">49</td>
+              <td class="num">67</td>
+              <td class="num">52</td>
+              <td><span class="badge badge-low">±18</span></td>
+            </tr>
+            <tr>
+              <td><code>--detect</code></td>
+              <td class="num">10</td>
+              <td class="num">47</td>
+              <td class="num">19</td>
+              <td><span class="badge badge-low">±37</span></td>
+            </tr>
+            <tr>
+              <td><code>--status</code></td>
+              <td class="num">20</td>
+              <td class="num">32</td>
+              <td class="num">24</td>
+              <td><span class="badge badge-low">±12</span></td>
+            </tr>
+            <tr>
+              <td><code>--symptoms &#x27;deploys are manual&#x27;</code></td>
+              <td class="num">31</td>
+              <td class="num">31</td>
+              <td class="num">31</td>
+              <td><span class="badge badge-const">constant</span></td>
+            </tr>
+            <tr>
+              <td><code>--search testing</code></td>
+              <td class="num">13</td>
+              <td class="num">13</td>
+              <td class="num">13</td>
+              <td><span class="badge badge-const">constant</span></td>
+            </tr>
+            <tr>
+              <td><code>--history skills-curator</code></td>
+              <td class="num">9</td>
+              <td class="num">13</td>
+              <td class="num">12</td>
+              <td><span class="badge badge-low">±4</span></td>
+            </tr>
+            <tr>
+              <td><code>--stale</code></td>
+              <td class="num">11</td>
+              <td class="num">11</td>
+              <td class="num">11</td>
+              <td><span class="badge badge-const">constant</span></td>
+            </tr>
+            <tr>
+              <td><code>--version</code></td>
+              <td class="num">9</td>
+              <td class="num">9</td>
+              <td class="num">9</td>
+              <td><span class="badge badge-const">constant</span></td>
+            </tr>
+  </tbody>
+</table>
+
+<h2>5 · Realistic session profiles</h2>
+<p>
+  Using the <strong>Large project</strong> as a realistic codebase, here's what three
+  typical session types cost.
+</p>
+<div class="card">
+  <svg viewBox="0 0 720 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="bar chart" style="width:100%;height:auto;display:block">
+<rect x="0" y="0" width="720" height="160" fill="white"/>
+<text x="312" y="25.0" text-anchor="end" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">Silent session (just description loaded)</text>
+<rect x="320" y="10" width="2.9" height="22" fill="#a3e635" rx="4"/>
+<text x="328.8912737508797" y="25.0" font-size="12" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">249</text>
+<text x="312" y="53.0" text-anchor="end" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">Light session WITH Skills Curator</text>
+<rect x="320" y="38" width="65.4" height="22" fill="#7c3aed" rx="4"/>
+<text x="391.3613652357495" y="53.0" font-size="12" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">5,629</text>
+<text x="312" y="81.0" text-anchor="end" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">Light session WITHOUT (1× ad-hoc eval)</text>
+<rect x="320" y="66" width="47.1" height="22" fill="#9ca3af" rx="4"/>
+<text x="373.1428571428571" y="81.0" font-size="12" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">4,060</text>
+<text x="312" y="109.0" text-anchor="end" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">Heavy session WITH Skills Curator</text>
+<rect x="320" y="94" width="97.3" height="22" fill="#7c3aed" rx="4"/>
+<text x="423.3279380717804" y="109.0" font-size="12" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">8,382</text>
+<text x="312" y="137.0" text-anchor="end" font-size="12" fill="#374151" font-family="ui-sans-serif,system-ui,sans-serif">Heavy session WITHOUT (7× ad-hoc evals)</text>
+<rect x="320" y="122" width="330.0" height="22" fill="#9ca3af" rx="4"/>
+<text x="656.0" y="137.0" font-size="12" font-weight="600" fill="#1f2937" font-family="ui-sans-serif,system-ui,sans-serif">28,420</text>
+</svg>
+</div>
+<ul>
+  <li><strong>Silent session</strong> (249 tokens): just project work, no skill questions. Only the frontmatter description is loaded for both tiers — the SKILL.md body never activates.</li>
+  <li><strong>Light session WITH Skills Curator</strong> (5,629 tokens): SKILL.md activation + 1× <code>--auto</code> + 1× <code>--recommend</code> + 1× <code>/skill-evaluate</code>.</li>
+  <li><strong>Heavy session WITH Skills Curator</strong> (8,382 tokens): all of the above + 2 more evaluations + 1× <code>--audit</code> + 1× <code>--check</code> + 1× <code>--customize</code>.</li>
+  <li><strong>Heavy session WITHOUT</strong> (28,420 tokens): seven ad-hoc skill questions, each WebFetching a SKILL.md and reasoning from scratch (~4,060 tokens/question — see Methodology). <strong>No persistence → next session re-pays the same cost.</strong></li>
+</ul>
+<div class="callout">
+  <strong>Heavy-session savings: 20,038 tokens (71%).</strong>
+  And that's only for the <em>current</em> session — every evaluation also writes a registry record,
+  so the same skill is never re-evaluated. Future sessions look up the verdict in ~150 tokens.
+</div>
+
+<h2>6 · The customization payoff</h2>
+<p>
+  <code>--customize</code> is the headline capability and also where the savings story compounds.
+  Without it, customizing a stack-mismatched skill (Vue examples in a React project) is a
+  manual rewrite that re-reads the source SKILL.md from scratch every time.
+</p>
+<table>
+  <thead><tr><th>Step</th><th class="num">Without skill</th><th class="num">With <code>--customize</code></th></tr></thead>
+  <tbody>
+    <tr><td>Fetch source SKILL.md (~10 KB)</td><td class="num">~2,560</td><td class="num">0 <span class="meta">(engine reads it)</span></td></tr>
+    <tr><td>Decide what to keep / drop / rewrite (per section)</td><td class="num">~3,000</td><td class="num">969 <span class="meta">(structured plan)</span></td></tr>
+    <tr><td>Agent rewrites mismatched sections</td><td class="num">~2,000</td><td class="num">~2,000 <span class="meta">(same, but directed)</span></td></tr>
+    <tr><th>Total per customization</th><th class="num">~7,560</th><th class="num">~3,000</th></tr>
+  </tbody>
+</table>
+
+<h2>7 · Methodology &amp; reproducibility</h2>
+<p>
+  Counts use <code>tiktoken</code>'s <code>cl100k_base</code> encoding (GPT-4's tokenizer).
+  Anthropic's tokenizer is also BPE with a similar vocabulary scale; measured counts are
+  within ~5–10% of what Claude actually sees. Subprocess output is captured with
+  <code>capture_output=True</code> and counted whole — this is exactly what Claude Code
+  shows the agent.
+</p>
+<p>To reproduce on your own machine:</p>
+<pre><code>git clone https://github.com/captkernel/Skills_Curator
+cd Skills_Curator
+pip install tiktoken
+python docs/audit/deep_token_audit.py   # writes docs/audit/audit_results.json
+python docs/audit/generate_html.py      # writes docs/token-cost-report.html</code></pre>
+<p class="meta">
+  External SKILL.md size assumption (~10 KB / 2,560 tokens for the "without-skill" baseline)
+  was validated against 42 real installed SKILL.md files on the test machine: average
+  11,057 bytes / 2,623 tokens, median 2,280 tokens.
+</p>
+
+<footer>
+  Generated 2026-05-13 19:05:37 · 120 command runs across 5 projects · <a href="how-it-works.html">How it works</a> · Skills Curator v4.4.4 ·
+  <a href="https://github.com/captkernel/Skills_Curator">github.com/captkernel/Skills_Curator</a>
+</footer>
+
+</main>
+</body>
+</html>

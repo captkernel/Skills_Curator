@@ -2,7 +2,7 @@
 name: skills-curator
 description: Use when the user mentions a skill/plugin by name, asks "should I install X", asks for skill recommendations, wants a security check on a skill, asks about duplicates or conflicts, wants to create a new skill, or wants to migrate skills across agent platforms (Cursor, Codex, Gemini, etc.).
 metadata:
-  version: "4.4.4"
+  version: "4.4.5"
   author: captkernel
   homepage: https://github.com/captkernel/Skills_Curator
   license: MIT
@@ -26,9 +26,11 @@ allowed-tools:
 
 # Skills Curator v4
 
-**Decide once. Re-decide never.**
+**Install the skill. Customize it to your stack. Decide once, never re-decide.**
 
-Other tools install skills. Skills Curator **persists your judgment** so you never re-decide. Every evaluation produces a structured record (pros / cons / conflicts / verdict / partial-adoption plan) that becomes part of a personal registry — and a markdown artifact you can paste in PRs, ADRs, or team docs.
+Other skill managers stop at install. Skills Curator's headline capability is **`--customize`**: take any external skill, scan the user's project, and produce a project-tailored fork with examples rewritten for *their* stack (Vue → React, Django → FastAPI, generic CI → their CI). The engine emits a per-section action plan (`keep`, `keep-trim`, `rewrite-stack`, `drop-or-rewrite`, `rewrite-frontmatter`); the agent does the prose. Nothing else in the ecosystem does this.
+
+The second pillar is **persistent judgment**: every evaluation produces a structured record (pros / cons / conflicts / verdict / partial-adoption plan) saved to a personal registry — so the same skill is never re-evaluated from scratch, and decisions become PR-pasteable artifacts.
 
 Read reference files on demand:
 - `references/commands.md` — all commands and flags
@@ -51,7 +53,7 @@ Skip the orientation entirely if `--auto` (next section) is about to surface con
 
 ## Proactive activation (the intelligence layer)
 
-**Skills Curator's main USP is context-aware judgment.** Don't wait for the user to say "evaluate this skill" — surface relevant skills when project context implies one would help.
+Customization is the headline capability; **proactive activation** is what makes it useful unprompted. Don't wait for the user to say "evaluate this skill" — surface relevant skills when project context implies one would help, and lead with `--customize` when the skill's stack doesn't match.
 
 ### Run this at the start of any session in a real project
 
@@ -212,15 +214,28 @@ If the skill isn't registered yet, `--add` it first.
 
 ---
 
-## Customizing an external skill (`--customize`)
+## `--customize`: the headline capability
 
-When a skill is good but its examples don't match the user's stack (Vue examples in a React project, Django in a FastAPI project), fork it as a project-tailored version:
+Most skills ship with examples written for someone else's codebase. Adopting them means tolerating mismatched examples or rewriting by hand. `--customize` is the one feature that solves this end-to-end.
 
 ```bash
 python registry.py --customize <source>   # source = registered id, local path, or owner/repo@skill
 ```
 
-The engine emits a per-section plan (`keep`, `keep-trim`, `rewrite-stack`, `drop-or-rewrite`, `rewrite-frontmatter`) and writes a fork at `~/.claude/skills/<name>-for-<project>/SKILL.md`. **The agent then rewrites each section** per the action column — engine produces the plan, agent does the prose. Use `--no-fork` to preview the plan without writing.
+**What it does, step by step:**
+
+1. **Resolves the source.** Accepts a registered skill id, a local path, or a GitHub `owner/repo@skill-name` — fetches the SKILL.md from any of them.
+2. **Scans the current project** for signals (tags, languages, framework keywords from `package.json`, `requirements.txt`, `CLAUDE.md`, etc.).
+3. **Splits the source SKILL.md into sections** and scores each one against the project's tag set + languages.
+4. **Emits a per-section action plan** with one of: `keep`, `keep-emphasize`, `keep-trim`, `rewrite-stack` (examples target a stack the project doesn't use), `drop-or-rewrite`, `rewrite-frontmatter`.
+5. **Scaffolds the fork** at `~/.claude/skills/<name>-for-<project>/SKILL.md` with the plan baked in as a table the agent walks row-by-row.
+6. **The agent then rewrites each section** per the action column — engine produces the plan, agent does the prose. Vue snippets become React snippets. Django routes become FastAPI routes. Generic deploy scripts become your CI's deploy scripts.
+
+Use `--no-fork` to preview the plan without writing the fork.
+
+**Why this is the USP:** installation is a solved problem; *adaptation* isn't. Every other skill manager assumes one-size-fits-all SKILL.md content. Skills Curator is the only one that treats SKILL.md as a template to be specialized per project — and the only one that does it with a project-aware action plan instead of a blanket find-and-replace.
+
+When you recommend a skill via `--recommend` and detect a stack mismatch (Vue skill in a React project), surface a one-line `--customize` hint instead of just suggesting "install it" — that's the moment this feature pays off.
 
 ---
 

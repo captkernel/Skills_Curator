@@ -1,0 +1,1126 @@
+{
+  "generated_at": "2026-05-13 19:05:37",
+  "methodology": "Token counts via tiktoken cl100k_base. cl100k_base is GPT-4's BPE tokenizer; Claude's tokenizer is also BPE with similar vocabulary scale, so counts are within ~5\u201310% of what Claude actually sees. Engine subprocess output is what enters Claude's context \u2014 the engine itself does NOT. Sessions assume both tiers installed concurrently.",
+  "static": {
+    "engine_py_tokens": 27900,
+    "skill_full_tokens": 3359,
+    "skill_lite_tokens": 10988,
+    "fm_full_tokens": 274,
+    "fm_lite_tokens": 422,
+    "desc_full_tokens": 62,
+    "desc_lite_tokens": 187,
+    "references": {
+      "commands.md": 1479,
+      "discovery.md": 1935,
+      "evaluation.md": 854,
+      "schema.md": 1090
+    },
+    "references_total": 5358
+  },
+  "projects": {
+    "Empty": {
+      "path": "D:\\Karan\\AFP",
+      "category": "empty",
+      "description": "Bare directory, 1 file, no signals",
+      "fingerprint": {
+        "file_count": 1,
+        "py_count": 0,
+        "js_count": 0,
+        "ts_count": 0,
+        "claude_md_bytes": 0,
+        "readme_bytes": 0,
+        "pkg_json_bytes": 0,
+        "total_bytes_top": 0,
+        "has_claude_md": false,
+        "has_pkg_json": false,
+        "has_requirements": false,
+        "has_pyproject": false
+      }
+    },
+    "Small": {
+      "path": "D:\\Karan\\Business",
+      "category": "small",
+      "description": "Notes folder with CLAUDE.md, ~34 root files",
+      "fingerprint": {
+        "file_count": 1560,
+        "py_count": 10,
+        "js_count": 290,
+        "ts_count": 62,
+        "claude_md_bytes": 8236,
+        "readme_bytes": 0,
+        "pkg_json_bytes": 0,
+        "total_bytes_top": 20817,
+        "has_claude_md": true,
+        "has_pkg_json": false,
+        "has_requirements": false,
+        "has_pyproject": false
+      }
+    },
+    "Medium": {
+      "path": "D:\\VoiceTaskAI",
+      "category": "medium",
+      "description": "React Native app, no CLAUDE.md, ~30 files",
+      "fingerprint": {
+        "file_count": 14670,
+        "py_count": 1,
+        "js_count": 8170,
+        "ts_count": 4669,
+        "claude_md_bytes": 0,
+        "readme_bytes": 5975,
+        "pkg_json_bytes": 1056,
+        "total_bytes_top": 308151,
+        "has_claude_md": false,
+        "has_pkg_json": true,
+        "has_requirements": false,
+        "has_pyproject": false
+      }
+    },
+    "Large": {
+      "path": "D:\\Karan\\Ancyr",
+      "category": "large",
+      "description": "Next.js project, 20 KB CLAUDE.md, ~50 files",
+      "fingerprint": {
+        "file_count": 17680,
+        "py_count": 1,
+        "js_count": 11729,
+        "ts_count": 4047,
+        "claude_md_bytes": 20859,
+        "readme_bytes": 4444,
+        "pkg_json_bytes": 835,
+        "total_bytes_top": 491111,
+        "has_claude_md": true,
+        "has_pkg_json": true,
+        "has_requirements": false,
+        "has_pyproject": false
+      }
+    },
+    "XL": {
+      "path": "D:\\Karan\\Skills\\csm-final",
+      "category": "xl",
+      "description": "Skills Curator's own repo: Python + skill files + tests + docs",
+      "fingerprint": {
+        "file_count": 48,
+        "py_count": 18,
+        "js_count": 0,
+        "ts_count": 0,
+        "claude_md_bytes": 5310,
+        "readme_bytes": 33742,
+        "pkg_json_bytes": 0,
+        "total_bytes_top": 96409,
+        "has_claude_md": true,
+        "has_pkg_json": false,
+        "has_requirements": false,
+        "has_pyproject": false
+      }
+    }
+  },
+  "verbs": {
+    "Empty": {
+      "--auto": {
+        "tokens": 37,
+        "chars": 149,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 298,
+        "preview": "\u26a0\ufe0f  No project signals to fingerprint (no package.json, requirements.txt, CLAUDE.md, etc.) \u23ce    Run --recommend explicitly if you want to scan anyway. \u23ce "
+      },
+      "--auto --refresh": {
+        "tokens": 37,
+        "chars": 149,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 313,
+        "preview": "\u26a0\ufe0f  No project signals to fingerprint (no package.json, requirements.txt, CLAUDE.md, etc.) \u23ce    Run --recommend explicitly if you want to scan anyway. \u23ce "
+      },
+      "--recommend": {
+        "tokens": 29,
+        "chars": 97,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 310,
+        "preview": "\ud83d\udd0d Scanning: AFP... \u23ce \u26a0\ufe0f  No signals detected. Add CLAUDE.md or README.md with project description. \u23ce "
+      },
+      "--scan": {
+        "tokens": 93,
+        "chars": 246,
+        "lines": 8,
+        "exit": 0,
+        "elapsed_ms": 281,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Project Scan: AFP \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Languages : none \u23ce   Tags      : none \u23ce   Skills    : external-skill-for-testproj2, skills-curator, skills-curator-lite \u23ce  \u23ce "
+      },
+      "--symptoms 'slow tests'": {
+        "tokens": 189,
+        "chars": 801,
+        "lines": 20,
+        "exit": 0,
+        "elapsed_ms": 345,
+        "preview": "\ud83e\ude7a Symptom 'slow tests' \u2192 tags: performance, test-performance, testing \u23ce  \u23ce   Candidates: \u23ce  \u23ce   \u2705 React Best Practices \u23ce      Tags    : performance \u23ce      What    : React/Next.js performance rules ordered by impact. \u23ce      Install : npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices \u23ce  \u23ce   \u2705 Agent Browser \u23ce      Tags    : testing \u23ce      What    : Browser automation via CDP. Element refs, 6 auth"
+      },
+      "--symptoms 'ugly UI'": {
+        "tokens": 87,
+        "chars": 330,
+        "lines": 10,
+        "exit": 0,
+        "elapsed_ms": 364,
+        "preview": "\ud83e\ude7a Symptom 'ugly UI' \u2192 tags: design-system, frontend-design, ui \u23ce  \u23ce   Candidates: \u23ce  \u23ce   \ud83c\udfdb\ufe0f Frontend Design \u23ce      Tags    : ui \u23ce      What    : Bold design philosophy before writing UI code. Prevents AI-slop aesthetics. \u23ce      Install : npx skills add anthropics/skills --skill frontend-design \u23ce  \u23ce   Next: /skill-evaluate <id> before installing. \u23ce "
+      },
+      "--symptoms 'deploys are manual'": {
+        "tokens": 31,
+        "chars": 111,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 292,
+        "preview": "\u26a0\ufe0f  No symptom mapping for 'deploys are manual'. \u23ce    Try: --find deploys are manual  (free-text catalog search) \u23ce "
+      },
+      "--detect": {
+        "tokens": 10,
+        "chars": 25,
+        "lines": 3,
+        "exit": 0,
+        "elapsed_ms": 318,
+        "preview": " \u23ce \ud83d\udd0d AFP: no skills found \u23ce  \u23ce "
+      },
+      "--status": {
+        "tokens": 20,
+        "chars": 48,
+        "lines": 4,
+        "exit": 0,
+        "elapsed_ms": 363,
+        "preview": " \u23ce \ud83d\udcc1 AFP \u23ce   Active (0): none \u23ce   Available (0): none \u23ce "
+      },
+      "--list": {
+        "tokens": 7,
+        "chars": 24,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 298,
+        "preview": "\ud83d\udced No skills registered. \u23ce "
+      },
+      "--list --type capability": {
+        "tokens": 10,
+        "chars": 43,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 349,
+        "preview": "\ud83d\udced No skills registered of type capability. \u23ce "
+      },
+      "--search testing": {
+        "tokens": 13,
+        "chars": 28,
+        "lines": 3,
+        "exit": 0,
+        "elapsed_ms": 338,
+        "preview": " \u23ce \ud83d\udd0d 'testing' \u2014 0 result(s) \u23ce  \u23ce "
+      },
+      "--platforms": {
+        "tokens": 176,
+        "chars": 574,
+        "lines": 15,
+        "exit": 0,
+        "elapsed_ms": 294,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skills Curator Platforms  \u00b7  Detected 3 of 55 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   Detected on this machine: Cross-tool ~/.agents/, Claude Code, GitHub Copilot \u23ce  \u23ce   PLATFORM                STATUS      DIR \u23ce   ----------------------  ----------  --- \u23ce   Claude Code             \u2713 detected  ~\\.claude\\skills \u23ce  "
+      },
+      "--platforms --verbose": {
+        "tokens": 774,
+        "chars": 3487,
+        "lines": 65,
+        "exit": 0,
+        "elapsed_ms": 342,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skills Curator Platforms  \u00b7  Detected 3 of 55 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   Detected on this machine: Cross-tool ~/.agents/, Claude Code, GitHub Copilot \u23ce  \u23ce   PLATFORM                STATUS      DIR \u23ce   ----------------------  ----------  --- \u23ce   Claude Code             \u2713 detected  ~\\.claude\\skills \u23ce  "
+      },
+      "--find testing": {
+        "tokens": 157,
+        "chars": 726,
+        "lines": 13,
+        "exit": 0,
+        "elapsed_ms": 344,
+        "preview": " \u23ce \ud83d\udd0d Catalog search 'testing' \u2014 3 result(s) \u23ce  \u23ce   \u2705 Agent Browser                        high        [agent-browser] \u23ce      Browser automation via CDP. Element refs, 6 auth methods, screenshots, form \u23ce      npx skills add vercel-labs/agent-browser --skill agent-browser \u23ce   \ud83d\udfe1 Verification Before Completion       medium      [verification-before-completion] \u23ce      Verify-before-done discipline. Stops agents mark"
+      },
+      "--discover design": {
+        "tokens": 114,
+        "chars": 491,
+        "lines": 10,
+        "exit": 0,
+        "elapsed_ms": 298,
+        "preview": " \u23ce \ud83d\udd0d Catalog search 'design' \u2014 2 result(s) \u23ce  \u23ce   \ud83c\udfdb\ufe0f Frontend Design                      official    [frontend-design] \u23ce      Bold design philosophy before writing UI code. Prevents AI-slop aesthetics. \u23ce      npx skills add anthropics/skills --skill frontend-design \u23ce   \u2705 Web Design Guidelines                high        [web-design-guidelines] \u23ce      UI/UX rules: accessibility, typography, dark mode. Validates "
+      },
+      "--audit": {
+        "tokens": 101,
+        "chars": 276,
+        "lines": 13,
+        "exit": 0,
+        "elapsed_ms": 295,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skill Audit  \u00b7  0 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2705 No duplicate sources \u23ce  \u23ce   \u2705 No preference conflicts detected \u23ce  \u23ce   \u2705 All skills have evaluations \u23ce  \u23ce   \u2705 All skills security-reviewed \u23ce  \u23ce "
+      },
+      "--health": {
+        "tokens": 7,
+        "chars": 24,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 357,
+        "preview": "\ud83d\udced No skills registered. \u23ce "
+      },
+      "--stale": {
+        "tokens": 11,
+        "chars": 37,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 321,
+        "preview": "\u2b1c No GitHub-sourced skills to check. \u23ce "
+      },
+      "--validate": {
+        "tokens": 81,
+        "chars": 186,
+        "lines": 9,
+        "exit": 0,
+        "elapsed_ms": 305,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Registry Validator  \u00b7  0 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   \u2705 No errors \u23ce   \u2705 No warnings \u23ce  \u23ce   Result: PASS \u23ce  \u23ce "
+      },
+      "--version": {
+        "tokens": 9,
+        "chars": 18,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 344,
+        "preview": "registry.py 4.4.4 \u23ce "
+      },
+      "--check (skill folder)": {
+        "tokens": 67,
+        "chars": 255,
+        "lines": 8,
+        "exit": 0,
+        "elapsed_ms": 376,
+        "preview": " \u23ce \ud83d\udd12 Security Scan: skills-curator \u23ce \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u23ce   Files scanned: 6 \u23ce   \u2705 No risks detected \u23ce  \u23ce   \u2139\ufe0f  Folder 'skills-curator' is not registered. Run --add to track it, \u23ce      then re-run --check to mark it security-reviewed. \u23ce "
+      },
+      "--history skills-curator": {
+        "tokens": 9,
+        "chars": 28,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 289,
+        "preview": "\u274c Not found: skills-curator \u23ce "
+      },
+      "--customize skills-curator --no-fork": {
+        "tokens": 50,
+        "chars": 171,
+        "lines": 4,
+        "exit": 0,
+        "elapsed_ms": 334,
+        "preview": "\ud83d\udd27 Customizing 'skills-curator' for project: AFP \u23ce  \u23ce \u274c Could not resolve 'skills-curator' to a SKILL.md. \u23ce    Try a local path, a registered skill id, or owner/repo@skill-name. \u23ce "
+      }
+    },
+    "Small": {
+      "--auto": {
+        "tokens": 232,
+        "chars": 932,
+        "lines": 23,
+        "exit": 0,
+        "elapsed_ms": 1398,
+        "preview": "\ud83d\udd0d First scan of Business \u2014 learning the stack... \u23ce  \u23ce    Detected: auth, automation, git, javascript, memory, personalization, python, security \u23ce  \u23ce \ud83d\udca1 Top 3 skill(s) that fit this project: \u23ce  \u23ce   1. \u2705 Supermemory \u23ce      Why     : matches [memory, personalization] \u23ce      What    : Persistent memory across sessions. Tracks facts, resolves contradictions. \u23ce      Install : npx skills add supermemoryai/supermemory \u23ce  \u23ce   2."
+      },
+      "--auto --refresh": {
+        "tokens": 227,
+        "chars": 903,
+        "lines": 23,
+        "exit": 0,
+        "elapsed_ms": 1396,
+        "preview": "\ud83d\udd04 Forced re-scan... \u23ce  \u23ce    Detected: auth, automation, git, javascript, memory, personalization, python, security \u23ce  \u23ce \ud83d\udca1 Top 3 skill(s) that fit this project: \u23ce  \u23ce   1. \u2705 Supermemory \u23ce      Why     : matches [memory, personalization] \u23ce      What    : Persistent memory across sessions. Tracks facts, resolves contradictions. \u23ce      Install : npx skills add supermemoryai/supermemory \u23ce  \u23ce   2. \u2705 React Best Practices \u23ce      "
+      },
+      "--recommend": {
+        "tokens": 911,
+        "chars": 3517,
+        "lines": 84,
+        "exit": 0,
+        "elapsed_ms": 1393,
+        "preview": "\ud83d\udd0d Scanning: Business... \u23ce    Stack: javascript, typescript, python \u23ce \ud83d\udce6 Loading skill catalog... \u23ce  \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Recommendations for: Business \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u26a1 CAPABILITY \u2014 new abilities \u23ce  \u23ce   01. \u2705 Supermemory \u23ce        Why     : [memory, personalization] \u23ce        What    : Persistent memory across sessions. Track"
+      },
+      "--scan": {
+        "tokens": 123,
+        "chars": 391,
+        "lines": 8,
+        "exit": 0,
+        "elapsed_ms": 1376,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Project Scan: Business \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Languages : javascript, typescript, python \u23ce   Tags      : security, python, memory, personalization, automation, typescript, git, javascript, auth, social-media \u23ce   Skills    : skills-curator, external-skill-for-testproj2, skills-curator, skills-curator-lite \u23ce  \u23ce "
+      },
+      "--symptoms 'slow tests'": {
+        "tokens": 189,
+        "chars": 801,
+        "lines": 20,
+        "exit": 0,
+        "elapsed_ms": 300,
+        "preview": "\ud83e\ude7a Symptom 'slow tests' \u2192 tags: performance, test-performance, testing \u23ce  \u23ce   Candidates: \u23ce  \u23ce   \u2705 React Best Practices \u23ce      Tags    : performance \u23ce      What    : React/Next.js performance rules ordered by impact. \u23ce      Install : npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices \u23ce  \u23ce   \u2705 Agent Browser \u23ce      Tags    : testing \u23ce      What    : Browser automation via CDP. Element refs, 6 auth"
+      },
+      "--symptoms 'ugly UI'": {
+        "tokens": 87,
+        "chars": 330,
+        "lines": 10,
+        "exit": 0,
+        "elapsed_ms": 295,
+        "preview": "\ud83e\ude7a Symptom 'ugly UI' \u2192 tags: design-system, frontend-design, ui \u23ce  \u23ce   Candidates: \u23ce  \u23ce   \ud83c\udfdb\ufe0f Frontend Design \u23ce      Tags    : ui \u23ce      What    : Bold design philosophy before writing UI code. Prevents AI-slop aesthetics. \u23ce      Install : npx skills add anthropics/skills --skill frontend-design \u23ce  \u23ce   Next: /skill-evaluate <id> before installing. \u23ce "
+      },
+      "--symptoms 'deploys are manual'": {
+        "tokens": 31,
+        "chars": 111,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 298,
+        "preview": "\u26a0\ufe0f  No symptom mapping for 'deploys are manual'. \u23ce    Try: --find deploys are manual  (free-text catalog search) \u23ce "
+      },
+      "--detect": {
+        "tokens": 19,
+        "chars": 61,
+        "lines": 4,
+        "exit": 0,
+        "elapsed_ms": 294,
+        "preview": " \u23ce \ud83d\udd0d Business: skills-curator \u23ce  \u23ce    \u2795 Registered: skills-curator \u23ce "
+      },
+      "--status": {
+        "tokens": 22,
+        "chars": 63,
+        "lines": 4,
+        "exit": 0,
+        "elapsed_ms": 389,
+        "preview": " \u23ce \ud83d\udcc1 Business \u23ce   Active (1): skills-curator \u23ce   Available (0): none \u23ce "
+      },
+      "--list": {
+        "tokens": 125,
+        "chars": 291,
+        "lines": 12,
+        "exit": 0,
+        "elapsed_ms": 299,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   REGISTRY v3.0  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2b1c UNEVALUATED \u23ce  \u23ce   \u26a1 Skills Curator  [skills-curator]  \u26a0\ufe0f  \u23ce      Source  : auto-detected \u23ce      Install : unknown \u23ce      Projects: Business \u23ce  \u23ce "
+      },
+      "--list --type capability": {
+        "tokens": 125,
+        "chars": 291,
+        "lines": 12,
+        "exit": 0,
+        "elapsed_ms": 289,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   REGISTRY v3.0  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2b1c UNEVALUATED \u23ce  \u23ce   \u26a1 Skills Curator  [skills-curator]  \u26a0\ufe0f  \u23ce      Source  : auto-detected \u23ce      Install : unknown \u23ce      Projects: Business \u23ce  \u23ce "
+      },
+      "--search testing": {
+        "tokens": 13,
+        "chars": 28,
+        "lines": 3,
+        "exit": 0,
+        "elapsed_ms": 369,
+        "preview": " \u23ce \ud83d\udd0d 'testing' \u2014 0 result(s) \u23ce  \u23ce "
+      },
+      "--platforms": {
+        "tokens": 176,
+        "chars": 574,
+        "lines": 15,
+        "exit": 0,
+        "elapsed_ms": 330,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skills Curator Platforms  \u00b7  Detected 3 of 55 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   Detected on this machine: Cross-tool ~/.agents/, Claude Code, GitHub Copilot \u23ce  \u23ce   PLATFORM                STATUS      DIR \u23ce   ----------------------  ----------  --- \u23ce   Claude Code             \u2713 detected  ~\\.claude\\skills \u23ce  "
+      },
+      "--platforms --verbose": {
+        "tokens": 774,
+        "chars": 3487,
+        "lines": 65,
+        "exit": 0,
+        "elapsed_ms": 298,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skills Curator Platforms  \u00b7  Detected 3 of 55 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   Detected on this machine: Cross-tool ~/.agents/, Claude Code, GitHub Copilot \u23ce  \u23ce   PLATFORM                STATUS      DIR \u23ce   ----------------------  ----------  --- \u23ce   Claude Code             \u2713 detected  ~\\.claude\\skills \u23ce  "
+      },
+      "--find testing": {
+        "tokens": 157,
+        "chars": 726,
+        "lines": 13,
+        "exit": 0,
+        "elapsed_ms": 367,
+        "preview": " \u23ce \ud83d\udd0d Catalog search 'testing' \u2014 3 result(s) \u23ce  \u23ce   \u2705 Agent Browser                        high        [agent-browser] \u23ce      Browser automation via CDP. Element refs, 6 auth methods, screenshots, form \u23ce      npx skills add vercel-labs/agent-browser --skill agent-browser \u23ce   \ud83d\udfe1 Verification Before Completion       medium      [verification-before-completion] \u23ce      Verify-before-done discipline. Stops agents mark"
+      },
+      "--discover design": {
+        "tokens": 114,
+        "chars": 491,
+        "lines": 10,
+        "exit": 0,
+        "elapsed_ms": 296,
+        "preview": " \u23ce \ud83d\udd0d Catalog search 'design' \u2014 2 result(s) \u23ce  \u23ce   \ud83c\udfdb\ufe0f Frontend Design                      official    [frontend-design] \u23ce      Bold design philosophy before writing UI code. Prevents AI-slop aesthetics. \u23ce      npx skills add anthropics/skills --skill frontend-design \u23ce   \u2705 Web Design Guidelines                high        [web-design-guidelines] \u23ce      UI/UX rules: accessibility, typography, dark mode. Validates "
+      },
+      "--audit": {
+        "tokens": 170,
+        "chars": 485,
+        "lines": 17,
+        "exit": 0,
+        "elapsed_ms": 295,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skill Audit  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2705 No duplicate sources \u23ce  \u23ce   \u2705 No preference conflicts detected \u23ce  \u23ce   \u2b1c UNEVALUATED (1 skill(s)) \u23ce      \u2022 Skills Curator  [skills-curator] \u23ce      \u2192 Run --eval <id> <project> <verdict> '<summary>' for each \u23ce  \u23ce   \ud83d\udd13 SECURITY UNREVIEWED (1 skill(s)) \u23ce      \u2022 Skills Curato"
+      },
+      "--health": {
+        "tokens": 132,
+        "chars": 303,
+        "lines": 8,
+        "exit": 0,
+        "elapsed_ms": 344,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skill Health Report  \u00b7  1 skill(s)  \u00b7  max=100 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   D [\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591]   0%  Skills Curator  [unevaluated] \u23ce        \u21b3 needs evaluation, not security-reviewed, no tags, no description \u23ce  \u23ce "
+      },
+      "--stale": {
+        "tokens": 11,
+        "chars": 37,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 332,
+        "preview": "\u2b1c No GitHub-sourced skills to check. \u23ce "
+      },
+      "--validate": {
+        "tokens": 97,
+        "chars": 234,
+        "lines": 10,
+        "exit": 0,
+        "elapsed_ms": 293,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Registry Validator  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   \u2705 No errors \u23ce   \u26a0\ufe0f  1 warning(s): \u23ce      [skills-curator] Not security_reviewed \u23ce  \u23ce   Result: PASS \u23ce  \u23ce "
+      },
+      "--version": {
+        "tokens": 9,
+        "chars": 18,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 323,
+        "preview": "registry.py 4.4.4 \u23ce "
+      },
+      "--check (skill folder)": {
+        "tokens": 49,
+        "chars": 189,
+        "lines": 7,
+        "exit": 0,
+        "elapsed_ms": 373,
+        "preview": " \u23ce \ud83d\udd12 Security Scan: skills-curator \u23ce \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u23ce   Files scanned: 6 \u23ce   \u2705 No risks detected \u23ce  \u23ce   \ud83d\udd12 Marked 'skills-curator' as security-reviewed in registry \u23ce "
+      },
+      "--history skills-curator": {
+        "tokens": 13,
+        "chars": 36,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 293,
+        "preview": " \u23ce \ud83d\udccb Skills Curator \u2014 0 evaluation(s) \u23ce "
+      },
+      "--customize skills-curator --no-fork": {
+        "tokens": 926,
+        "chars": 3271,
+        "lines": 74,
+        "exit": 0,
+        "elapsed_ms": 1454,
+        "preview": "\ud83d\udd27 Customizing 'skills-curator' for project: Business \u23ce  \u23ce    Loaded SKILL.md (11,979 chars) \u23ce    Project signals: auth, automation, git, javascript, memory, personalization, python, security \u23ce  \u23ce \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557 \u23ce \u2551  Customization plan: skills-curator \u2192 Business                        \u2551 \u23ce \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d \u23ce  \u23ce   01. \u270f\ufe0f "
+      }
+    },
+    "Medium": {
+      "--auto": {
+        "tokens": 252,
+        "chars": 983,
+        "lines": 23,
+        "exit": 0,
+        "elapsed_ms": 6665,
+        "preview": "\ud83d\udd0d First scan of VoiceTaskAI \u2014 learning the stack... \u23ce  \u23ce    Detected: analytics, api, auth, automation, dashboard, data, devops, expo \u23ce  \u23ce \ud83d\udca1 Top 3 skill(s) that fit this project: \u23ce  \u23ce   1. \u2705 React Best Practices \u23ce      Why     : matches [frontend, react, typescript] \u23ce      What    : React/Next.js performance rules ordered by impact. \u23ce      Install : npx skills add vercel-labs/agent-skills --skill vercel-react-best-"
+      },
+      "--auto --refresh": {
+        "tokens": 245,
+        "chars": 951,
+        "lines": 23,
+        "exit": 0,
+        "elapsed_ms": 6527,
+        "preview": "\ud83d\udd04 Forced re-scan... \u23ce  \u23ce    Detected: analytics, api, auth, automation, dashboard, data, devops, expo \u23ce  \u23ce \ud83d\udca1 Top 3 skill(s) that fit this project: \u23ce  \u23ce   1. \u2705 React Best Practices \u23ce      Why     : matches [frontend, react, typescript] \u23ce      What    : React/Next.js performance rules ordered by impact. \u23ce      Install : npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices \u23ce  \u23ce   2. \u2705 React Native S"
+      },
+      "--recommend": {
+        "tokens": 976,
+        "chars": 3723,
+        "lines": 85,
+        "exit": 0,
+        "elapsed_ms": 6502,
+        "preview": "\ud83d\udd0d Scanning: VoiceTaskAI... \u23ce    Stack: javascript, typescript, react, java, ruby \u23ce \ud83d\udce6 Loading skill catalog... \u23ce  \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Recommendations for: VoiceTaskAI \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u26a1 CAPABILITY \u2014 new abilities \u23ce  \u23ce   01. \u2705 Agent Browser \u23ce        Why     : [automation, testing] \u23ce        What    : Browser automation via CD"
+      },
+      "--scan": {
+        "tokens": 130,
+        "chars": 400,
+        "lines": 8,
+        "exit": 0,
+        "elapsed_ms": 6720,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Project Scan: VoiceTaskAI \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Languages : javascript, typescript, react, java, ruby, python \u23ce   Tags      : ruby, typescript, expo, java, react-native, dashboard, api, mobile, frontend, auth, automation, analytics \u23ce   Skills    : external-skill-for-testproj2, skills-curator, skills-curator-lite \u23ce  \u23ce "
+      },
+      "--symptoms 'slow tests'": {
+        "tokens": 189,
+        "chars": 801,
+        "lines": 20,
+        "exit": 0,
+        "elapsed_ms": 289,
+        "preview": "\ud83e\ude7a Symptom 'slow tests' \u2192 tags: performance, test-performance, testing \u23ce  \u23ce   Candidates: \u23ce  \u23ce   \u2705 React Best Practices \u23ce      Tags    : performance \u23ce      What    : React/Next.js performance rules ordered by impact. \u23ce      Install : npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices \u23ce  \u23ce   \u2705 Agent Browser \u23ce      Tags    : testing \u23ce      What    : Browser automation via CDP. Element refs, 6 auth"
+      },
+      "--symptoms 'ugly UI'": {
+        "tokens": 87,
+        "chars": 330,
+        "lines": 10,
+        "exit": 0,
+        "elapsed_ms": 278,
+        "preview": "\ud83e\ude7a Symptom 'ugly UI' \u2192 tags: design-system, frontend-design, ui \u23ce  \u23ce   Candidates: \u23ce  \u23ce   \ud83c\udfdb\ufe0f Frontend Design \u23ce      Tags    : ui \u23ce      What    : Bold design philosophy before writing UI code. Prevents AI-slop aesthetics. \u23ce      Install : npx skills add anthropics/skills --skill frontend-design \u23ce  \u23ce   Next: /skill-evaluate <id> before installing. \u23ce "
+      },
+      "--symptoms 'deploys are manual'": {
+        "tokens": 31,
+        "chars": 111,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 305,
+        "preview": "\u26a0\ufe0f  No symptom mapping for 'deploys are manual'. \u23ce    Try: --find deploys are manual  (free-text catalog search) \u23ce "
+      },
+      "--detect": {
+        "tokens": 12,
+        "chars": 33,
+        "lines": 3,
+        "exit": 0,
+        "elapsed_ms": 342,
+        "preview": " \u23ce \ud83d\udd0d VoiceTaskAI: no skills found \u23ce  \u23ce "
+      },
+      "--status": {
+        "tokens": 24,
+        "chars": 66,
+        "lines": 4,
+        "exit": 0,
+        "elapsed_ms": 303,
+        "preview": " \u23ce \ud83d\udcc1 VoiceTaskAI \u23ce   Active (0): none \u23ce   Available (1): skills-curator \u23ce "
+      },
+      "--list": {
+        "tokens": 123,
+        "chars": 289,
+        "lines": 12,
+        "exit": 0,
+        "elapsed_ms": 317,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   REGISTRY v3.0  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2b1c UNEVALUATED \u23ce  \u23ce   \u26a1 Skills Curator  [skills-curator]  \ud83d\udd12 \u23ce      Source  : auto-detected \u23ce      Install : unknown \u23ce      Projects: Business \u23ce  \u23ce "
+      },
+      "--list --type capability": {
+        "tokens": 123,
+        "chars": 289,
+        "lines": 12,
+        "exit": 0,
+        "elapsed_ms": 335,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   REGISTRY v3.0  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2b1c UNEVALUATED \u23ce  \u23ce   \u26a1 Skills Curator  [skills-curator]  \ud83d\udd12 \u23ce      Source  : auto-detected \u23ce      Install : unknown \u23ce      Projects: Business \u23ce  \u23ce "
+      },
+      "--search testing": {
+        "tokens": 13,
+        "chars": 28,
+        "lines": 3,
+        "exit": 0,
+        "elapsed_ms": 311,
+        "preview": " \u23ce \ud83d\udd0d 'testing' \u2014 0 result(s) \u23ce  \u23ce "
+      },
+      "--platforms": {
+        "tokens": 176,
+        "chars": 574,
+        "lines": 15,
+        "exit": 0,
+        "elapsed_ms": 319,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skills Curator Platforms  \u00b7  Detected 3 of 55 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   Detected on this machine: Cross-tool ~/.agents/, Claude Code, GitHub Copilot \u23ce  \u23ce   PLATFORM                STATUS      DIR \u23ce   ----------------------  ----------  --- \u23ce   Claude Code             \u2713 detected  ~\\.claude\\skills \u23ce  "
+      },
+      "--platforms --verbose": {
+        "tokens": 774,
+        "chars": 3487,
+        "lines": 65,
+        "exit": 0,
+        "elapsed_ms": 325,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skills Curator Platforms  \u00b7  Detected 3 of 55 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   Detected on this machine: Cross-tool ~/.agents/, Claude Code, GitHub Copilot \u23ce  \u23ce   PLATFORM                STATUS      DIR \u23ce   ----------------------  ----------  --- \u23ce   Claude Code             \u2713 detected  ~\\.claude\\skills \u23ce  "
+      },
+      "--find testing": {
+        "tokens": 157,
+        "chars": 726,
+        "lines": 13,
+        "exit": 0,
+        "elapsed_ms": 329,
+        "preview": " \u23ce \ud83d\udd0d Catalog search 'testing' \u2014 3 result(s) \u23ce  \u23ce   \u2705 Agent Browser                        high        [agent-browser] \u23ce      Browser automation via CDP. Element refs, 6 auth methods, screenshots, form \u23ce      npx skills add vercel-labs/agent-browser --skill agent-browser \u23ce   \ud83d\udfe1 Verification Before Completion       medium      [verification-before-completion] \u23ce      Verify-before-done discipline. Stops agents mark"
+      },
+      "--discover design": {
+        "tokens": 114,
+        "chars": 491,
+        "lines": 10,
+        "exit": 0,
+        "elapsed_ms": 302,
+        "preview": " \u23ce \ud83d\udd0d Catalog search 'design' \u2014 2 result(s) \u23ce  \u23ce   \ud83c\udfdb\ufe0f Frontend Design                      official    [frontend-design] \u23ce      Bold design philosophy before writing UI code. Prevents AI-slop aesthetics. \u23ce      npx skills add anthropics/skills --skill frontend-design \u23ce   \u2705 Web Design Guidelines                high        [web-design-guidelines] \u23ce      UI/UX rules: accessibility, typography, dark mode. Validates "
+      },
+      "--audit": {
+        "tokens": 139,
+        "chars": 377,
+        "lines": 15,
+        "exit": 0,
+        "elapsed_ms": 295,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skill Audit  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2705 No duplicate sources \u23ce  \u23ce   \u2705 No preference conflicts detected \u23ce  \u23ce   \u2b1c UNEVALUATED (1 skill(s)) \u23ce      \u2022 Skills Curator  [skills-curator] \u23ce      \u2192 Run --eval <id> <project> <verdict> '<summary>' for each \u23ce  \u23ce   \u2705 All skills security-reviewed \u23ce  \u23ce "
+      },
+      "--health": {
+        "tokens": 125,
+        "chars": 280,
+        "lines": 8,
+        "exit": 0,
+        "elapsed_ms": 372,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skill Health Report  \u00b7  1 skill(s)  \u00b7  max=100 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   D [\u2588\u2588\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591]  20%  Skills Curator  [unevaluated] \u23ce        \u21b3 needs evaluation, no tags, no description \u23ce  \u23ce "
+      },
+      "--stale": {
+        "tokens": 11,
+        "chars": 37,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 312,
+        "preview": "\u2b1c No GitHub-sourced skills to check. \u23ce "
+      },
+      "--validate": {
+        "tokens": 81,
+        "chars": 186,
+        "lines": 9,
+        "exit": 0,
+        "elapsed_ms": 298,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Registry Validator  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   \u2705 No errors \u23ce   \u2705 No warnings \u23ce  \u23ce   Result: PASS \u23ce  \u23ce "
+      },
+      "--version": {
+        "tokens": 9,
+        "chars": 18,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 349,
+        "preview": "registry.py 4.4.4 \u23ce "
+      },
+      "--check (skill folder)": {
+        "tokens": 49,
+        "chars": 189,
+        "lines": 7,
+        "exit": 0,
+        "elapsed_ms": 349,
+        "preview": " \u23ce \ud83d\udd12 Security Scan: skills-curator \u23ce \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u23ce   Files scanned: 6 \u23ce   \u2705 No risks detected \u23ce  \u23ce   \ud83d\udd12 Marked 'skills-curator' as security-reviewed in registry \u23ce "
+      },
+      "--history skills-curator": {
+        "tokens": 13,
+        "chars": 36,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 307,
+        "preview": " \u23ce \ud83d\udccb Skills Curator \u2014 0 evaluation(s) \u23ce "
+      },
+      "--customize skills-curator --no-fork": {
+        "tokens": 947,
+        "chars": 3333,
+        "lines": 74,
+        "exit": 0,
+        "elapsed_ms": 6490,
+        "preview": "\ud83d\udd27 Customizing 'skills-curator' for project: VoiceTaskAI \u23ce  \u23ce    Loaded SKILL.md (11,979 chars) \u23ce    Project signals: analytics, api, auth, automation, dashboard, data, devops, expo \u23ce  \u23ce \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557 \u23ce \u2551  Customization plan: skills-curator \u2192 VoiceTaskAI                     \u2551 \u23ce \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d \u23ce  \u23ce   01. \u270f\ufe0f [rewrite-f"
+      }
+    },
+    "Large": {
+      "--auto": {
+        "tokens": 260,
+        "chars": 974,
+        "lines": 23,
+        "exit": 0,
+        "elapsed_ms": 4121,
+        "preview": "\ud83d\udd0d First scan of Ancyr \u2014 learning the stack... \u23ce  \u23ce    Detected: ai, analytics, animation, api, css, data, devops, frontend \u23ce  \u23ce \ud83d\udca1 Top 3 skill(s) that fit this project: \u23ce  \u23ce   1. \u2705 React Best Practices \u23ce      Why     : matches [frontend, nextjs, react] \u23ce      What    : React/Next.js performance rules ordered by impact. \u23ce      Install : npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices \u23ce  \u23ce   2."
+      },
+      "--auto --refresh": {
+        "tokens": 254,
+        "chars": 948,
+        "lines": 23,
+        "exit": 0,
+        "elapsed_ms": 4162,
+        "preview": "\ud83d\udd04 Forced re-scan... \u23ce  \u23ce    Detected: ai, analytics, animation, api, css, data, devops, frontend \u23ce  \u23ce \ud83d\udca1 Top 3 skill(s) that fit this project: \u23ce  \u23ce   1. \u2705 React Best Practices \u23ce      Why     : matches [frontend, nextjs, react] \u23ce      What    : React/Next.js performance rules ordered by impact. \u23ce      Install : npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices \u23ce  \u23ce   2. \u2705 Remotion Best Practices"
+      },
+      "--recommend": {
+        "tokens": 961,
+        "chars": 3655,
+        "lines": 85,
+        "exit": 0,
+        "elapsed_ms": 4211,
+        "preview": "\ud83d\udd0d Scanning: Ancyr... \u23ce    Stack: javascript, typescript, react, python, go \u23ce \ud83d\udce6 Loading skill catalog... \u23ce  \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Recommendations for: Ancyr \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u26a1 CAPABILITY \u2014 new abilities \u23ce  \u23ce   01. \ud83d\udfe1 MCP Builder \u23ce        Why     : [api, python, typescript] \u23ce        What    : Guides creation of high-quality MCP"
+      },
+      "--scan": {
+        "tokens": 128,
+        "chars": 373,
+        "lines": 8,
+        "exit": 0,
+        "elapsed_ms": 4150,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Project Scan: Ancyr \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Languages : javascript, typescript, react, python, go \u23ce   Tags      : javascript, go, python, frontend, api, video, analytics, tailwind, nextjs, ml, css, remotion \u23ce   Skills    : external-skill-for-testproj2, skills-curator, skills-curator-lite \u23ce  \u23ce "
+      },
+      "--symptoms 'slow tests'": {
+        "tokens": 189,
+        "chars": 801,
+        "lines": 20,
+        "exit": 0,
+        "elapsed_ms": 295,
+        "preview": "\ud83e\ude7a Symptom 'slow tests' \u2192 tags: performance, test-performance, testing \u23ce  \u23ce   Candidates: \u23ce  \u23ce   \u2705 React Best Practices \u23ce      Tags    : performance \u23ce      What    : React/Next.js performance rules ordered by impact. \u23ce      Install : npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices \u23ce  \u23ce   \u2705 Agent Browser \u23ce      Tags    : testing \u23ce      What    : Browser automation via CDP. Element refs, 6 auth"
+      },
+      "--symptoms 'ugly UI'": {
+        "tokens": 87,
+        "chars": 330,
+        "lines": 10,
+        "exit": 0,
+        "elapsed_ms": 307,
+        "preview": "\ud83e\ude7a Symptom 'ugly UI' \u2192 tags: design-system, frontend-design, ui \u23ce  \u23ce   Candidates: \u23ce  \u23ce   \ud83c\udfdb\ufe0f Frontend Design \u23ce      Tags    : ui \u23ce      What    : Bold design philosophy before writing UI code. Prevents AI-slop aesthetics. \u23ce      Install : npx skills add anthropics/skills --skill frontend-design \u23ce  \u23ce   Next: /skill-evaluate <id> before installing. \u23ce "
+      },
+      "--symptoms 'deploys are manual'": {
+        "tokens": 31,
+        "chars": 111,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 296,
+        "preview": "\u26a0\ufe0f  No symptom mapping for 'deploys are manual'. \u23ce    Try: --find deploys are manual  (free-text catalog search) \u23ce "
+      },
+      "--detect": {
+        "tokens": 11,
+        "chars": 27,
+        "lines": 3,
+        "exit": 0,
+        "elapsed_ms": 360,
+        "preview": " \u23ce \ud83d\udd0d Ancyr: no skills found \u23ce  \u23ce "
+      },
+      "--status": {
+        "tokens": 23,
+        "chars": 60,
+        "lines": 4,
+        "exit": 0,
+        "elapsed_ms": 308,
+        "preview": " \u23ce \ud83d\udcc1 Ancyr \u23ce   Active (0): none \u23ce   Available (1): skills-curator \u23ce "
+      },
+      "--list": {
+        "tokens": 123,
+        "chars": 289,
+        "lines": 12,
+        "exit": 0,
+        "elapsed_ms": 329,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   REGISTRY v3.0  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2b1c UNEVALUATED \u23ce  \u23ce   \u26a1 Skills Curator  [skills-curator]  \ud83d\udd12 \u23ce      Source  : auto-detected \u23ce      Install : unknown \u23ce      Projects: Business \u23ce  \u23ce "
+      },
+      "--list --type capability": {
+        "tokens": 123,
+        "chars": 289,
+        "lines": 12,
+        "exit": 0,
+        "elapsed_ms": 329,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   REGISTRY v3.0  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2b1c UNEVALUATED \u23ce  \u23ce   \u26a1 Skills Curator  [skills-curator]  \ud83d\udd12 \u23ce      Source  : auto-detected \u23ce      Install : unknown \u23ce      Projects: Business \u23ce  \u23ce "
+      },
+      "--search testing": {
+        "tokens": 13,
+        "chars": 28,
+        "lines": 3,
+        "exit": 0,
+        "elapsed_ms": 302,
+        "preview": " \u23ce \ud83d\udd0d 'testing' \u2014 0 result(s) \u23ce  \u23ce "
+      },
+      "--platforms": {
+        "tokens": 176,
+        "chars": 574,
+        "lines": 15,
+        "exit": 0,
+        "elapsed_ms": 319,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skills Curator Platforms  \u00b7  Detected 3 of 55 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   Detected on this machine: Cross-tool ~/.agents/, Claude Code, GitHub Copilot \u23ce  \u23ce   PLATFORM                STATUS      DIR \u23ce   ----------------------  ----------  --- \u23ce   Claude Code             \u2713 detected  ~\\.claude\\skills \u23ce  "
+      },
+      "--platforms --verbose": {
+        "tokens": 774,
+        "chars": 3487,
+        "lines": 65,
+        "exit": 0,
+        "elapsed_ms": 349,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skills Curator Platforms  \u00b7  Detected 3 of 55 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   Detected on this machine: Cross-tool ~/.agents/, Claude Code, GitHub Copilot \u23ce  \u23ce   PLATFORM                STATUS      DIR \u23ce   ----------------------  ----------  --- \u23ce   Claude Code             \u2713 detected  ~\\.claude\\skills \u23ce  "
+      },
+      "--find testing": {
+        "tokens": 157,
+        "chars": 726,
+        "lines": 13,
+        "exit": 0,
+        "elapsed_ms": 301,
+        "preview": " \u23ce \ud83d\udd0d Catalog search 'testing' \u2014 3 result(s) \u23ce  \u23ce   \u2705 Agent Browser                        high        [agent-browser] \u23ce      Browser automation via CDP. Element refs, 6 auth methods, screenshots, form \u23ce      npx skills add vercel-labs/agent-browser --skill agent-browser \u23ce   \ud83d\udfe1 Verification Before Completion       medium      [verification-before-completion] \u23ce      Verify-before-done discipline. Stops agents mark"
+      },
+      "--discover design": {
+        "tokens": 114,
+        "chars": 491,
+        "lines": 10,
+        "exit": 0,
+        "elapsed_ms": 310,
+        "preview": " \u23ce \ud83d\udd0d Catalog search 'design' \u2014 2 result(s) \u23ce  \u23ce   \ud83c\udfdb\ufe0f Frontend Design                      official    [frontend-design] \u23ce      Bold design philosophy before writing UI code. Prevents AI-slop aesthetics. \u23ce      npx skills add anthropics/skills --skill frontend-design \u23ce   \u2705 Web Design Guidelines                high        [web-design-guidelines] \u23ce      UI/UX rules: accessibility, typography, dark mode. Validates "
+      },
+      "--audit": {
+        "tokens": 139,
+        "chars": 377,
+        "lines": 15,
+        "exit": 0,
+        "elapsed_ms": 361,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skill Audit  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2705 No duplicate sources \u23ce  \u23ce   \u2705 No preference conflicts detected \u23ce  \u23ce   \u2b1c UNEVALUATED (1 skill(s)) \u23ce      \u2022 Skills Curator  [skills-curator] \u23ce      \u2192 Run --eval <id> <project> <verdict> '<summary>' for each \u23ce  \u23ce   \u2705 All skills security-reviewed \u23ce  \u23ce "
+      },
+      "--health": {
+        "tokens": 125,
+        "chars": 280,
+        "lines": 8,
+        "exit": 0,
+        "elapsed_ms": 454,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skill Health Report  \u00b7  1 skill(s)  \u00b7  max=100 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   D [\u2588\u2588\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591]  20%  Skills Curator  [unevaluated] \u23ce        \u21b3 needs evaluation, no tags, no description \u23ce  \u23ce "
+      },
+      "--stale": {
+        "tokens": 11,
+        "chars": 37,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 413,
+        "preview": "\u2b1c No GitHub-sourced skills to check. \u23ce "
+      },
+      "--validate": {
+        "tokens": 81,
+        "chars": 186,
+        "lines": 9,
+        "exit": 0,
+        "elapsed_ms": 416,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Registry Validator  \u00b7  1 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   \u2705 No errors \u23ce   \u2705 No warnings \u23ce  \u23ce   Result: PASS \u23ce  \u23ce "
+      },
+      "--version": {
+        "tokens": 9,
+        "chars": 18,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 325,
+        "preview": "registry.py 4.4.4 \u23ce "
+      },
+      "--check (skill folder)": {
+        "tokens": 49,
+        "chars": 189,
+        "lines": 7,
+        "exit": 0,
+        "elapsed_ms": 367,
+        "preview": " \u23ce \ud83d\udd12 Security Scan: skills-curator \u23ce \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u23ce   Files scanned: 6 \u23ce   \u2705 No risks detected \u23ce  \u23ce   \ud83d\udd12 Marked 'skills-curator' as security-reviewed in registry \u23ce "
+      },
+      "--history skills-curator": {
+        "tokens": 13,
+        "chars": 36,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 329,
+        "preview": " \u23ce \ud83d\udccb Skills Curator \u2014 0 evaluation(s) \u23ce "
+      },
+      "--customize skills-curator --no-fork": {
+        "tokens": 965,
+        "chars": 3351,
+        "lines": 75,
+        "exit": 0,
+        "elapsed_ms": 4359,
+        "preview": "\ud83d\udd27 Customizing 'skills-curator' for project: Ancyr \u23ce  \u23ce    Loaded SKILL.md (11,979 chars) \u23ce    Project signals: ai, analytics, animation, api, css, data, devops, frontend \u23ce  \u23ce \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557 \u23ce \u2551  Customization plan: skills-curator \u2192 Ancyr                           \u2551 \u23ce \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d \u23ce  \u23ce   01. \u270f\ufe0f [rewrite-frontmatter]"
+      }
+    },
+    "XL": {
+      "--auto": {
+        "tokens": 250,
+        "chars": 966,
+        "lines": 23,
+        "exit": 0,
+        "elapsed_ms": 383,
+        "preview": "\ud83d\udd04 Project changed since last scan \u2014 re-evaluating recommendations... \u23ce  \u23ce    Detected: ai, auth, devops, documents, expo, git, ml, mobile \u23ce  \u23ce \ud83d\udca1 Top 3 skill(s) that fit this project: \u23ce  \u23ce   1. \u2705 React Native Skills \u23ce      Why     : matches [expo, mobile, react-native] \u23ce      What    : React Native best practices: Expo patterns, performance, platform handling. \u23ce      Install : npx skills add vercel-labs/agent-skills"
+      },
+      "--auto --refresh": {
+        "tokens": 243,
+        "chars": 917,
+        "lines": 23,
+        "exit": 0,
+        "elapsed_ms": 375,
+        "preview": "\ud83d\udd04 Forced re-scan... \u23ce  \u23ce    Detected: ai, auth, devops, documents, expo, git, ml, mobile \u23ce  \u23ce \ud83d\udca1 Top 3 skill(s) that fit this project: \u23ce  \u23ce   1. \u2705 React Native Skills \u23ce      Why     : matches [expo, mobile, react-native] \u23ce      What    : React Native best practices: Expo patterns, performance, platform handling. \u23ce      Install : npx skills add vercel-labs/agent-skills --skill vercel-react-native-skills \u23ce  \u23ce   2. \ud83c\udfdb\ufe0f Docu"
+      },
+      "--recommend": {
+        "tokens": 1140,
+        "chars": 4458,
+        "lines": 104,
+        "exit": 0,
+        "elapsed_ms": 400,
+        "preview": "\ud83d\udd0d Scanning: csm-final... \u23ce    Stack: python \u23ce \ud83d\udce6 Loading skill catalog... \u23ce  \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Recommendations for: csm-final \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u26a1 CAPABILITY \u2014 new abilities \u23ce  \u23ce   01. \ud83c\udfdb\ufe0f Document Skills \u23ce        Why     : [documents, pdf] \u23ce        What    : Create and edit PDFs, Word docs, Excel sheets, and presentations. \u23ce "
+      },
+      "--scan": {
+        "tokens": 126,
+        "chars": 378,
+        "lines": 8,
+        "exit": 0,
+        "elapsed_ms": 403,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Project Scan: csm-final \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Languages : python \u23ce   Tags      : testing, pdf, react-native, security, python, ml, auth, ai, git, mobile, expo, documents \u23ce   Skills    : frontend-design, web-design-guidelines, external-skill-for-testproj2, skills-curator, skills-curator-lite \u23ce  \u23ce "
+      },
+      "--symptoms 'slow tests'": {
+        "tokens": 189,
+        "chars": 801,
+        "lines": 20,
+        "exit": 0,
+        "elapsed_ms": 288,
+        "preview": "\ud83e\ude7a Symptom 'slow tests' \u2192 tags: performance, test-performance, testing \u23ce  \u23ce   Candidates: \u23ce  \u23ce   \u2705 React Best Practices \u23ce      Tags    : performance \u23ce      What    : React/Next.js performance rules ordered by impact. \u23ce      Install : npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices \u23ce  \u23ce   \u2705 Agent Browser \u23ce      Tags    : testing \u23ce      What    : Browser automation via CDP. Element refs, 6 auth"
+      },
+      "--symptoms 'ugly UI'": {
+        "tokens": 87,
+        "chars": 330,
+        "lines": 10,
+        "exit": 0,
+        "elapsed_ms": 342,
+        "preview": "\ud83e\ude7a Symptom 'ugly UI' \u2192 tags: design-system, frontend-design, ui \u23ce  \u23ce   Candidates: \u23ce  \u23ce   \ud83c\udfdb\ufe0f Frontend Design \u23ce      Tags    : ui \u23ce      What    : Bold design philosophy before writing UI code. Prevents AI-slop aesthetics. \u23ce      Install : npx skills add anthropics/skills --skill frontend-design \u23ce  \u23ce   Next: /skill-evaluate <id> before installing. \u23ce "
+      },
+      "--symptoms 'deploys are manual'": {
+        "tokens": 31,
+        "chars": 111,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 326,
+        "preview": "\u26a0\ufe0f  No symptom mapping for 'deploys are manual'. \u23ce    Try: --find deploys are manual  (free-text catalog search) \u23ce "
+      },
+      "--detect": {
+        "tokens": 47,
+        "chars": 170,
+        "lines": 6,
+        "exit": 0,
+        "elapsed_ms": 303,
+        "preview": " \u23ce \ud83d\udd0d csm-final: frontend-design, web-design-guidelines, skills-curator \u23ce  \u23ce    \u2795 Registered: frontend-design \u23ce    \u2795 Registered: web-design-guidelines \u23ce    \ud83d\udd17 Linked: skills-curator \u23ce "
+      },
+      "--status": {
+        "tokens": 32,
+        "chars": 104,
+        "lines": 4,
+        "exit": 0,
+        "elapsed_ms": 316,
+        "preview": " \u23ce \ud83d\udcc1 csm-final \u23ce   Active (3): skills-curator, frontend-design, web-design-guidelines \u23ce   Available (0): none \u23ce "
+      },
+      "--list": {
+        "tokens": 205,
+        "chars": 556,
+        "lines": 22,
+        "exit": 0,
+        "elapsed_ms": 319,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   REGISTRY v3.0  \u00b7  3 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2b1c UNEVALUATED \u23ce  \u23ce   \u26a1 Skills Curator  [skills-curator]  \ud83d\udd12 \u23ce      Source  : auto-detected \u23ce      Install : unknown \u23ce      Projects: Business, csm-final \u23ce  \u23ce   \u26a1 Frontend Design  [frontend-design]  \u26a0\ufe0f  \u23ce      Source  : auto-detected \u23ce      Install : unknown \u23ce     "
+      },
+      "--list --type capability": {
+        "tokens": 205,
+        "chars": 556,
+        "lines": 22,
+        "exit": 0,
+        "elapsed_ms": 311,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   REGISTRY v3.0  \u00b7  3 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2b1c UNEVALUATED \u23ce  \u23ce   \u26a1 Skills Curator  [skills-curator]  \ud83d\udd12 \u23ce      Source  : auto-detected \u23ce      Install : unknown \u23ce      Projects: Business, csm-final \u23ce  \u23ce   \u26a1 Frontend Design  [frontend-design]  \u26a0\ufe0f  \u23ce      Source  : auto-detected \u23ce      Install : unknown \u23ce     "
+      },
+      "--search testing": {
+        "tokens": 13,
+        "chars": 28,
+        "lines": 3,
+        "exit": 0,
+        "elapsed_ms": 302,
+        "preview": " \u23ce \ud83d\udd0d 'testing' \u2014 0 result(s) \u23ce  \u23ce "
+      },
+      "--platforms": {
+        "tokens": 176,
+        "chars": 574,
+        "lines": 15,
+        "exit": 0,
+        "elapsed_ms": 334,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skills Curator Platforms  \u00b7  Detected 3 of 55 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   Detected on this machine: Cross-tool ~/.agents/, Claude Code, GitHub Copilot \u23ce  \u23ce   PLATFORM                STATUS      DIR \u23ce   ----------------------  ----------  --- \u23ce   Claude Code             \u2713 detected  ~\\.claude\\skills \u23ce  "
+      },
+      "--platforms --verbose": {
+        "tokens": 774,
+        "chars": 3487,
+        "lines": 65,
+        "exit": 0,
+        "elapsed_ms": 318,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skills Curator Platforms  \u00b7  Detected 3 of 55 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   Detected on this machine: Cross-tool ~/.agents/, Claude Code, GitHub Copilot \u23ce  \u23ce   PLATFORM                STATUS      DIR \u23ce   ----------------------  ----------  --- \u23ce   Claude Code             \u2713 detected  ~\\.claude\\skills \u23ce  "
+      },
+      "--find testing": {
+        "tokens": 157,
+        "chars": 726,
+        "lines": 13,
+        "exit": 0,
+        "elapsed_ms": 298,
+        "preview": " \u23ce \ud83d\udd0d Catalog search 'testing' \u2014 3 result(s) \u23ce  \u23ce   \u2705 Agent Browser                        high        [agent-browser] \u23ce      Browser automation via CDP. Element refs, 6 auth methods, screenshots, form \u23ce      npx skills add vercel-labs/agent-browser --skill agent-browser \u23ce   \ud83d\udfe1 Verification Before Completion       medium      [verification-before-completion] \u23ce      Verify-before-done discipline. Stops agents mark"
+      },
+      "--discover design": {
+        "tokens": 114,
+        "chars": 491,
+        "lines": 10,
+        "exit": 0,
+        "elapsed_ms": 298,
+        "preview": " \u23ce \ud83d\udd0d Catalog search 'design' \u2014 2 result(s) \u23ce  \u23ce   \ud83c\udfdb\ufe0f Frontend Design                      official    [frontend-design] \u23ce      Bold design philosophy before writing UI code. Prevents AI-slop aesthetics. \u23ce      npx skills add anthropics/skills --skill frontend-design \u23ce   \u2705 Web Design Guidelines                high        [web-design-guidelines] \u23ce      UI/UX rules: accessibility, typography, dark mode. Validates "
+      },
+      "--audit": {
+        "tokens": 205,
+        "chars": 636,
+        "lines": 20,
+        "exit": 0,
+        "elapsed_ms": 344,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skill Audit  \u00b7  3 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   \u2705 No duplicate sources \u23ce  \u23ce   \u2705 No preference conflicts detected \u23ce  \u23ce   \u2b1c UNEVALUATED (3 skill(s)) \u23ce      \u2022 Skills Curator  [skills-curator] \u23ce      \u2022 Frontend Design  [frontend-design] \u23ce      \u2022 Web Design Guidelines  [web-design-guidelines] \u23ce      \u2192 Run --eval <id> <pr"
+      },
+      "--health": {
+        "tokens": 233,
+        "chars": 562,
+        "lines": 12,
+        "exit": 0,
+        "elapsed_ms": 293,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Skill Health Report  \u00b7  3 skill(s)  \u00b7  max=100 \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce  \u23ce   D [\u2588\u2588\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591]  20%  Skills Curator  [unevaluated] \u23ce        \u21b3 needs evaluation, no tags, no description \u23ce   D [\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591]   0%  Frontend Design  [unevaluated] \u23ce        \u21b3 needs evaluation, not security-reviewed, no tags"
+      },
+      "--stale": {
+        "tokens": 11,
+        "chars": 37,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 336,
+        "preview": "\u2b1c No GitHub-sourced skills to check. \u23ce "
+      },
+      "--validate": {
+        "tokens": 108,
+        "chars": 286,
+        "lines": 11,
+        "exit": 0,
+        "elapsed_ms": 353,
+        "preview": " \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   Registry Validator  \u00b7  3 skill(s) \u23ce \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u23ce   \u2705 No errors \u23ce   \u26a0\ufe0f  2 warning(s): \u23ce      [frontend-design] Not security_reviewed \u23ce      [web-design-guidelines] Not security_reviewed \u23ce  \u23ce   Result: PASS \u23ce  \u23ce "
+      },
+      "--version": {
+        "tokens": 9,
+        "chars": 18,
+        "lines": 1,
+        "exit": 0,
+        "elapsed_ms": 294,
+        "preview": "registry.py 4.4.4 \u23ce "
+      },
+      "--check (skill folder)": {
+        "tokens": 49,
+        "chars": 189,
+        "lines": 7,
+        "exit": 0,
+        "elapsed_ms": 356,
+        "preview": " \u23ce \ud83d\udd12 Security Scan: skills-curator \u23ce \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u23ce   Files scanned: 6 \u23ce   \u2705 No risks detected \u23ce  \u23ce   \ud83d\udd12 Marked 'skills-curator' as security-reviewed in registry \u23ce "
+      },
+      "--history skills-curator": {
+        "tokens": 13,
+        "chars": 36,
+        "lines": 2,
+        "exit": 0,
+        "elapsed_ms": 363,
+        "preview": " \u23ce \ud83d\udccb Skills Curator \u2014 0 evaluation(s) \u23ce "
+      },
+      "--customize skills-curator --no-fork": {
+        "tokens": 969,
+        "chars": 3345,
+        "lines": 77,
+        "exit": 0,
+        "elapsed_ms": 365,
+        "preview": "\ud83d\udd27 Customizing 'skills-curator' for project: csm-final \u23ce  \u23ce    Loaded SKILL.md (11,979 chars) \u23ce    Project signals: ai, auth, devops, documents, expo, git, ml, mobile \u23ce  \u23ce \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557 \u23ce \u2551  Customization plan: skills-curator \u2192 csm-final                       \u2551 \u23ce \u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d \u23ce  \u23ce   01. \u270f\ufe0f [rewrite-frontmatter] sco"
+      }
+    }
+  },
+  "sessions": {
+    "Empty": {
+      "A_silent_tokens": 249,
+      "B_light_tokens": 4474,
+      "C_heavy_tokens": 6292,
+      "without_skill_light": 4060,
+      "without_skill_heavy": 28420
+    },
+    "Small": {
+      "A_silent_tokens": 249,
+      "B_light_tokens": 5551,
+      "C_heavy_tokens": 8296,
+      "without_skill_light": 4060,
+      "without_skill_heavy": 28420
+    },
+    "Medium": {
+      "A_silent_tokens": 249,
+      "B_light_tokens": 5636,
+      "C_heavy_tokens": 8371,
+      "without_skill_light": 4060,
+      "without_skill_heavy": 28420
+    },
+    "Large": {
+      "A_silent_tokens": 249,
+      "B_light_tokens": 5629,
+      "C_heavy_tokens": 8382,
+      "without_skill_light": 4060,
+      "without_skill_heavy": 28420
+    },
+    "XL": {
+      "A_silent_tokens": 249,
+      "B_light_tokens": 5798,
+      "C_heavy_tokens": 8621,
+      "without_skill_light": 4060,
+      "without_skill_heavy": 28420
+    }
+  }
+}
