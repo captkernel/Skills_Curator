@@ -9,7 +9,7 @@ The intelligence layer for Claude skills — surfaces what fits your project, de
 [![Version](https://img.shields.io/github/v/release/captkernel/Skills_Curator?style=flat-square&label=version)](https://github.com/captkernel/Skills_Curator/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/captkernel/Skills_Curator/validate.yml?branch=main&style=flat-square&label=ci)](.github/workflows/validate.yml)
 [![Tests](https://img.shields.io/badge/tests-37%20passing-success?style=flat-square)](tests/)
-[![Tiers](https://img.shields.io/badge/tiers-Lite%20%2B%20Python-blue?style=flat-square)](#two-tiers)
+[![Editions](https://img.shields.io/badge/editions-Lite%20%2B%20Python%20%2B%20claude.ai-blue?style=flat-square)](#editions)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/captkernel/Skills_Curator?style=flat-square)](https://github.com/captkernel/Skills_Curator/commits)
 
@@ -17,13 +17,13 @@ The intelligence layer for Claude skills — surfaces what fits your project, de
 npx skills add captkernel/Skills_Curator
 ```
 
-**Status: Stable · v4.4.4 · 55 supported platforms · Lite (no deps) is default · Python tier is opt-in**
+**Status: Stable · v4.5.0 · 55 supported platforms · Three editions: Lite (default) · Python · claude.ai (web + desktop)**
 
 </div>
 
 ---
 
-> **TL;DR.** Other skill managers stop at install. Skills Curator is the intelligence layer above them: it watches what you're building, surfaces skills that fit, **decomposes external skills into project-tailored forks** (so you adopt the capability without inheriting the author's voice), and persists every judgment so you never re-evaluate. Ships in two tiers — **Lite** (no Python, default) and **Python full** (tested engine, opt-in for speed on large catalogs).
+> **TL;DR.** Other skill managers stop at install. Skills Curator is the intelligence layer above them: it watches what you're building, surfaces skills that fit, **decomposes external skills into project-tailored forks** (so you adopt the capability without inheriting the author's voice), and persists every judgment so you never re-evaluate. Ships in three editions — **Lite** (no Python, Claude Code default), **Python full** (Claude Code performance tier with tested engine + Gist sync), and **claude.ai** (web + desktop edition for Anthropic's Skills feature).
 
 <table>
 <tr>
@@ -60,7 +60,7 @@ The Python engine is 27,900 tokens of code but **never enters context** — it r
 <details>
 <summary><b>Table of contents</b></summary>
 
-- [Quick install](#quick-install) · [Two tiers](#two-tiers) · [Demo](#demo)
+- [Quick install](#quick-install) · [Editions](#editions) · [Demo](#demo)
 - [Why this exists](#why-this-exists) · [Features at a glance](#features-at-a-glance)
 - [The intelligence layer](#the-intelligence-layer) · [`--customize`](#--customize--infuse-dont-invoke)
 - [Token cost](#token-cost) · [Quickstart](#quickstart) · [Platforms](#platforms)
@@ -89,24 +89,49 @@ powershell -ExecutionPolicy Bypass -File install.ps1 # Windows (same modes via -
 
 After install, the skill auto-loads in any new Claude Code session and announces itself once on first activation.
 
+### claude.ai (web + desktop)
+
+claude.ai uses its own Skills feature instead of `npx skills`, so the install is a one-file download + upload:
+
+1. **Download:** [`skills-curator-claudeai.zip`](https://github.com/captkernel/Skills_Curator/raw/main/dist/skills-curator-claudeai.zip) (19 KB)
+2. **Upload:** claude.ai → **Settings → Capabilities → Skills → Upload skill** → pick the zip
+3. **(Recommended) Persist your registry:** add an empty `skills_registry.json` to a Project's Knowledge — Skills Curator auto-reads it and emits updates as downloadable files. Full setup in [`INSTALL.md`](skills/skills-curator-claudeai/INSTALL.md).
+
+Same intelligence layer as the Claude Code editions: same `--customize` decomposition, same trust-rated catalog, same security scan, same shared registry schema. **It just runs in claude.ai instead of in your CLI.**
+
+This edition does not appear in `plugin.json`'s `skills[]` array — Claude Code users only get Lite + Python from `npx skills add`. The claude.ai bundle is distributed via the direct zip download above. One repo, two channels.
+
 ---
 
-## Two tiers
+## Editions
 
-Both ship in the same plugin. **Lite is the default** — pick it unless you have a specific reason to add the Python tier.
+Three editions ship in one repo, targeting two different runtimes. Pick by **where you run Claude**, not by feature wish-list:
 
-| | `skills-curator-lite` (default) | `skills-curator` (Python tier) |
-|---|---|---|
-| Engine | None — agent does the work via Bash / Read / Glob / Grep | Python 3.10+ (stdlib only, ~2.3k LOC) |
-| Install friction | Zero | Python 3.10+ check |
-| Project fingerprint (`--auto`) | ✅ byte-count + prefix compare | ✅ MD5-based |
-| Symptom mapping, security scan, customize, migrate | ✅ feature parity | ✅ |
-| Cross-device Gist sync | ❌ | ✅ |
-| Speed on 100+ skills | Slower (N agent steps) | Single-pass (~1s) |
-| Regression tests | None | 37 pytest cases |
-| Activation token cost | ~11,000 (embeds catalog inline) | ~3,400 (delegates to engine) |
+- **Claude Code (CLI)** → Lite (default) or Python (opt-in performance tier). Both auto-install via `npx skills add`.
+- **claude.ai (web + desktop)** → claude.ai edition. Uploaded as a zip via Settings → Capabilities → Skills.
 
-Different registry paths — they don't conflict. Install both if you want.
+The three editions share the same judgment model and the same registry JSON schema (v3.0) — a registry written by one edition can be read by another. They differ in runtime, persistence, and which verbs make sense for the target.
+
+| | `skills-curator-lite` (Claude Code default) | `skills-curator` (Claude Code Python tier) | `skills-curator-claudeai` (claude.ai edition) |
+|---|---|---|---|
+| Runtime | Claude Code CLI | Claude Code CLI | claude.ai web + desktop |
+| Engine | None — agent runs the spec via Bash / Read / Glob / Grep | Python 3.10+ (stdlib only, ~2.3k LOC) | None — agent runs the spec via code-execution sandbox |
+| Install | `npx skills add captkernel/Skills_Curator` (default) | `... --with-python` (opt-in) | Upload zip via Settings → Capabilities → Skills |
+| Install friction | Zero | Python 3.10+ check | Manual zip + upload |
+| Persistence | `~/.claude/skills/.../registry.json` | `~/.claude/skills/.../registry.json` | Project Knowledge / upload / Gist (see [persistence guide](skills/skills-curator-claudeai/references/persistence.md)) |
+| Project signals | Files in cwd | Files in cwd | Attached files + Project Knowledge + pasted snippets |
+| Proactive `--auto` activation | ✅ byte-count fingerprint | ✅ MD5 fingerprint | ❌ (no cwd, no session boundary the skill controls) |
+| Symptom mapping (17 patterns) | ✅ | ✅ | ✅ |
+| Security scan (15 patterns) | ✅ | ✅ | ✅ |
+| `CUSTOMIZE` headline verb | ✅ writes to `~/.claude/skills/<fork>/` | ✅ writes to `~/.claude/skills/<fork>/` | ✅ outputs `<fork>.zip` to `/mnt/user-data/outputs/` (ready to upload back to claude.ai) |
+| `RECOMMEND` / `EVALUATE` / `AUDIT` | ✅ | ✅ | ✅ |
+| `PLATFORMS` / `MIGRATE` (55 platforms) | ✅ | ✅ | ❌ removed — claude.ai isn't installing to CLI agents |
+| Cross-device Gist sync | ❌ | ✅ | ✅ (Mode C — power users) |
+| Speed on 100+ skills | Slower (N agent steps) | Single-pass (~1s) | Slower (N agent steps) |
+| Regression tests | None | 37 pytest cases | None (no engine to test) |
+| Slash commands | `/skill-evaluate` etc. | `/skill-evaluate` etc. | Natural language only |
+
+The Claude Code editions don't conflict — different registry paths. Install both if you want. The claude.ai edition runs in a different product entirely, but shares the registry schema, so a Gist-synced registry roams across all three.
 
 ---
 
@@ -412,7 +437,7 @@ Just evaluate again — every record is an entry in `evaluation_history`. The la
 
 | | |
 |---|---|
-| **Maturity** | Stable. v4.4.4 current. Schema v3 (stable since v4.0). |
+| **Maturity** | Stable. v4.5.0 current. Schema v3 (stable since v4.0). |
 | **Tiers** | Lite (default, zero deps) + Python full (opt-in). |
 | **CI** | 3 OS × 4 Python versions on every PR (Python tier only). |
 | **Tests** | 37 pytest cases (Python tier). |

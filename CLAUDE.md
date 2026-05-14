@@ -6,9 +6,23 @@ This is the source repo for Skills Curator. The end-user README is `README.md`. 
 
 ## What this folder is
 
-A Claude Code skill that handles judgment about other skills: pre-install evaluation, security scanning, project-aware recommendation, persistent decision history, cross-agent migration. Single-file Python engine + a SKILL.md + 3 slash commands + a plugin manifest.
+A plugin that handles judgment about other skills: pre-install evaluation, security scanning, project-aware recommendation, persistent decision history, cross-agent migration. Single-file Python engine + three SKILL.md variants + 3 slash commands + a plugin manifest.
 
 The pitch: *"Decide once. Re-decide never."* Other tools manage skills; Skills Curator persists your judgment.
+
+## Three editions (as of v4.5.0)
+
+The plugin ships **three** SKILL.md variants targeting **two** different runtimes:
+
+| Edition | Runtime | Install path | Notes |
+|---|---|---|---|
+| `skills-curator-lite/` | Claude Code (CLI) | Auto via `npx skills add captkernel/Skills_Curator` | Default tier — no Python. Lite is tracked at its own internal version (`2.0.0`); only the plugin's outer version follows SemVer for the whole repo. |
+| `skills-curator/` | Claude Code (CLI) | `--with-python` opt-in via the same install command | Python 3.10+ tier. `VERSION` constant in `scripts/registry.py` tracks plugin version. |
+| `skills-curator-claudeai/` | claude.ai (web + desktop) | Manual zip + upload via Settings → Capabilities → Skills | **NOT in `plugin.json` `skills[]`** — that array is for Claude Code's plugin loader. Shipping the claude.ai variant via that path would incorrectly drop it into `~/.claude/skills/`. |
+
+**Why not all in `plugin.json` skills[]:** The `skills[]` array tells Claude Code's plugin loader which subfolders to auto-install into `~/.claude/skills/`. The claude.ai edition uses different persistence (Project Knowledge, not `~/.claude/`), different invocation (natural language, not slash commands), and doesn't make sense as a Claude Code skill. It's distributed via the same repo but a different channel (the zip flow documented in its `INSTALL.md`).
+
+**Registry schema is shared across editions:** `v3.0` JSON. A registry written by any edition can be read by any other. Power users can roam a single registry across all three runtimes via Gist sync (Python edition has `--sync`; claude.ai edition has Mode C).
 
 ---
 
@@ -58,7 +72,7 @@ Skills_Curator/                             ← repo root
 │       ├── skill-submission.yml
 │       └── report-bad-skill.yml
 ├── docs/gist-sync.md
-├── skills/skills-curator/                  ← the skill itself
+├── skills/skills-curator/                  ← Python edition (Claude Code)
 │   ├── SKILL.md                            ← agent brain (auto-loaded)
 │   ├── references/                         ← progressive disclosure
 │   │   ├── commands.md
@@ -66,8 +80,18 @@ Skills_Curator/                             ← repo root
 │   │   ├── discovery.md
 │   │   └── schema.md
 │   └── scripts/
-│       └── registry.py                     ← stdlib-only engine, ~1k lines
-└── tests/                                  ← 37 pytest cases
+│       └── registry.py                     ← stdlib-only engine, ~2.3k lines
+├── skills/skills-curator-lite/             ← Lite edition (Claude Code default)
+│   └── SKILL.md                            ← embedded catalog + spec, no engine
+├── skills/skills-curator-claudeai/         ← claude.ai edition (web + desktop, v4.5.0+)
+│   ├── SKILL.md                            ← slim spec (~250 lines)
+│   ├── INSTALL.md                          ← user install guide (zip + upload)
+│   └── references/                         ← progressive disclosure
+│       ├── catalog.yaml
+│       ├── signals.md
+│       ├── security-patterns.md
+│       └── persistence.md
+└── tests/                                  ← 37 pytest cases (Python edition only)
     ├── conftest.py                         ← isolated tmp_path fixture
     ├── test_registry_core.py
     ├── test_migration.py

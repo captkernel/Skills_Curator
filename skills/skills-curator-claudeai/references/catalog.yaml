@@ -1,0 +1,313 @@
+# Skills Curator embedded catalog (claude.ai edition, v4.5.0)
+#
+# Curated seed catalog with hand-written pros/cons and trust classification.
+# Live GitHub-discovered entries (via the refresh flow in SKILL.md) merge on
+# top — curated entries win on id collision so hand-written pros/cons aren't
+# overwritten.
+#
+# Schema per entry:
+#   id, name, source, install, type (capability|preference), trust, tags[],
+#   description, pros[], cons[]
+
+- id: find-skills
+  name: Find Skills
+  source: vercel-labs/skills
+  install: npx skills add vercel-labs/skills --skill find-skills
+  type: capability
+  trust: official
+  tags: [meta, discovery, skill-management]
+  description: Discovers and recommends skills from skills.sh based on task context.
+  pros:
+    - Official Vercel maintenance
+    - Wraps skills.sh discovery in one verb
+  cons:
+    - Popularity-driven; doesn't filter by project fit
+    - Overlaps with Skills Curator's RECOMMEND
+
+- id: frontend-design
+  name: Frontend Design
+  source: anthropics/skills
+  install: npx skills add anthropics/skills --skill frontend-design
+  type: preference
+  trust: official
+  tags: [frontend, design, react, css, html, ui, vue]
+  description: Bold design philosophy before writing UI code. Prevents AI-slop aesthetics.
+  pros:
+    - Anthropic-curated
+    - Prevents generic-looking UI defaults
+    - Stack-agnostic principles
+  cons:
+    - Strong opinions may conflict with team style guide
+    - Adds prompt overhead on non-UI tasks
+
+- id: document-skills
+  name: Document Skills
+  source: anthropics/skills
+  install: npx skills add anthropics/skills --skill document-skills
+  type: capability
+  trust: official
+  tags: [documents, pdf, word, excel, powerpoint, docx, xlsx]
+  description: Create and edit PDFs, Word docs, Excel sheets, and presentations.
+  pros:
+    - Covers all major office formats
+    - First-party Anthropic skill
+  cons:
+    - Useless if your project never produces office files
+    - Bundles 5 sub-skills you may not need
+
+- id: skill-creator
+  name: Skill Creator
+  source: anthropics/skills
+  install: npx skills add anthropics/skills --skill skill-creator
+  type: capability
+  trust: official
+  tags: [meta, skill-development, authoring]
+  description: Interactive skill authoring. Creates properly structured SKILL.md files.
+  pros:
+    - Produces canonically-formatted SKILL.md
+    - Reduces friction for first-time authors
+  cons:
+    - Overlaps with Skills Curator's authoring flow
+    - Adds context cost when not authoring
+
+- id: vercel-react-best-practices
+  name: React Best Practices
+  source: vercel-labs/agent-skills
+  install: npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices
+  type: preference
+  trust: high
+  tags: [react, nextjs, frontend, performance, typescript]
+  description: React/Next.js performance rules ordered by impact.
+  pros:
+    - Vercel-authored
+    - Impact-ranked rules
+    - Next.js-aware
+  cons:
+    - Next.js-biased examples (less useful for plain React)
+    - Doesn't cover SSR alternatives
+
+- id: web-design-guidelines
+  name: Web Design Guidelines
+  source: vercel-labs/agent-skills
+  install: npx skills add vercel-labs/agent-skills --skill web-design-guidelines
+  type: preference
+  trust: high
+  tags: [frontend, design, accessibility, ux, css, web]
+  description: UI/UX rules — accessibility, typography, dark mode.
+  pros:
+    - Accessibility-first
+    - Specific, validatable rules
+  cons:
+    - Heavy overlap with frontend-design
+    - Vercel design language may not match your brand
+
+- id: agent-browser
+  name: Agent Browser
+  source: vercel-labs/agent-browser
+  install: npx skills add vercel-labs/agent-browser --skill agent-browser
+  type: capability
+  trust: high
+  tags: [browser, automation, scraping, cdp, testing, forms]
+  description: Browser automation via CDP. Element refs, 6 auth methods, screenshots, form fill.
+  pros:
+    - Six auth methods including session import
+    - CDP gives access to JS-heavy pages
+  cons:
+    - Requires Chrome — adds CI dependency
+    - Heavyweight for static-page scraping
+
+- id: supermemory
+  name: Supermemory
+  source: supermemoryai/supermemory
+  install: npx skills add supermemoryai/supermemory
+  type: capability
+  trust: high
+  tags: [memory, personalization, context, recall, ai]
+  description: Persistent memory across sessions. Tracks facts, resolves contradictions.
+  pros:
+    - Cross-session persistence
+    - Conflict resolution built-in
+  cons:
+    - Sends context to a third-party service
+    - Privacy review required for sensitive projects
+
+- id: remotion-best-practices
+  name: Remotion Best Practices
+  source: remotion-dev/skills
+  install: npx skills add remotion-dev/skills --skill remotion-best-practices
+  type: preference
+  trust: high
+  tags: [remotion, video, animation, react, programmatic-video]
+  description: Remotion knowledge — animations, timing, audio, captions, 3D.
+  pros:
+    - First-party Remotion knowledge
+    - Activates automatically on Remotion files
+  cons:
+    - Useless if you don't use Remotion
+    - Adds context cost on every session
+
+- id: firecrawl-cli
+  name: Firecrawl CLI
+  source: firecrawl/cli
+  install: npx skills add firecrawl/cli
+  type: capability
+  trust: high
+  tags: [scraping, web, crawl, data-extraction, js-rendering]
+  description: Web scraping with JS rendering. Handles SPAs, auth-gated pages.
+  pros:
+    - Handles JS-heavy SPAs out of the box
+    - Structured-extraction primitives
+  cons:
+    - Requires Firecrawl API key
+    - Paid tier for any meaningful usage
+
+- id: openspace
+  name: OpenSpace
+  source: HKUDS/OpenSpace
+  install: pip install git+https://github.com/HKUDS/OpenSpace.git
+  type: capability
+  trust: medium
+  tags: [meta, self-evolving, mcp, token-efficiency]
+  description: Self-evolving skills via MCP. Auto-fix, learn from execution.
+  pros:
+    - Token-efficient
+    - Self-improving over usage
+  cons:
+    - Requires MCP setup
+    - Research-grade — interface may shift
+
+- id: writing-plans
+  name: Writing Plans
+  source: obra/superpowers
+  install: npx skills add obra/superpowers --skill writing-plans
+  type: preference
+  trust: medium
+  tags: [workflow, planning, discipline, process]
+  description: Plan-before-code discipline. Reduces agents skipping steps.
+  pros:
+    - Reduces 'jumped to coding' failures
+    - Forces explicit alignment before edits
+  cons:
+    - Adds friction for trivial one-liner tasks
+    - Verbose for simple bug fixes
+
+- id: verification-before-completion
+  name: Verification Before Completion
+  source: obra/superpowers
+  install: npx skills add obra/superpowers --skill verification-before-completion
+  type: preference
+  trust: medium
+  tags: [workflow, verification, quality, testing]
+  description: Verify-before-done discipline.
+  pros:
+    - Catches false-success claims
+    - Pairs naturally with TDD
+  cons:
+    - Requires verification commands to actually exist
+    - Slows iteration when verification is expensive
+
+- id: composio-connect
+  name: Composio Connect
+  source: ComposioHQ/composio-skills
+  install: npx skills add ComposioHQ/composio-skills --skill connect
+  type: capability
+  trust: high
+  tags: [integrations, api, gmail, slack, github, notion]
+  description: Connect Claude to SaaS apps with managed OAuth.
+  pros:
+    - Managed OAuth removes credential plumbing
+    - 100+ integrations
+  cons:
+    - Vendor lock-in to Composio
+    - Routes data through their proxy
+
+- id: security-auditor
+  name: Security Auditor
+  source: alirezarezvani/claude-skills
+  install: npx skills add alirezarezvani/claude-skills --skill security-auditor
+  type: capability
+  trust: medium
+  tags: [security, audit, vulnerability, owasp, code-review]
+  description: Security audit skill. Scans for OWASP top 10, injection vectors, exposed secrets.
+  pros:
+    - OWASP-mapped
+    - Catches obvious vulnerability patterns
+  cons:
+    - Pattern-based — misses logic-level issues
+    - Community-maintained, smaller maintainer pool
+
+- id: git-commit-writer
+  name: Git Commit Writer
+  source: glebis/claude-skills
+  install: npx skills add glebis/claude-skills --skill git-commit-writer
+  type: preference
+  trust: medium
+  tags: [git, commits, workflow, conventional-commits]
+  description: Enforces conventional commit message format.
+  pros:
+    - Consistent commit history
+    - Plays well with semantic-release
+  cons:
+    - Convention may not match team's existing style
+    - Wasteful if you already have commitlint
+
+- id: senior-backend
+  name: Senior Backend
+  source: davila7/claude-code-templates
+  install: npx skills add davila7/claude-code-templates --skill senior-backend
+  type: preference
+  trust: medium
+  tags: [backend, api, python, nodejs, go, typescript, database]
+  description: Senior backend patterns — API scaffolding, DB optimisation, load testing.
+  pros:
+    - Multi-language coverage
+    - Includes load-testing patterns
+  cons:
+    - Generic — may not match your stack's idioms
+    - Adopting all 4 languages bloats prompt
+
+- id: vercel-react-native-skills
+  name: React Native Skills
+  source: vercel-labs/agent-skills
+  install: npx skills add vercel-labs/agent-skills --skill vercel-react-native-skills
+  type: preference
+  trust: high
+  tags: [react-native, mobile, ios, android, expo]
+  description: React Native best practices — Expo patterns, performance, platform handling.
+  pros:
+    - Expo-aware
+    - Platform-handling guidance for iOS/Android divergence
+  cons:
+    - Expo-biased; less useful for bare React Native
+    - No Fabric/Hermes guidance yet
+
+- id: mcp-builder
+  name: MCP Builder
+  source: ComposioHQ/awesome-claude-skills
+  install: npx skills add ComposioHQ/awesome-claude-skills --skill mcp-builder
+  type: capability
+  trust: medium
+  tags: [mcp, integration, api, tools, typescript, python]
+  description: Guides creation of high-quality MCP servers for integrating external APIs.
+  pros:
+    - Tightens MCP server quality
+    - TypeScript + Python coverage
+  cons:
+    - Only useful when authoring an MCP server
+    - Heavy overlap with Anthropic MCP docs
+
+- id: skills-curator
+  name: Skills Curator (Claude Code editions)
+  source: captkernel/Skills_Curator
+  install: npx skills add captkernel/Skills_Curator
+  type: capability
+  trust: high
+  tags: [meta, skill-management, registry, evaluation]
+  description: The Claude Code editions of this skill. Lite (no-Python, default) + Python (single-pass engine, 37 pytest cases, Gist sync).
+  pros:
+    - Single-pass speed on 100+ skills (Python tier)
+    - Cross-device Gist sync (Python tier)
+    - Cross-agent migration to 55 platforms
+  cons:
+    - Requires Claude Code (CLI), not claude.ai
+    - Different runtime than this edition

@@ -2,6 +2,36 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.5.0] — 2026-05-14
+
+Third edition. Skills Curator now ships for **claude.ai (web + desktop)** in addition to the two existing Claude Code editions (Lite and Python full). Same judgment model, same registry schema — re-architected for a runtime that has no persistent `~/.claude/` filesystem and no slash commands. The Claude Code editions are unchanged in behavior; this is purely additive.
+
+### Added
+
+- **`skills/skills-curator-claudeai/`** — new edition bundle for the claude.ai Skills feature. Slim `SKILL.md` (~250 lines) with progressive disclosure to four reference files. Designed to be zipped and uploaded via claude.ai → Settings → Capabilities → Skills.
+- **`skills/skills-curator-claudeai/references/catalog.yaml`** — 20-entry curated catalog, mirrored from the Lite edition's embedded YAML. Loaded on demand during RECOMMEND to keep activation cost low.
+- **`skills/skills-curator-claudeai/references/signals.md`** — framework + goal signal extraction tables and the Tag-rivals stack-mismatch detector. Loaded on demand during RECOMMEND and CUSTOMIZE.
+- **`skills/skills-curator-claudeai/references/security-patterns.md`** — 15 severity-tagged regex patterns for pre-install scanning. Loaded on demand during EVALUATE and SCAN.
+- **`skills/skills-curator-claudeai/references/persistence.md`** — deep dive on the three persistence modes (Project Knowledge / upload / Gist sync), schema field-by-field, migration rules, troubleshooting.
+- **`skills/skills-curator-claudeai/INSTALL.md`** — end-user install guide: prerequisites, zip command (PowerShell + bash), upload steps, Project Knowledge setup for Mode A persistence, verification check.
+- **New verb on the claude.ai edition: `SCAN`** — lightweight quick-scan that runs only the security patterns and returns a findings table, no full ADOPT/PARTIAL/SKIP verdict. Use when the user just wants a safety check without adoption advice.
+- **`/mnt/user-data/outputs/` persistence flow** — the claude.ai edition writes the updated registry to a downloadable file rather than pasting it back into chat. Eliminates the context-cost problem registries would otherwise cause.
+- **`CUSTOMIZE` outputs a zip** — on the claude.ai edition, the headline `CUSTOMIZE` verb packages the fork as `/mnt/user-data/outputs/<fork-name>.zip` so the user can upload it back to claude.ai (or move to `~/.claude/skills/` if they're also on Claude Code) in one step.
+- **README "Editions" section** replacing the old "Two tiers" section. Three-column comparison covering runtime, engine, install, persistence, verbs supported, and tradeoffs. Old "Two tiers" anchor preserved as a redirect via the new heading.
+
+### Changed
+
+- **Plugin description** in `.claude-plugin/plugin.json` updated to describe three editions, not two. New `claude-ai` keyword added.
+- **Plugin version 4.4.5 → 4.5.0** in `plugin.json`, `registry.py VERSION` constant, and the Python tier's `SKILL.md` metadata. Lite tier's internal version (`2.0.0`) is unchanged — Lite tracks separately and didn't change in this release.
+- **README header status line** rewritten to mention the third edition. Editions badge replaces the old Tiers badge.
+
+### Notes
+
+- The claude.ai edition is **not** auto-installed by `npx skills add captkernel/Skills_Curator` — that command installs the Claude Code editions to `~/.claude/skills/`. The claude.ai edition lives in the repo at `skills/skills-curator-claudeai/` and is installed via the standalone zip + upload flow documented in its `INSTALL.md`. Adding it to `plugin.json`'s `skills[]` array would incorrectly drop the claude.ai variant into Claude Code installations.
+- **Registry JSON schema is shared** across all three editions (`v3.0`). A registry written by one edition can be read by another. Power users can use Gist sync (the Python tier's existing `--sync` feature, or the claude.ai edition's Mode C) to roam a single registry across all three runtimes.
+- claude.ai isn't one of the engine's 55 supported platforms — those are all CLI/IDE agents. `--migrate` does not produce a claude.ai-compatible bundle. This was a manual port informed by claude.ai's runtime constraints (sandbox-per-conversation, no `~/.claude/`, no slash commands, Project Knowledge as the only durable storage Claude can read on its own).
+- No engine code changed. All 37 pytest cases continue to pass.
+
 ## [4.4.5] — 2026-05-13
 
 USP repositioning + empirical token-cost docs. `--customize` is now the headline capability in both SKILL.md files; the intelligence-layer messaging is reframed as the activation model that surfaces the right skill, not the USP itself. New reproducible token-cost audit ships in `docs/audit/`, with two self-contained HTML reports for transparency. No engine or CLI behavior changes.
