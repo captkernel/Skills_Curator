@@ -81,6 +81,50 @@ For other persistence modes (per-conversation upload, Gist sync), see [`referenc
 
 ---
 
+## Alternative: Project Instructions (no Skills feature needed)
+
+If your claude.ai plan doesn't expose the Skills feature (Free plan) or you'd rather avoid managing uploaded skills, you can run Skills Curator entirely via a **Project** instead. This trades auto-discovery for always-on behavior within one Project.
+
+### Setup
+
+1. Open claude.ai → sidebar → **Projects** → **New Project** (or open an existing one).
+2. Open **Project Knowledge** and upload these files from the bundle:
+   - `SKILL.md`
+   - `references/catalog.yaml`
+   - `references/signals.md`
+   - `references/security-patterns.md`
+   - `references/persistence.md`
+   - `skills_registry.json` (start with `{"version": "3.0", "last_updated": "", "skills": []}`)
+3. Open **Project Instructions** and paste this directive:
+
+   ```
+   You have access to the Skills Curator skill via Project Knowledge.
+   Read SKILL.md and follow its instructions exactly. When a verb
+   (RECOMMEND, EVALUATE, SCAN, AUDIT, CUSTOMIZE) requires a reference
+   file (catalog.yaml, signals.md, security-patterns.md,
+   persistence.md), read it on demand from Project Knowledge. The
+   user's persistent registry lives at skills_registry.json in
+   Project Knowledge — read from it, and emit updated versions to
+   /mnt/user-data/outputs/skills_registry.json when decisions change.
+   ```
+
+4. Save the Project. Open a new conversation inside it.
+
+### Trade-offs vs the Skills feature install
+
+| | Skills feature (upload zip) | Project Instructions (this workaround) |
+|---|---|---|
+| Activation | Auto-discovered when relevant — Claude decides based on the skill's `description` | Always-on for every conversation in this Project |
+| Reach | Active everywhere you enable the skill | Limited to one Project |
+| Plan requirement | Pro / Max / Team / Enterprise | Works on Free plan |
+| Setup steps | 1 zip upload + 1 registry file | 6 file uploads + 1 instructions paste |
+| Updates | Re-upload one zip when a new version ships | Re-upload changed files individually |
+| Behavior fidelity | Full | Full (same `SKILL.md`, same references, same registry) |
+
+If you can use the Skills feature, do — it's auto-activating and scales to every conversation. The Project Instructions path exists so users on the Free plan can still get the same judgment model.
+
+---
+
 ## Verifying the install
 
 In a new conversation with the skill enabled, ask:
