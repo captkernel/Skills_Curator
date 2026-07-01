@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Skills Curator">
+  <title>Skills Curator</title>
+  <!-- "D4b": a skill decomposed into modular parts; the kept parts are nudged inward
+       (recomposing toward a whole); the chosen part is chroma-red. Visualises the
+       decompose -> select-the-best -> rewrite loop (the --customize core).
+       Art direction: Clair Obscur: Expedition 33 palette (oxblood + cream + chroma). -->
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="#f3ede1"/>
+  <rect x="18.1" y="18.1" width="8" height="8" rx="1.6" fill="#7a1f1f" opacity=".82"/>
+  <rect x="28" y="18.1" width="8" height="8" rx="1.6" fill="#7a1f1f" opacity=".82"/>
+  <rect x="39" y="17" width="8" height="8" rx="1.6" fill="#7a1f1f" opacity=".2"/>
+  <rect x="17" y="28" width="8" height="8" rx="1.6" fill="#7a1f1f" opacity=".2"/>
+  <rect x="28" y="28" width="8" height="8" rx="1.6" fill="#7a1f1f" opacity=".82"/>
+  <rect x="37.9" y="28" width="8" height="8" rx="1.6" fill="#d97777"/>
+  <rect x="18.1" y="37.9" width="8" height="8" rx="1.6" fill="#7a1f1f" opacity=".82"/>
+  <rect x="28" y="39" width="8" height="8" rx="1.6" fill="#7a1f1f" opacity=".2"/>
+  <rect x="37.9" y="37.9" width="8" height="8" rx="1.6" fill="#7a1f1f" opacity=".82"/>
+</svg>

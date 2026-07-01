@@ -42,6 +42,8 @@ All commands are CLI flags on `scripts/registry.py`. Slash commands live in `.cl
 | Flag | Purpose |
 |---|---|
 | `--author` | Interactive scaffold (SKILL.md + MANIFEST.yaml + CHANGELOG) |
+| `--customize SOURCE [--no-fork]` | Fork an external skill for the current project; archives every section so dropped functionality stays recoverable |
+| `--restore FORK_ID [--apply]` | Re-evaluate the fork's archive against the project's *current* signals; surface (or splice back) sections that now fit (v4.6+) |
 
 ## Platforms (v4.3)
 

@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/images/logo.svg" alt="Skills Curator logo" width="88" height="88" />
+
 # Skills Curator
 
 **Install the skill. Customize it to your stack. Decide once, never re-decide.**
@@ -17,7 +19,7 @@ The intelligence layer for Claude skills — surfaces what fits your project, de
 npx skills add captkernel/Skills_Curator
 ```
 
-**Status: Stable · v4.5.0 · 55 supported platforms · Three editions: Lite (default) · Python · claude.ai (web + desktop)**
+**Status: Stable · v4.6.0 · 55 supported platforms · Three editions: Lite (default) · Python · claude.ai (web + desktop)**
 
 </div>
 
@@ -437,7 +439,7 @@ Just evaluate again — every record is an entry in `evaluation_history`. The la
 
 | | |
 |---|---|
-| **Maturity** | Stable. v4.5.0 current. Schema v3 (stable since v4.0). |
+| **Maturity** | Stable. v4.6.0 current. Schema v3 (stable since v4.0). |
 | **Tiers** | Lite (default, zero deps) + Python full (opt-in). |
 | **CI** | 3 OS × 4 Python versions on every PR (Python tier only). |
 | **Tests** | 37 pytest cases (Python tier). |

@@ -27,6 +27,7 @@ Usage:
   python registry.py --migrate <agent>          # Copy skills to another agent
   python registry.py --author                   # Scaffold a new SKILL.md
   python registry.py --customize SOURCE         # Fork an external skill as a project-customized version
+  python registry.py --restore FORK_ID [--apply]# Re-evaluate archived sections from a previous --customize; patch back any that now fit
   python registry.py --validate [--strict]
   python registry.py --add ID NAME SOURCE INSTALL [--skill-type capability|preference]
   python registry.py --eval ID PROJECT VERDICT SUMMARY
@@ -76,7 +77,7 @@ import urllib.error
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-VERSION = "4.5.0"
+VERSION = "4.6.0"
 SCHEMA_VERSION = "3.0"
 
 SKILL_DIR            = Path.home() / ".claude" / "skills" / "skills-curator"
@@ -339,7 +340,7 @@ def cmd_init() -> None:
     print(f"  Discovery : --recommend  --discover [term]  --scan")
     print(f"  Safety    : --check <path>  --audit  --health  --stale")
     print(f"  Platforms : --platforms [--verbose]  --migrate [target[,...]]")
-    print(f"  Authoring : --author  --customize <source>")
+    print(f"  Authoring : --author  --customize <source>  --restore <fork-id>")
     print(f"  Sync      : --sync  --push")
     print(f"  Run --help for all options")
 
@@ -1296,6 +1297,53 @@ def _section_relevance(content: str, project_tags: set[str], project_languages: 
     return score, matched
 
 
+# Stack/framework keywords we recognize inside a section's prose. Used by
+# --customize to record *what stack each archived section was for*, and by
+# --restore to score those archived sections against the project's CURRENT
+# signals. Keep this aligned with the tag/language vocabulary produced by
+# _scan_project so cross-referencing is straightforward.
+_STACK_KEYWORDS = {
+    # Frontend frameworks
+    "react", "nextjs", "next.js", "vue", "vuejs", "nuxt", "svelte", "sveltekit",
+    "angular", "solid", "solidjs", "remix", "astro", "qwik", "ember",
+    # Styling / UI
+    "tailwind", "tailwindcss", "css", "sass", "scss", "styled-components",
+    "shadcn", "mui", "chakra", "bootstrap",
+    # Backend frameworks
+    "fastapi", "django", "flask", "rails", "ruby on rails", "express",
+    "nestjs", "koa", "laravel", "phoenix", "gin", "echo", "fiber", "actix",
+    "spring", "spring boot", "asp.net", "dotnet", ".net",
+    # Languages
+    "python", "typescript", "javascript", "ruby", "go", "golang", "rust",
+    "java", "kotlin", "swift", "php", "c#", "c++", "elixir", "scala",
+    # Data / infra
+    "postgres", "postgresql", "mysql", "sqlite", "mongodb", "redis",
+    "docker", "kubernetes", "k8s", "terraform", "ansible",
+    # Testing
+    "jest", "vitest", "pytest", "mocha", "playwright", "cypress", "rspec",
+    # CI
+    "github actions", "gitlab ci", "circleci", "jenkins", "travis",
+}
+
+
+def _extract_section_stack_signals(content: str) -> list[str]:
+    """Find stack/framework keywords inside a section so --restore can decide
+    whether the section is now relevant to the project. Lowercased, deduped,
+    order-preserving. Returns up to 10."""
+    if not content:
+        return []
+    text = content.lower()
+    found: list[str] = []
+    seen: set[str] = set()
+    for kw in _STACK_KEYWORDS:
+        if kw in text and kw not in seen:
+            found.append(kw)
+            seen.add(kw)
+            if len(found) >= 10:
+                break
+    return found
+
+
 def _read_external_skill(source: str) -> tuple[str, str] | None:
     """Resolve an external skill identifier to (skill_name, SKILL.md text).
     Accepts: a registered skill id, a local folder path, an owner/repo[@skill]
@@ -1482,9 +1530,175 @@ def cmd_customize(source: str, project_dir: Path | None = None,
 
     fork_path.write_text("\n".join(fork_lines), encoding="utf-8")
     print(f"  ✅ Fork scaffolded at: {fork_path}")
+
+    # ── Scaffold the archive: every section of the source SKILL.md is preserved
+    # so `--restore <fork-id>` can patch dropped functionality back in if the
+    # project later grows into needing it (e.g. Vue gets added to a React app
+    # and the Vue section that was originally dropped is now relevant).
+    archive_dir = fork_dir / "_archive"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+
+    original_path = archive_dir / "SKILL.original.md"
+    original_path.write_text(skill_md, encoding="utf-8")
+    original_sha = hashlib.sha256(skill_md.encode("utf-8")).hexdigest()[:16]
+
+    archive_sections: list[dict] = []
+    for p, (heading, content) in zip(plan, sections):
+        if heading in ("__frontmatter__", "__preamble__"):
+            continue
+        archive_sections.append({
+            "heading": heading,
+            "content": content,
+            "action_at_customize": p["action"],
+            "score_at_customize": p["score"],
+            "matched_tags_at_customize": p.get("matched", []),
+            "stack_signals": _extract_section_stack_signals(content),
+            "restorable": p["action"] in ("drop-or-rewrite", "rewrite-stack", "keep-trim"),
+            "reason": p["note"],
+        })
+
+    archive_manifest = {
+        "schema": "customize-archive/1.0",
+        "fork_id": fork_id,
+        "source_id": skill_id,
+        "source_sha256_prefix": original_sha,
+        "customized_for": project_name,
+        "customized_at": str(date.today()),
+        "customized_by": f"skills-curator/{VERSION}",
+        "project_tags_at_customize": sorted(project_tags),
+        "project_languages_at_customize": list(languages),
+        "sections": archive_sections,
+    }
+    (archive_dir / "dropped.json").write_text(
+        json.dumps(archive_manifest, indent=2), encoding="utf-8"
+    )
+
+    dropped_n = sum(1 for s in archive_sections if s["restorable"])
+    print(f"     Archive : {archive_dir.relative_to(fork_dir.parent)}/  "
+          f"({len(archive_sections)} section(s) preserved, {dropped_n} restorable)")
+    print(f"     Restore : python registry.py --restore {fork_id}  "
+          f"# re-evaluates archived sections against the project's *current* state")
+    print()
     print(f"     Next: ask the agent to rewrite sections per the plan above.")
     print(f"     The agent should read the original SKILL.md, follow the action column, and replace")
     print(f"     the 'Customization plan' section with the rewritten content.")
+
+
+def cmd_restore_customization(fork_id: str, project_dir: Path | None = None,
+                              apply: bool = False) -> None:
+    """Re-evaluate the archived sections of a previously-customized fork
+    against the project's *current* signals. If the project has grown into a
+    stack a previously-dropped section was written for, surface it as a patch
+    candidate — and with --apply, splice it back into the fork's SKILL.md.
+
+    This is the second half of the `--customize` story: nothing is permanently
+    discarded. A fork written when the project was React-only can be patched
+    later when Vue is added, without re-customizing from scratch."""
+    project_dir = project_dir or Path.cwd()
+    fork_dir = CUSTOMIZE_DIR / fork_id
+    archive_path = fork_dir / "_archive" / "dropped.json"
+    fork_skill_path = fork_dir / "SKILL.md"
+
+    if not fork_dir.exists():
+        print(f"❌ No fork found at {fork_dir}.")
+        print(f"   Did you mean to run `--customize <source>` first?")
+        return
+    if not archive_path.exists():
+        print(f"❌ No archive at {archive_path}.")
+        print(f"   This fork predates the archive feature (added in 4.6.0).")
+        print(f"   Re-run `--customize {fork_id}` to regenerate the archive.")
+        return
+
+    try:
+        manifest = json.loads(archive_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        print(f"❌ Archive is corrupt: {e}")
+        return
+
+    print(f"🔧 Restoring archived sections of '{fork_id}' for: {project_dir.name}\n")
+    print(f"   Original source: {manifest.get('source_id', '?')} "
+          f"(customized {manifest.get('customized_at', '?')})")
+    print(f"   Then : tags = {', '.join(manifest.get('project_tags_at_customize', [])[:6]) or '∅'}")
+
+    signals = _scan_project(project_dir)
+    project_tags = set(signals.get("tags", []))
+    languages = signals.get("languages", [])
+    print(f"   Now  : tags = {', '.join(sorted(project_tags)[:6]) or '∅'}\n")
+
+    if not project_tags:
+        print(f"⚠️  No current project signals — restore needs CLAUDE.md or a manifest to score against.")
+        return
+
+    candidates: list[dict] = []
+    for entry in manifest.get("sections", []):
+        if not entry.get("restorable"):
+            continue
+        new_score, new_matched = _section_relevance(
+            entry.get("content", ""), project_tags, languages
+        )
+        stack_overlap = sorted(
+            set(entry.get("stack_signals", [])) & {t.lower() for t in project_tags}
+        )
+        old_score = entry.get("score_at_customize", 0)
+        # Promote when: relevance grew meaningfully, OR stack the section was
+        # originally written for is now in the project.
+        if new_score >= 2 or (stack_overlap and new_score > old_score):
+            candidates.append({
+                "heading": entry["heading"],
+                "content": entry["content"],
+                "old_action": entry.get("action_at_customize"),
+                "old_score": old_score,
+                "new_score": new_score,
+                "new_matched": new_matched,
+                "stack_overlap": stack_overlap,
+            })
+
+    if not candidates:
+        print(f"  ✅ No archived sections are newly relevant — fork is still well-fit.\n")
+        return
+
+    print(f"╔══════════════════════════════════════════════════════════════╗")
+    print(f"║  Patch candidates ({len(candidates)}): archived sections that now fit{' ' * 7}║")
+    print(f"╚══════════════════════════════════════════════════════════════╝\n")
+    for i, c in enumerate(candidates, 1):
+        print(f"  {i:02}. 🟢 {c['heading']}")
+        print(f"      Originally : {c['old_action']} (score {c['old_score']})")
+        print(f"      Now        : score {c['new_score']}  "
+              f"matched: {', '.join(c['new_matched'][:5]) or '—'}")
+        if c["stack_overlap"]:
+            print(f"      Stack hit  : {', '.join(c['stack_overlap'])}")
+        print()
+
+    if not apply:
+        print(f"  Preview only. Re-run with --apply to splice these sections back into:")
+        print(f"    {fork_skill_path}")
+        return
+
+    if not fork_skill_path.exists():
+        print(f"❌ Fork SKILL.md missing at {fork_skill_path} — cannot apply.")
+        return
+
+    current = fork_skill_path.read_text(encoding="utf-8")
+    patch_lines = [
+        "",
+        "---",
+        "",
+        f"## Restored from archive ({date.today()})",
+        "",
+        f"> Patched back by `skills-curator --restore {fork_id} --apply`.",
+        f"> These sections were originally dropped/rewritten but now match the project's current stack.",
+        f"> Review and integrate into the appropriate places above; remove this banner when done.",
+        "",
+    ]
+    for c in candidates:
+        patch_lines.append(c["heading"])
+        patch_lines.append("")
+        patch_lines.append(c["content"])
+        patch_lines.append("")
+    fork_skill_path.write_text(current.rstrip() + "\n" + "\n".join(patch_lines), encoding="utf-8")
+    print(f"  ✅ Spliced {len(candidates)} section(s) into {fork_skill_path.name}")
+    print(f"     Next: ask the agent to integrate the 'Restored from archive' block "
+          f"into the proper locations, then delete the banner.")
 
 
 def cmd_recommend(project_dir: Path | None = None,
@@ -2228,6 +2442,11 @@ def main() -> None:
                    help="Fork an external skill as a project-customized version (SOURCE = registered id, local path, or owner/repo@skill)")
     p.add_argument("--no-fork",    action="store_true",
                    help="With --customize, only print the plan; don't write the fork")
+    p.add_argument("--restore",    metavar="FORK_ID",
+                   help="Re-evaluate the archive of a previously-customized fork; "
+                        "surface dropped sections that now match the project")
+    p.add_argument("--apply",      action="store_true",
+                   help="With --restore, splice patch-candidate sections back into the fork's SKILL.md")
     p.add_argument("--export-eval", dest="export_eval", metavar="SKILL_ID",
                    help="Emit latest evaluation as shareable markdown")
     p.add_argument("--version",    action="version", version=f"%(prog)s {VERSION}")
@@ -2253,6 +2472,7 @@ def main() -> None:
     elif args.auto:                     cmd_auto(proj, args.refresh)
     elif args.symptoms:                 cmd_symptoms(args.symptoms)
     elif args.customize:                cmd_customize(args.customize, proj, emit_fork=not args.no_fork)
+    elif args.restore:                  cmd_restore_customization(args.restore, proj, apply=args.apply)
     elif args.recommend:                cmd_recommend(proj, args.refresh, args.max)
     elif args.discover is not None:     cmd_discover(args.discover or None, args.refresh)
     elif args.find is not None:         cmd_discover(args.find or None, args.refresh)

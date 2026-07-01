@@ -2,7 +2,7 @@
 name: skills-curator
 description: Use when the user mentions a skill/plugin by name, asks "should I install X", asks for skill recommendations, wants a security check on a skill, asks about duplicates or conflicts, wants to create a new skill, or wants to migrate skills across agent platforms (Cursor, Codex, Gemini, etc.).
 metadata:
-  version: "4.5.0"
+  version: "4.6.0"
   author: captkernel
   homepage: https://github.com/captkernel/Skills_Curator
   license: MIT
@@ -236,6 +236,28 @@ Use `--no-fork` to preview the plan without writing the fork.
 **Why this is the USP:** installation is a solved problem; *adaptation* isn't. Every other skill manager assumes one-size-fits-all SKILL.md content. Skills Curator is the only one that treats SKILL.md as a template to be specialized per project — and the only one that does it with a project-aware action plan instead of a blanket find-and-replace.
 
 When you recommend a skill via `--recommend` and detect a stack mismatch (Vue skill in a React project), surface a one-line `--customize` hint instead of just suggesting "install it" — that's the moment this feature pays off.
+
+### Nothing is permanently dropped: the `_archive/` scaffold (v4.6+)
+
+`--customize` doesn't *delete* sections that don't fit — it **archives** them. Every fork written by `--customize` also gets:
+
+- `<fork>/_archive/SKILL.original.md` — the source SKILL.md verbatim, so the agent always has a faithful copy to diff against
+- `<fork>/_archive/dropped.json` — every section of the source preserved as JSON, with its original content, its action at customize time (`drop-or-rewrite`, `rewrite-stack`, `keep-trim`, etc.), the stack/framework keywords it mentions, and the project signals that were in effect when the call ran
+
+This means dropped functionality is recoverable. A fork written when the project was "React + FastAPI" can be patched later when Vue is added — without re-customizing from scratch and without the agent having to re-derive what was originally there.
+
+### `--restore <fork-id>`: patch dropped functionality back in
+
+```bash
+python registry.py --restore <fork-id>          # preview: which archived sections now fit?
+python registry.py --restore <fork-id> --apply  # splice them back into the fork's SKILL.md
+```
+
+`--restore` re-scans the project for its **current** signals, re-scores every archived section against them, and surfaces the ones whose relevance has grown. Typical trigger: the project added a stack the original `--customize` call had no signal for.
+
+Run `--restore <fork-id>` proactively after a meaningful project shift (new framework added, CLAUDE.md rewritten) on any fork that lives at `~/.claude/skills/<id>-for-<project>`. Output is silent when nothing has changed — running it is cheap.
+
+With `--apply`, the patch candidates are appended to the fork's SKILL.md under a `## Restored from archive (<date>)` banner. The agent then integrates them into the right places and removes the banner. Engine produces the patch, agent does the prose — same split as `--customize` itself.
 
 ---
 

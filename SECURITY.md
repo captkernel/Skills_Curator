@@ -4,14 +4,14 @@
 
 If you find a security issue in `Skills_Curator` itself (the tool, not a skill it lists), **do not open a public GitHub issue.**
 
-Instead, email **karanparmar7993@gmail.com** with:
+Instead, use GitHub's private vulnerability reporting: go to the repo's **Security** tab and click **"Report a vulnerability"** (or [open the advisory form directly](https://github.com/captkernel/Skills_Curator/security/advisories/new)). Please include:
 
 - A description of the issue
 - Steps to reproduce
 - The version of the tool you're using (`python registry.py --version`)
 - Whether you've disclosed the issue elsewhere
 
-You will get an acknowledgement within 5 working days. Once a fix is available, the disclosure timeline is coordinated with you.
+You will get an acknowledgement within 5 working days. Once a fix is available, the disclosure timeline is coordinated with you through the advisory thread.
 
 ---
 

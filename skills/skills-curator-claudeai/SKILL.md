@@ -13,7 +13,7 @@ license: MIT
 metadata:
   version: "1.0.0"
   edition: claude.ai
-  plugin_version: "4.5.0"
+  plugin_version: "4.6.0"
   author: captkernel
   homepage: https://github.com/captkernel/Skills_Curator
   derived_from: skills-curator-lite

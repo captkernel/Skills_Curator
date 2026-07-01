@@ -2,6 +2,28 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.6.0] — 2026-05-18
+
+`--customize` now scaffolds an archive of every section of the source SKILL.md so dropped/trimmed functionality stays recoverable. A new `--restore <fork-id>` command re-evaluates that archive against the project's *current* signals and surfaces (or splices back) any sections whose relevance has grown — e.g. a Vue section dropped from a React-only fork can be patched back when Vue is added to the project, without re-customizing from scratch.
+
+### Added
+
+- **`--customize` archive scaffold** — every fork now also gets `<fork>/_archive/SKILL.original.md` (verbatim source) and `<fork>/_archive/dropped.json` (every section with its original content, the action taken at customize time, the stack/framework keywords it mentions, and a snapshot of the project signals in effect). Schema: `customize-archive/1.0`. Format is intentionally simple so power users and other tools can read it without the engine.
+- **`--restore FORK_ID`** — re-scans the project for current signals, re-scores every archived section against them, and lists patch candidates (sections whose relevance has grown, or whose original stack is now in the project). Preview-only by default.
+- **`--restore FORK_ID --apply`** — splices the patch candidates into the fork's SKILL.md under a dated `## Restored from archive` banner. Engine produces the patch; the agent then integrates it into the proper place and removes the banner (same split as `--customize`).
+- **`_extract_section_stack_signals` / `_STACK_KEYWORDS`** — internal helper + vocabulary that recognizes ~60 framework/language/infra keywords in section prose so the archive knows *what stack each section was for*. Aligned with the tag/language vocabulary `_scan_project` produces.
+
+### Changed
+
+- **Plugin version 4.5.0 → 4.6.0** in `plugin.json`, `registry.py VERSION` constant, and the Python tier's `SKILL.md` metadata. Lite tier and claude.ai edition are unchanged in this release.
+- **SKILL.md `--customize` section** now documents the `_archive/` scaffold and the `--restore` companion.
+- **`references/commands.md`** authoring table updated to list `--customize` and `--restore`.
+
+### Notes
+
+- Forks created before 4.6.0 have no `_archive/`; running `--restore` on them prints a friendly note suggesting a re-run of `--customize` to regenerate the archive. The behavior is non-destructive.
+- The archive deliberately preserves *all* sections (not just the dropped ones) so future re-analysis has the original full context, but only sections originally marked `drop-or-rewrite`, `rewrite-stack`, or `keep-trim` are flagged `restorable: true`.
+
 ## [4.5.0] — 2026-05-14
 
 Third edition. Skills Curator now ships for **claude.ai (web + desktop)** in addition to the two existing Claude Code editions (Lite and Python full). Same judgment model, same registry schema — re-architected for a runtime that has no persistent `~/.claude/` filesystem and no slash commands. The Claude Code editions are unchanged in behavior; this is purely additive.

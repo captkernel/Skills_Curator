@@ -1,6 +1,6 @@
 {
   "name": "skills-curator",
-  "version": "4.5.0",
+  "version": "4.6.0",
   "description": "Intelligence layer for Claude skills. Maintains a trust-rated catalog (curated + GitHub topic search), recommends what fits your project, returns ranked lists with pros, cons and customization advice, persists every decision, and migrates skills across 55 supported agent platforms. Ships in three editions: Lite (Python-free, Claude Code default), Python full (Claude Code performance tier), and claude.ai (web + desktop edition for the claude.ai Skills feature).",
   "author": {
     "name": "captkernel",
