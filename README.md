@@ -23,7 +23,7 @@ npx skills add captkernel/Skills_Curator
   <img src="docs/video/skills-curator-poster.jpg" alt="Skills Curator — 32 second launch reel" width="300" />
 </a>
 
-*32 seconds: what it does, and why. ([watch](https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel.mp4))*
+*32 seconds: what it does, and why. — [9:16 reels](https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel.mp4) · [4:5 feed](https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel-4x5.mp4)*
 
 **Status: Stable · v4.6.0 · 55 supported platforms · Three editions: Lite (default) · Python · claude.ai (web + desktop)**
 
