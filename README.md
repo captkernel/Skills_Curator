@@ -19,6 +19,12 @@ The intelligence layer for Claude skills — surfaces what fits your project, de
 npx skills add captkernel/Skills_Curator
 ```
 
+<a href="https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel.mp4">
+  <img src="docs/video/skills-curator-poster.jpg" alt="Skills Curator — 32 second launch reel" width="300" />
+</a>
+
+*32 seconds: what it does, and why. ([watch](https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel.mp4))*
+
 **Status: Stable · v4.6.0 · 55 supported platforms · Three editions: Lite (default) · Python · claude.ai (web + desktop)**
 
 </div>
