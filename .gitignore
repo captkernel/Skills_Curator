@@ -17,3 +17,18 @@ Thumbs.db
 
 # Deploy script credentials
 .token
+
+# Node / logs / session notes
+node_modules/
+*.log
+.remember/
+
+# Render / promo production output — lives in ../_media/
+*-output-*/
+ratio-*/
+.playwright-mcp/
+*-preview.html
+/*.png
+
+# Local dashboard status file
+.pcc.json
