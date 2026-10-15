@@ -175,8 +175,9 @@ Slash commands: `/skill-evaluate`, `/skill-recommend`, `/skill-audit`. Architect
 
 ## Roadmap
 
-- **v4.5** — Surface `--customize` hints directly in `--auto` and `--symptoms` output. Make the agent default to suggesting `--customize` over a raw install when the project's stack diverges from the source skill. Persist `_TRUSTED_AUTHORS` to a user config.
-- **v4.6** — Skill-author helpers: `--validate-skill <path>` to scan your own SKILL.md against best practices. Bidirectional `--customize` — track when a forked skill drifts from the upstream source so you can pull future improvements without losing your rewrites.
+- **v4.5 (shipped)**: the claude.ai edition (web + desktop), with its own catalog, signal tables, security patterns, persistence guide and a `SCAN` verb.
+- **v4.6 (shipped)**: `--customize` keeps an `_archive/` of every source section, and `--restore <fork-id>` patches back sections that fit the project again.
+- **Next**: `--validate-skill <path>` for skill authors, upstream drift tracking for forks, and a user config for `_TRUSTED_AUTHORS`.
 - **v5.0** — Schema v4: snapshot the catalog at evaluation time so verdicts remain auditable even as the catalog moves on.
 
 ---
@@ -191,8 +192,8 @@ Slash commands: `/skill-evaluate`, `/skill-recommend`, `/skill-audit`. Architect
 
 - **Runs.** Lite uses only the agent's Bash, Read, Glob, Grep and Write tools, plus `curl` to the GitHub search API (and to `raw.githubusercontent.com` when you customize a GitHub-hosted skill). The Python tier runs one stdlib-only script, `skills/skills-curator/scripts/registry.py`, as a subprocess.
 - **Reads.** Your project's files (stack, dependencies, CLAUDE.md) and the skills installed under `~/.claude/skills`.
-- **Writes.** Its own `registry.json` under `~/.claude/skills/` on your machine; a fork folder there when you run `--customize`; copies into other agents' skill folders when you run `--migrate`.
-- **Sends.** Without Gist sync, only GET requests to GitHub: topic search on `api.github.com`, SKILL.md fetches from `raw.githubusercontent.com` when you customize or check a remote skill, and release lookups when you run `--stale`. Your code, project content and registry stay on your machine.
+- **Writes.** Its own state files (registry.json plus caches such as catalog.json) under `~/.claude/skills/skills-curator*/` on your machine, and Lite briefly writes a temp file (`/tmp/source-skill.md`) while customizing; a fork folder there when you run `--customize`; copies into other agents' skill folders when you run `--migrate`.
+- **Sends.** Without Gist sync, only GET requests to GitHub: topic search on `api.github.com`, SKILL.md fetches from `raw.githubusercontent.com` when you customize a remote skill, and release lookups when you run `--stale`. Your code, project content and registry stay on your machine.
 - **Gist sync is opt-in.** The Python tier pushes the registry to a private GitHub Gist only after you set `SKILLS_CURATOR_GIST_ID` and `SKILLS_CURATOR_GITHUB_TOKEN` and run `--push` or `--sync`. Setup: [`docs/gist-sync.md`](docs/gist-sync.md).
 
 ---

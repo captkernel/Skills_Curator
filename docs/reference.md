@@ -8,7 +8,7 @@ Reference for Skills Curator. Start with the [README](../README.md).
 |---|---|---|---|
 | Runtime | Claude Code CLI | Claude Code CLI | claude.ai web + desktop |
 | Engine | None — agent runs the spec via Bash / Read / Glob / Grep | Python 3.10+ (stdlib only, ~2.3k LOC) | None — agent runs the spec via code-execution sandbox |
-| Install | `npx skills add captkernel/Skills_Curator` (default) | `... --with-python` (opt-in) | Upload zip via Settings → Capabilities → Skills |
+| Install | Plugin (default): `/plugin install skills-curator@captkernel` from the captkernel marketplace. Alternative: `npx skills add captkernel/Skills_Curator` | Same plugin install (ships both tiers). Alternative: `npx skills add ... --with-python` (opt-in) | Upload zip via Settings → Capabilities → Skills |
 | Install friction | Zero | Python 3.10+ check | Manual zip + upload |
 | Persistence | `~/.claude/skills/.../registry.json` | `~/.claude/skills/.../registry.json` | Project Knowledge / upload / Gist (see [persistence guide](../editions/skills-curator-claudeai/references/persistence.md)) |
 | Project signals | Files in cwd | Files in cwd | Attached files + Project Knowledge + pasted snippets |
@@ -198,14 +198,14 @@ Yes — `--platforms` lists 55 supported agents and `--migrate` copies skills to
 <details>
 <summary><b>Is my registry private?</b></summary>
 
-Yes. Stored at `~/.claude/skills/skills-curator/registry.json`, never sent anywhere unless you explicitly enable Gist sync (set `SKILLS_CURATOR_GIST_ID` + `SKILLS_CURATOR_GITHUB_TOKEN`). Disable all outbound calls with `SKILLS_NO_TELEMETRY=1`.
+Yes. Stored at `~/.claude/skills/skills-curator/registry.json`, never sent anywhere unless you explicitly enable Gist sync (set `SKILLS_CURATOR_GIST_ID` + `SKILLS_CURATOR_GITHUB_TOKEN`). `SKILLS_NO_TELEMETRY=1` turns off catalog search and SKILL.md fetches; `--stale` and Gist sync still connect when you run them.
 
 </details>
 
 <details>
 <summary><b>How does external skills research work?</b></summary>
 
-Three layers: (1) **19 curated entries** built into the script with hand-written pros/cons; (2) **GitHub topic search** (`topic:claude-skill`, `claude-code-skill`, `agent-skill`) — one call per topic, sorted by stars, cached 24h, metadata only (no SKILL.md fetched at this stage); (3) **on-demand SKILL.md fetch** when `--check` / `--customize` / `--evaluate` triggers it. Trust tier auto-classified by author membership in `_TRUSTED_AUTHORS`.
+Three layers: (1) **19 curated entries** built into the script with hand-written pros/cons; (2) **GitHub topic search** (`topic:claude-skill`, `claude-code-skill`, `agent-skill`) — one call per topic, sorted by stars, cached 24h, metadata only (no SKILL.md fetched at this stage); (3) **on-demand SKILL.md fetch** when you run `--customize` on a GitHub-hosted skill (the only step that downloads a remote SKILL.md). Trust tier auto-classified by author membership in `_TRUSTED_AUTHORS`.
 
 </details>
 
@@ -222,7 +222,7 @@ Just evaluate again — every record is an entry in `evaluation_history`. The la
 
 - **Python 3.10+** for the full tier (Lite has no Python requirement)
 - **Standard library only** — no `pip install` step
-- **Network** — optional. Set `SKILLS_NO_TELEMETRY=1` to disable all outbound calls.
+- **Network** — optional. `SKILLS_NO_TELEMETRY=1` turns off catalog search and SKILL.md fetches; `--stale` and Gist sync still connect when you run them.
 
 ---
 

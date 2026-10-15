@@ -41,7 +41,8 @@ Environment variables:
   SKILLS_CURATOR_GIST_ID        Private GitHub Gist ID (cross-device sync)
   SKILLS_CURATOR_GITHUB_TOKEN   GitHub PAT with gist + repo scope
   SKILLS_SH_API_KEY             skills.sh API key (sk_live_...) for accurate install counts
-  SKILLS_NO_TELEMETRY           Set to "1" to disable all outbound network calls
+  SKILLS_NO_TELEMETRY           Set to "1" to disable catalog search and SKILL.md
+                                fetches (--stale and Gist sync still connect)
 
 Requires Python 3.10+.
 """
