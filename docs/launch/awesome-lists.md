@@ -38,12 +38,13 @@ Add this badge to the README:
 README line (add at the end of the subcategory):
 
 ```
-- **[captkernel/skills-curator](https://github.com/captkernel/Skills_Curator)** - Recommend, vet, and customize Claude skills for your project
+- **[captkernel/skills-curator](https://github.com/captkernel/Skills_Curator)** - Recommend, vet, and customize Claude skills for a project
 ```
 
 (9 words in the description.)
 
 - Subcategory: Community Skills > Productivity and Collaboration (README checked 2026-10-15; the subcategories are now Vector Databases, Marketing, Productivity and Collaboration, Development and Testing, Context Engineering, Specialized Domains, n8n Automation). Alternative: Development and Testing.
+- Order: the Skills Curator PR goes first. Submit the Claunchpad PR only after the Skills Curator PR is merged, or after a gap of at least two weeks.
 - PR title: `Add skill: captkernel/skills-curator`
 - Hold condition: about 25 stars or visible installs. The maintainers decline brand-new skills and say they focus on community-adopted ones. The decision to submit is the owner's.
-- History: PR #548 (Skills Curator) was closed on 2026-05-08 for lack of usage. Do not resubmit before there is visible usage.
+- History: PR #548 (Skills Curator) was closed on 2026-05-08 for lack of usage. Do not resubmit before there is visible usage (see hold condition).
