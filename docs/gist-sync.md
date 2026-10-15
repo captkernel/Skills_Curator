@@ -106,7 +106,7 @@ This isn't built in — open an issue if you'd like an `--encrypt` flag.
 
 ## Disabling sync
 
-Just don't set the env vars. The tool works completely offline; sync is opt-in.
+Just don't set the env vars; sync is opt-in. Without these env vars nothing is uploaded; catalog search and SKILL.md fetches still make GET requests to GitHub unless `SKILLS_NO_TELEMETRY=1`.
 
 To temporarily disable, unset the env vars in the current shell:
 
@@ -114,7 +114,7 @@ To temporarily disable, unset the env vars in the current shell:
 unset SKILLS_CURATOR_GIST_ID SKILLS_CURATOR_GITHUB_TOKEN
 ```
 
-To also turn off catalog search and SKILL.md fetches (no skills.sh fetch either), set:
+To also turn off catalog search and SKILL.md fetches, set:
 
 ```bash
 export SKILLS_NO_TELEMETRY=1

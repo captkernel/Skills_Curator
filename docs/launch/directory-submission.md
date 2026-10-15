@@ -32,19 +32,21 @@ One listing reaches claude.ai, Cowork and Claude Code.
 |---|---|
 | Name | `skills-curator` |
 | Version | 4.6.2 |
-| Author | captkernel (https://github.com/captkernel) |
+| Author | captKernel (https://github.com/captkernel) |
 | License | MIT |
 | Keywords | skills-curator, skill-evaluator, skill-registry, claude-code, claude-ai, claude-skills, skill-security, agent-skills, skill-judgment |
 
 **Short description** (plugin.json `description`, verbatim):
 
-> Intelligence layer for Claude skills. Maintains a trust-rated catalog (curated + GitHub topic search), recommends what fits your project, returns ranked lists with pros, cons and customization advice, persists every decision, and migrates skills across 55 supported agent platforms. Ships in three editions: Lite (Python-free, Claude Code default), Python full (Claude Code performance tier), and claude.ai (web + desktop edition for the claude.ai Skills feature).
+> Intelligence layer for Claude skills. Maintains a trust-rated catalog (curated + GitHub topic search), recommends what fits your project, returns ranked lists with pros, cons and customization advice, persists every decision, and migrates skills across 55 supported agent platforms. The plugin ships two tiers: Lite (Python-free, the default) and Python full (performance tier). A claude.ai edition for the claude.ai Skills feature is a separate download.
 
 If the portal limits the description length, use this shorter form:
 
 > Recommends the skills that fit your project, security-scans them, customizes them to your stack, remembers every decision, and migrates skills across 55 agent platforms.
 
-**Long description:** use the README intro ("The intelligence layer for Claude skills: surfaces what fits your project, decomposes external skills into project-tailored forks, and persists every judgment") plus the plugin.json description above.
+**Long description** (ready to paste, from README facts):
+
+> Skills Curator is the intelligence layer for Claude skills. It reads your project (stack, dependencies, CLAUDE.md) and recommends the skills that fit, with pros, cons and install commands. Before you install a skill it evaluates it (pros, cons, conflicts, verdict) and runs a pre-install security scan for 15 risk patterns, then saves the decision to a local registry, so asking again costs about 13 tokens instead of about 4,060. `--customize` splits an external SKILL.md into sections, scores each against your project and rewrites mismatched examples in your stack. Token cost is measured: 249 tokens always-on per session and at most 1,140 per command. It also audits installed skills and migrates them across 55 agent platforms.
 
 **Category:** the portal's category list was not available when this sheet was written. Pick the closest of: Developer tools / Productivity / Skills management.
 
@@ -77,7 +79,7 @@ The exact questions were not known when this sheet was written. These are best p
 - **What does it read?** The user's project files (stack, dependencies, CLAUDE.md) and the skills installed under `~/.claude/skills`.
 - **What does it write?** Its own state files (`registry.json` plus caches such as `catalog.json`) under `~/.claude/skills/skills-curator*/`; a temp file (`/tmp/source-skill.md`) briefly during Lite customization; a fork folder there when the user runs `--customize`; copies into other agents' skill folders when the user runs `--migrate`.
 - **What code does it run?** Lite uses only the agent's Bash, Read, Glob, Grep and Write tools, plus `curl` to the GitHub search API and `raw.githubusercontent.com`. The Python tier runs one stdlib-only script, `skills/skills-curator/scripts/registry.py`, as a subprocess. No hooks, no MCP servers, no settings or permission changes.
-- **Credentials or secrets?** Only the optional `SKILLS_CURATOR_GITHUB_TOKEN`, read from the environment for opt-in Gist sync. It is never stored by the plugin.
+- **Credentials or secrets?** Only the optional `SKILLS_CURATOR_GITHUB_TOKEN`, read from the environment (`registry.py` line 92) for opt-in Gist sync. When it is set, the Python tier also sends it as an `Authorization` header on GitHub topic search (`registry.py` line 956) and on `--stale` release lookups (`registry.py` line 2147), to `api.github.com` only. It is never stored by the plugin.
 - **Does it install other software?** Not on its own. The catalog lists `npx skills add ...` install commands for third-party skills; these are shown to the user as recommendations. See the npx note below.
 
 ## Compliance acknowledgements

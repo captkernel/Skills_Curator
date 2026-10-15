@@ -54,10 +54,11 @@ REFS_DIR   = REPO / "skills" / "skills-curator" / "references"
 # ----------------------------------------------------------------------
 DEFAULT_PROJECTS_SPEC = [
     # label, path-relative-or-absolute, category, description
-    ("Empty",  r"D:\Karan\AFP",              "empty",  "Bare directory, 1 file, no signals"),
-    ("Small",  r"D:\Karan\Business",         "small",  "Notes folder with CLAUDE.md, ~34 root files"),
-    ("Medium", r"D:\VoiceTaskAI",            "medium", "React Native app, no CLAUDE.md, ~30 files"),
-    ("Large",  r"D:\Karan\Ancyr",            "large",  "Next.js project, 20 KB CLAUDE.md, ~50 files"),
+    # Paths are anonymized placeholders; set them to real local folders (or pass --projects) to re-run.
+    ("Empty",  r"<empty-project>",           "empty",  "Bare directory, 1 file, no signals"),
+    ("Small",  r"<business-docs-project>",   "small",  "Notes folder with CLAUDE.md, ~34 root files"),
+    ("Medium", r"<react-native-project>",    "medium", "React Native app, no CLAUDE.md, ~30 files"),
+    ("Large",  r"<nextjs-project>",          "large",  "Next.js project, 20 KB CLAUDE.md, 17,680 files"),
     ("XL",     str(REPO),                    "xl",     "Skills Curator's own repo: Python + skill files + tests + docs"),
 ]
 

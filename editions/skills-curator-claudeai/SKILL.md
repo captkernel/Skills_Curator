@@ -311,8 +311,11 @@ A few capabilities only exist in the Claude Code editions and can't be replicate
 
 If the user has Claude Code installed and any of those matter, point them at:
 
-```bash
-npx skills add captkernel/Skills_Curator
 ```
+/plugin marketplace add captkernel/plugins
+/plugin install skills-curator@captkernel
+```
+
+(Alternative: `npx skills add captkernel/Skills_Curator`.)
 
 The editions don't conflict — they target different runtimes, and the registry JSON schema is shared so a user can sync between them via a Gist.

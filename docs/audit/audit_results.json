@@ -19,7 +19,7 @@
   },
   "projects": {
     "Empty": {
-      "path": "D:\\Karan\\AFP",
+      "path": "<empty-project>",
       "category": "empty",
       "description": "Bare directory, 1 file, no signals",
       "fingerprint": {
@@ -38,7 +38,7 @@
       }
     },
     "Small": {
-      "path": "D:\\Karan\\Business",
+      "path": "<business-docs-project>",
       "category": "small",
       "description": "Notes folder with CLAUDE.md, ~34 root files",
       "fingerprint": {
@@ -57,7 +57,7 @@
       }
     },
     "Medium": {
-      "path": "D:\\VoiceTaskAI",
+      "path": "<react-native-project>",
       "category": "medium",
       "description": "React Native app, no CLAUDE.md, ~30 files",
       "fingerprint": {
@@ -76,9 +76,9 @@
       }
     },
     "Large": {
-      "path": "D:\\Karan\\Ancyr",
+      "path": "<nextjs-project>",
       "category": "large",
-      "description": "Next.js project, 20 KB CLAUDE.md, ~50 files",
+      "description": "Next.js project, 20 KB CLAUDE.md, 17,680 files",
       "fingerprint": {
         "file_count": 17680,
         "py_count": 1,
@@ -95,7 +95,7 @@
       }
     },
     "XL": {
-      "path": "D:\\Karan\\Skills\\csm-final",
+      "path": "<skills-repo>",
       "category": "xl",
       "description": "Skills Curator's own repo: Python + skill files + tests + docs",
       "fingerprint": {

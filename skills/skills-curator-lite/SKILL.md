@@ -906,7 +906,10 @@ Lite is feature-parity with v4.3 of the Python version for everything in this fi
 
 If the user has Python 3.10+ available and one of those matters, point them at:
 ```bash
-npx skills add captkernel/Skills_Curator    # full Python version, both ship in same plugin
+/plugin marketplace add captkernel/plugins
+/plugin install skills-curator@captkernel   # the plugin ships Lite and the Python tier together
+npx skills add captkernel/Skills_Curator    # alternative: adds the Python tier if Python 3.10+ is found
+# (the claude.ai edition is a separate download, not part of the plugin)
 ```
 
 The two skills don't conflict — install both if you like. Different registry paths.

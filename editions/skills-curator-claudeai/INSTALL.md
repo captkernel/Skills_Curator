@@ -2,7 +2,7 @@
 
 This is the **claude.ai edition** of Skills Curator (`web + desktop`). It runs inside a claude.ai conversation via the Skills (Capabilities) feature — it is *not* a Claude Code CLI skill.
 
-If you have Claude Code, install the CLI editions instead (`npx skills add captkernel/Skills_Curator`) for `--auto`, cross-agent migration, and Gist sync.
+If you have Claude Code, install the Claude Code plugin instead (`/plugin marketplace add captkernel/plugins`, then `/plugin install skills-curator@captkernel`; or `npx skills add captkernel/Skills_Curator`) for `--auto`, cross-agent migration, and Gist sync.
 
 ---
 
