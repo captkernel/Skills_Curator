@@ -129,3 +129,12 @@ Run on 2026-10-15 at HEAD of `main` before adding this file.
 | Secrets in tracked files | None found (filename scan; token appears only as an env var name in docs) |
 | Pinned npx/uvx executed by the plugin | The plugin executes none; see the npx usage note |
 | Security scan disclosure | README section "What it runs, reads and sends" covers runs, reads, writes, sends and the opt-in Gist sync |
+
+## Registries
+
+Checked 2026-10-15. Topics `agent-skills`, `claude-code-plugin`, `claude-skills`, `claude-code` are set on this repo.
+
+- skills.sh publisher page `https://skills.sh/captkernel`: loads; lists `skills_curator` (2 skills, 20 installs).
+- `https://skills.sh/captkernel/Skills_Curator`: loads. Status: listed, with `skills-curator` (13 installs) and `skills-curator-lite` (7 installs).
+- skills.sh shows the command as `npx skills add captkernel/skills_curator`. Not run here, to avoid installing into real agent directories.
+- `https://skills.sh/?q=skills-curator`: client-rendered shell, no results visible to a fetch, so inconclusive; the repo page above is the evidence.
