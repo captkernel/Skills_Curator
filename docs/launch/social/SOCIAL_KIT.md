@@ -1,6 +1,6 @@
 # Skills Curator, distribution kit
 
-Copy-paste ready, posted from the captKernel accounts (handle `@captkernel`). Repo is public (MIT). Voice is founder-to-builders: direct, lowercase-leaning, honest about the rough edges, and it ends on a real question. No em dashes. When and where to post: the launch checklist in the Claunchpad repo, `docs/launch/CHECKLIST.md` (Launch 1): https://github.com/captkernel/Claunchpad/blob/master/docs/launch/CHECKLIST.md
+Copy-paste ready, posted from the captKernel accounts (handle `@captkernel`). Repo is public (MIT). Voice is founder-to-builders: direct, lowercase-leaning, honest about the rough edges, and it ends on a real question. No em dashes. The install line goes first everywhere except Reddit: Reddit posts open with the problem and put the Install and Repo lines at the end of the body, because self-promotion filters on newer accounts tend to remove posts that lead with an install command. When and where to post: the launch checklist in the Claunchpad repo, `docs/launch/CHECKLIST.md` (Launch 1): https://github.com/captkernel/Claunchpad/blob/master/docs/launch/CHECKLIST.md
 
 **The links**
 ```
@@ -14,7 +14,7 @@ Token report: https://htmlpreview.github.io/?https://github.com/captkernel/Skill
 Other:        npx skills add captkernel/Skills_Curator, or the claude.ai zip (dist/skills-curator-claudeai.zip)
 ```
 
-**Headline facts** (every figure here is from `README.md` or `docs/token-cost-analysis.md`; don't add numbers from anywhere else): a skill that handles judgment about other skills. It reads your project (stack, dependencies, CLAUDE.md) and recommends what fits, evaluates a skill before you install it (pros, cons, conflicts, verdict), runs a pre-install security scan (15 risk patterns), and saves every decision to a local registry, so re-asking about a skill costs about 13 tokens instead of about 4,060. `--customize` splits an external SKILL.md into sections, scores each against your project, and writes a fork that keeps what fits and rewrites mismatched examples in your stack. Token cost is measured, not estimated: 249 tokens always-on per session, at most 1,140 tokens per command, flat from an empty folder to a 17,680-file project. Catalog of 19 curated entries plus live GitHub topic search. Migrates skills across 55 agent platforms. Three editions (Lite with no Python, Python, claude.ai). v4.6.2, 37 tests, MIT.
+**Headline facts** (every figure here is from `README.md` or `docs/token-cost-analysis.md`; don't add numbers from anywhere else; the install-count scraping removal is from `CHANGELOG.md` (v4.0 "Removed") and `docs/reference.md` ("Why no install counts?")): a skill that handles judgment about other skills. It reads your project (stack, dependencies, CLAUDE.md) and recommends what fits, evaluates a skill before you install it (pros, cons, conflicts, verdict), runs a pre-install security scan (15 risk patterns), and saves every decision to a local registry, so re-asking about a skill costs about 13 tokens instead of about 4,060. `--customize` splits an external SKILL.md into sections, scores each against your project, and writes a fork that keeps what fits and rewrites mismatched examples in your stack. Token cost is measured, not estimated: 249 tokens always-on per session, at most 1,140 tokens per command, flat from an empty folder to a 17,680-file project. Catalog of 19 curated entries plus live GitHub topic search. Migrates skills across 55 agent platforms. Three editions (Lite with no Python, Python, claude.ai). v4.6.2, 37 tests, MIT.
 
 **Narrative beats to lean on:**
 1. Skill tools wait for you to ask. You don't know what exists until you go searching, and six months later you're re-evaluating a skill you already decided about.
@@ -42,23 +42,20 @@ Angle: the problem with how skills get adopted (author's voice, re-deciding, not
 
 **Title:**
 ```
-I built a skill that decides which Claude skills fit your project, then rewrites them in your stack instead of installing them as-is (Skills Curator, MIT)
+Every skill you install brings its author's stack with it, so I built something that rewrites skills for yours
 ```
 
 **Body:**
 ```markdown
-**Install (Claude Code):** `/plugin marketplace add captkernel/plugins` then `/plugin install skills-curator@captkernel`
-**Repo:** https://github.com/captkernel/Skills_Curator (disclosure: I built it)
+The problem with skills: the tools for them (`npx skills`, `asm`, find-skills) are plumbing. Install, list, sync. They wait for you to ask, and they assume you already know what to look for. Three problems follow:
 
-The thing that bugged me about skills: the tools for them (`npx skills`, `asm`, find-skills) are plumbing. Install, list, sync. They wait for you to ask, and they assume you already know what to look for. Three problems kept showing up:
+- You don't know what skills exist until you go searching.
+- Six months later you're re-evaluating a skill you already decided about.
+- Every skill you add brings its author's voice with it: their examples, their stack, their assumptions. Five external skills and a project speaks in five accents.
 
-- I didn't know what skills existed until I went searching.
-- Six months later I'd be re-evaluating a skill I had already decided about.
-- Every skill I added brought its author's voice with it: their examples, their stack, their assumptions. Five external skills and my project spoke in five accents.
+(I built this, MIT; links at the bottom.) Skills Curator is my attempt at the judgment layer on top of that plumbing:
 
-Skills Curator is my attempt at the judgment layer on top of that plumbing:
-
-**It reads what you're building and recommends.** Stack, dependencies, CLAUDE.md. Ask "what skills fit this project?" and you get a ranked list with pros, cons and install commands. Recommendations refresh only when your project's key files change.
+**It reads what you're building and recommends.** Stack, dependencies, CLAUDE.md. Ask "what skills fit this project?" and you get a ranked list with pros, cons and install commands. In `--auto` mode it re-runs recommendations only when your project's key files change.
 
 **It evaluates before you install, and remembers.** "Should I install X?" gets a verdict (ADOPT / PARTIAL / SKIP) with evidence and a pre-install security scan (15 risk patterns). The verdict is saved to a local registry, so asking again later costs about 13 tokens instead of about 4,060.
 
@@ -69,6 +66,9 @@ What I learned building it: the hard part isn't recommending, it's being honest.
 It's MIT, runs on Claude Code (a Lite edition with no Python, plus an optional Python tier) and has a separate claude.ai edition. The 32s reel is linked in the README.
 
 How do you decide whether to add a skill today, and have you ever kept one you'd rather have half of?
+
+**Install (Claude Code):** `/plugin marketplace add captkernel/plugins` then `/plugin install skills-curator@captkernel`
+**Repo:** https://github.com/captkernel/Skills_Curator
 ```
 
 **Time to post:** the day after r/ClaudeCode (see the checklist). Reply to every comment.
@@ -81,15 +81,12 @@ Angle: the engineering, specifically how it keeps token cost flat regardless of 
 
 **Title:**
 ```
-Measured the token cost of a skill-management skill across projects from 1 to 17,680 files: 249 tokens always-on, flat. Here's how.
+An always-on skill's context cost doesn't have to grow with project size: measured 249 tokens from 1 to 17,680 files, and here's why it stays flat
 ```
 
 **Body:**
 ```markdown
-**Install:** `/plugin marketplace add captkernel/plugins` then `/plugin install skills-curator@captkernel`
-**Repo:** https://github.com/captkernel/Skills_Curator (disclosure: I built it, MIT)
-
-I maintain Skills Curator, a skill that evaluates, recommends and customizes other skills. The question I kept getting was "what does it cost me in context?", and I didn't want to answer with a guess. So I measured it with `tiktoken` against 5 real projects, from 1 file to 17,680 files, plus every CLI verb in both tiers.
+The obvious question for any always-on skill is what it costs in context, and the honest answer shouldn't be a guess. (I built this one, Skills Curator, MIT; links at the bottom.) It evaluates, recommends and customizes other skills, and I measured it with `tiktoken` against 5 real projects, from 1 file to 17,680 files, plus every CLI verb in both tiers.
 
 What came out:
 
@@ -108,6 +105,9 @@ How it stays flat:
 Rough edges, honestly: `tiktoken` `cl100k_base` is an approximation of Anthropic's tokenizer (the analysis puts it within ~5 to 10%). And the Lite edition, the no-Python default, has a 10,988-token SKILL.md body when it activates, against 3,359 for the Python tier. Lite trades context for zero dependencies. The audit scripts are in the repo (`docs/audit/`) if you want to rerun it on your own codebases.
 
 What do you budget for always-on skill cost, and does anyone else measure it, or is it vibes?
+
+**Install:** `/plugin marketplace add captkernel/plugins` then `/plugin install skills-curator@captkernel`
+**Repo:** https://github.com/captkernel/Skills_Curator
 ```
 
 **Time to post:** Launch 1 day, after X and LinkedIn (see the checklist). Reply to every comment.
@@ -209,7 +209,7 @@ Every Claude skill you install comes with its author's voice.
 
 Their examples. Their stack. Their assumptions. Add five external skills and your project ends up speaking in five accents. And the tools for managing skills mostly handle the plumbing: install, list, sync. They wait for you to know what to ask for.
 
-The gap I kept hitting wasn't installing skills. It was judgment. Does this one fit my project? Is it safe? Didn't I already decide about it six months ago?
+The gap isn't installing skills. It's judgment. Does this one fit my project? Is it safe? Didn't I already decide about it six months ago?
 
 So I built Skills Curator, an open-source skill for Claude Code that handles that judgment:
 

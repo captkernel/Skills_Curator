@@ -27,7 +27,7 @@ The engine deliberately caps inputs:
 - `rglob` is used only to count file extensions for language detection; file contents are not emitted.
 - Catalog matches are deduplicated and capped at `--max 8` by default.
 
-Result: a 17,680-file React Native codebase with a 20 KB CLAUDE.md generates the same-size stdout as a 30-file folder. The HTML report includes a grouped bar chart that makes this visually obvious — bars are flat across project sizes.
+Result: a 17,680-file Next.js codebase with a 20 KB CLAUDE.md generates the same-size stdout as a 30-file folder. The HTML report includes a grouped bar chart that makes this visually obvious — bars are flat across project sizes.
 
 ---
 
