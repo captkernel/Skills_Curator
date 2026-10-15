@@ -499,7 +499,7 @@ obra                                              → 🟡 medium
 others                                            → ⬜ community / ❓ unknown</code></pre>
 <p>
   Cached at <code>~/.claude/skills/skills-curator/catalog.json</code> with a 24-hour TTL. Set
-  <code>SKILLS_NO_TELEMETRY=1</code> to disable all outbound calls.
+  <code>SKILLS_NO_TELEMETRY=1</code> to turn off catalog search and SKILL.md fetches (<code>--stale</code> and Gist sync still connect when run).
 </p>
 
 <h3>Layer 3: On-demand SKILL.md fetch</h3>

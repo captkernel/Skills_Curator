@@ -55,7 +55,7 @@ python "$R" --scan
 
 Windows PowerShell:
 ```powershell
-$R = "$env:USERPROFILE\.claude\skills\skills-curator\scripts\registry.py"
+$R = "<this skill folder>\scripts\registry.py"   # the path SKILL.md Setup shows; plugin installs are not under ~/.claude/skills
 python $R --recommend
 ```
 
@@ -177,7 +177,7 @@ To get proactive skill suggestions on a schedule:
 
 ```powershell
 # Windows: Task Scheduler weekly trigger
-python "$env:USERPROFILE\.claude\skills\skills-curator\scripts\registry.py" --recommend --refresh
+python "<this skill folder>\scripts\registry.py" --recommend --refresh
 ```
 
 Recommendation history is always saved to `recommendations.json` so you can review it later.

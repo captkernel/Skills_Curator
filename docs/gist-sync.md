@@ -114,7 +114,7 @@ To temporarily disable, unset the env vars in the current shell:
 unset SKILLS_CURATOR_GIST_ID SKILLS_CURATOR_GITHUB_TOKEN
 ```
 
-To go fully offline (no skills.sh fetch either), also set:
+To also turn off catalog search and SKILL.md fetches (no skills.sh fetch either), set:
 
 ```bash
 export SKILLS_NO_TELEMETRY=1

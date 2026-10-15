@@ -105,7 +105,7 @@ python "$R" --push
 
 Windows PowerShell:
 ```powershell
-$R = "$env:USERPROFILE\.claude\skills\skills-curator\scripts\registry.py"
+$R = "<this skill folder>\scripts\registry.py"   # the path SKILL.md Setup shows; plugin installs are not under ~/.claude/skills
 python $R --list
 ```
 

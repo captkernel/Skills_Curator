@@ -34,7 +34,7 @@ We do not maintain a blocklist in this tool, but high-severity findings drive ne
   - `api.github.com` (Gist sync, release-version checks)
   - `skills.sh` (catalog enrichment, install-count fetch)
 - It never sends your code, project content, or registry contents to any external service.
-- All outbound calls are gated on `SKILLS_NO_TELEMETRY=1`. Set that env var to make the tool fully offline.
+- Catalog search and SKILL.md fetches are gated on `SKILLS_NO_TELEMETRY=1`. Set that env var to turn them off (`--stale` and Gist sync still connect when you run them).
 
 ---
 

@@ -118,7 +118,7 @@ These are the three slash commands surfaced in Claude Code. Everything else is i
 ~/.claude/skills/skills-curator/registry.json
 
 # CLI (the script ships in this skill's own scripts/ folder; Claude Code
-# fills in ${CLAUDE_SKILL_DIR} for manual and plugin installs alike):
+# fills in this skill's folder for manual and plugin installs alike):
 python "${CLAUDE_SKILL_DIR}/scripts/registry.py"
 ```
 
