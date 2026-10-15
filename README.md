@@ -15,10 +15,6 @@ The intelligence layer for Claude skills — surfaces what fits your project, de
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/captkernel/Skills_Curator?style=flat-square)](https://github.com/captkernel/Skills_Curator/commits)
 
-```bash
-npx skills add captkernel/Skills_Curator
-```
-
 <a href="https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel.mp4">
   <img src="docs/video/skills-curator-poster.jpg" alt="Skills Curator — 32 second launch reel" width="300" />
 </a>
@@ -31,83 +27,37 @@ npx skills add captkernel/Skills_Curator
 
 ---
 
-> **TL;DR.** Other skill managers stop at install. Skills Curator is the intelligence layer above them: it watches what you're building, surfaces skills that fit, **decomposes external skills into project-tailored forks** (so you adopt the capability without inheriting the author's voice), and persists every judgment so you never re-evaluate. Ships in three editions — **Lite** (no Python, Claude Code default), **Python full** (Claude Code performance tier with tested engine + Gist sync), and **claude.ai** (web + desktop edition for Anthropic's Skills feature).
+## Install
 
-<table>
-<tr>
-<td width="50%" valign="top">
+**Claude Code (plugin, recommended):**
+```
+/plugin marketplace add captkernel/plugins
+/plugin install skills-curator@captkernel
+```
+Other ways: the one-line installer below, a manual copy into `~/.claude/skills/`, or the claude.ai zip.
 
-### ✨ `--customize` — infuse, don't invoke
+- **`--customize` forks a skill into your stack.** It splits an external SKILL.md into sections, scores each one against your project, and rewrites mismatched examples in your stack. The capability transfers; the author's accent doesn't.
+- **Token cost is measured, not estimated.** 249 tokens always-on per session and at most 1,140 tokens per command, flat from an empty folder to a 17,680-file project ([report](docs/token-cost-report.html)).
+- **Every decision persists.** Each evaluation (pros, cons, conflicts, verdict) is saved to a local registry, so re-asking about a skill costs about 13 tokens instead of about 4,060.
 
-Most skills ship with examples from someone else's stack. `--customize` is the one feature that solves this end-to-end: it **decomposes the source SKILL.md into sections**, scores each one against your project's signals, and emits a per-section action plan (`keep` / `keep-trim` / `rewrite-stack` / `drop-or-rewrite`). The engine produces the plan; the agent rewrites the prose in your project's voice.
-
-**Result:** Vue snippets become React snippets. Django routes become FastAPI routes. The capability transfers. The author's accent doesn't.
-
-Nothing else in the ecosystem does this.
-
-</td>
-<td width="50%" valign="top">
-
-### 📊 Empirical token cost — measured, not estimated
-
-[Reproducible measurements](docs/token-cost-report.html) across 5 real projects from empty to **17,680 files**:
-
-- **249 tokens** always-on per session (0.025% of a 1M context window)
-- **1,140 tokens** max single-command stdout
-- **Project size doesn't scale token cost** — the engine reads project files in a Python subprocess; only stdout enters Claude's context
-- **71% savings** vs ad-hoc skill evaluation across 7 interactions
-
-The Python engine is 27,900 tokens of code but **never enters context** — it runs as a subprocess.
-
-</td>
-</tr>
-</table>
-
----
-
-<details>
-<summary><b>Table of contents</b></summary>
-
-- [Quick install](#quick-install) · [Editions](#editions) · [Demo](#demo)
-- [Why this exists](#why-this-exists) · [Features at a glance](#features-at-a-glance)
-- [The intelligence layer](#the-intelligence-layer) · [`--customize`](#--customize--infuse-dont-invoke)
-- [Token cost](#token-cost) · [Quickstart](#quickstart) · [Platforms](#platforms)
-- [Architecture](#architecture) · [Command reference](#command-reference)
-- [FAQ](#faq) · [Roadmap](#roadmap) · [Project status](#project-status)
-- [Security](#security) · [Contributing](#contributing) · [License](#license)
-
-</details>
-
----
-
-## Quick install
+### Other ways to install
 
 ```bash
-# Recommended one-liner (installs Lite by default, adds Python tier if Python 3.10+ is found):
+# One-liner (installs Lite by default, adds Python tier if Python 3.10+ is found):
 npx skills add captkernel/Skills_Curator
 
-# Or clone + run an installer:
+# Or clone + run an installer (copies into ~/.claude/skills/ and ~/.claude/commands/):
 git clone https://github.com/captkernel/Skills_Curator
 cd Skills_Curator
-bash install.sh                                      # auto: Lite + Python if 3.10+ found
-bash install.sh --lite-only                          # Lite only (no Python check)
-bash install.sh --with-python                        # require Python 3.10+ + install both
+bash install.sh                                      # auto; or --lite-only / --with-python
 powershell -ExecutionPolicy Bypass -File install.ps1 # Windows (same modes via -Tier)
 ```
 
+**Manual copy:** put `skills/skills-curator-lite/` (and, for the Python tier, `skills/skills-curator/`) in `~/.claude/skills/`, and `.claude/commands/*.md` in `~/.claude/commands/`.
+
+**claude.ai (web + desktop):** download [`skills-curator-claudeai.zip`](https://github.com/captkernel/Skills_Curator/raw/main/dist/skills-curator-claudeai.zip) (19 KB), then upload it at claude.ai → **Settings → Capabilities → Skills → Upload skill**. To persist your registry, add an empty `skills_registry.json` to a Project's Knowledge. Full setup in [`INSTALL.md`](editions/skills-curator-claudeai/INSTALL.md).
+
 After install, the skill auto-loads in any new Claude Code session and announces itself once on first activation.
-
-### claude.ai (web + desktop)
-
-claude.ai uses its own Skills feature instead of `npx skills`, so the install is a one-file download + upload:
-
-1. **Download:** [`skills-curator-claudeai.zip`](https://github.com/captkernel/Skills_Curator/raw/main/dist/skills-curator-claudeai.zip) (19 KB)
-2. **Upload:** claude.ai → **Settings → Capabilities → Skills → Upload skill** → pick the zip
-3. **(Recommended) Persist your registry:** add an empty `skills_registry.json` to a Project's Knowledge — Skills Curator auto-reads it and emits updates as downloadable files. Full setup in [`INSTALL.md`](editions/skills-curator-claudeai/INSTALL.md).
-
-Same intelligence layer as the Claude Code editions: same `--customize` decomposition, same trust-rated catalog, same security scan, same shared registry schema. **It just runs in claude.ai instead of in your CLI.**
-
-This edition lives in `editions/`, outside the `skills/` folder the plugin scans, so Claude Code users only get Lite + Python from `npx skills add`. The claude.ai bundle is distributed via the direct zip download above. One repo, two channels.
 
 ---
 
@@ -115,31 +65,10 @@ This edition lives in `editions/`, outside the `skills/` folder the plugin scans
 
 Three editions ship in one repo, targeting two different runtimes. Pick by **where you run Claude**, not by feature wish-list:
 
-- **Claude Code (CLI)** → Lite (default) or Python (opt-in performance tier). Both auto-install via `npx skills add`.
+- **Claude Code (CLI)** → Lite (default) or Python (opt-in performance tier). The plugin installs both; `npx skills add` installs Lite and adds Python if 3.10+ is found.
 - **claude.ai (web + desktop)** → claude.ai edition. Uploaded as a zip via Settings → Capabilities → Skills.
 
-The three editions share the same judgment model and the same registry JSON schema (v3.0) — a registry written by one edition can be read by another. They differ in runtime, persistence, and which verbs make sense for the target.
-
-| | `skills-curator-lite` (Claude Code default) | `skills-curator` (Claude Code Python tier) | `skills-curator-claudeai` (claude.ai edition) |
-|---|---|---|---|
-| Runtime | Claude Code CLI | Claude Code CLI | claude.ai web + desktop |
-| Engine | None — agent runs the spec via Bash / Read / Glob / Grep | Python 3.10+ (stdlib only, ~2.3k LOC) | None — agent runs the spec via code-execution sandbox |
-| Install | `npx skills add captkernel/Skills_Curator` (default) | `... --with-python` (opt-in) | Upload zip via Settings → Capabilities → Skills |
-| Install friction | Zero | Python 3.10+ check | Manual zip + upload |
-| Persistence | `~/.claude/skills/.../registry.json` | `~/.claude/skills/.../registry.json` | Project Knowledge / upload / Gist (see [persistence guide](editions/skills-curator-claudeai/references/persistence.md)) |
-| Project signals | Files in cwd | Files in cwd | Attached files + Project Knowledge + pasted snippets |
-| Proactive `--auto` activation | ✅ byte-count fingerprint | ✅ MD5 fingerprint | ❌ (no cwd, no session boundary the skill controls) |
-| Symptom mapping (17 patterns) | ✅ | ✅ | ✅ |
-| Security scan (15 patterns) | ✅ | ✅ | ✅ |
-| `CUSTOMIZE` headline verb | ✅ writes to `~/.claude/skills/<fork>/` | ✅ writes to `~/.claude/skills/<fork>/` | ✅ outputs `<fork>.zip` to `/mnt/user-data/outputs/` (ready to upload back to claude.ai) |
-| `RECOMMEND` / `EVALUATE` / `AUDIT` | ✅ | ✅ | ✅ |
-| `PLATFORMS` / `MIGRATE` (55 platforms) | ✅ | ✅ | ❌ removed — claude.ai isn't installing to CLI agents |
-| Cross-device Gist sync | ❌ | ✅ | ✅ (Mode C — power users) |
-| Speed on 100+ skills | Slower (N agent steps) | Single-pass (~1s) | Slower (N agent steps) |
-| Regression tests | None | 37 pytest cases | None (no engine to test) |
-| Slash commands | `/skill-evaluate` etc. | `/skill-evaluate` etc. | Natural language only |
-
-The Claude Code editions don't conflict — different registry paths. Install both if you want. The claude.ai edition runs in a different product entirely, but shares the registry schema, so a Gist-synced registry roams across all three.
+The three editions share the same judgment model and the same registry JSON schema (v3.0) — a registry written by one edition can be read by another. Lite needs no engine; the Python tier adds single-pass speed on 100+ skills, 37 regression tests and Gist sync; the claude.ai edition drops `PLATFORMS` / `MIGRATE` and saves forks as uploadable zips. Full side-by-side table: [`docs/reference.md`](docs/reference.md#editions-full-comparison).
 
 ---
 
@@ -149,36 +78,7 @@ The Claude Code editions don't conflict — different registry paths. Install bo
 
 <img src="docs/images/screenshot-claude-session.png" alt="Claude Code session — Skills Curator activates, scans the project, and surfaces ranked recommendations with pros, cons, and install commands inline" width="100%" />
 
-The user asks *"what skills fit this project?"*. The skill activates, reads the project context, and weaves a ranked list with trust-tier icons, pros/cons, and install commands into the response. No prompting, no manual lookup.
-
-### What `--recommend` produces with pros/cons
-
-```
-🔍 Scanning: my-saas-app...   Stack: typescript, react
-
-══════════════════════════════════════════════════════════
-  Recommendations for: my-saas-app
-══════════════════════════════════════════════════════════
-
-  ⚡ CAPABILITY — new abilities
-
-  01. ✅ Agent Browser
-       Why     : [automation, browser, scraping]
-       Trust   : high
-       ✓ Pro   : Six auth methods including session import
-       ✗ Con   : Requires Chrome — adds CI dependency
-       Install : npx skills add vercel-labs/agent-browser
-
-  🎨 PREFERENCE — better defaults
-
-  01. 🏛️ Frontend Design
-       Why     : [frontend, react, ui]
-       Trust   : official
-       ✓ Pro   : Prevents generic-looking UI defaults
-       ✗ Con   : Strong opinions may conflict with team style guide
-       💡 Tip   : Stack mismatch — run `--customize frontend-design`
-                  to fork with rewritten examples.
-```
+The user asks *"what skills fit this project?"*. The skill activates, reads the project context, and weaves a ranked list with trust-tier icons, pros/cons, and install commands into the response. No prompting, no manual lookup. Sample `--recommend` output: [`docs/reference.md`](docs/reference.md#example---recommend-output).
 
 ---
 
@@ -214,17 +114,7 @@ Skills Curator inverts the model. It's context-aware — reads what you're build
 | **Bounded token cost** — engine reads project in subprocess, not Claude's context | ❌ | ✅ ([report](docs/token-cost-report.html)) |
 | Honest about install counts (no fake popularity scraping) | ❌ | ✅ |
 
----
-
-## The intelligence layer
-
-Half of what makes Skills Curator distinctive is **context-aware judgment** — the engine reads your project and surfaces what's relevant so you don't have to search. The other half (`--customize`) ensures what you adopt arrives in your voice. Both are required for the pitch to hold.
-
-- **`--auto`** — at session start, hashes your project's key files. If nothing changed, output is one line. If a dep was added or CLAUDE.md edited, re-runs recommendations and surfaces the top 3.
-- **`--symptoms "<phrase>"`** — when the user says *"my tests are slow"*, *"deploys are manual"*, *"the UI looks ugly"*, the agent runs this. A built-in 17-pattern table maps complaints to skill categories.
-- **`--find / --discover`** — familiar free-text catalog search for power users who already know what they want.
-
-Everything else (evaluate, audit, migrate, export) is execution on top.
+`--auto` re-runs recommendations only when your project's key files change, `--symptoms` maps complaints like *"my tests are slow"* to skill categories, and `--find` / `--discover` searches the catalog by keyword. More in [The intelligence layer](docs/reference.md#the-intelligence-layer).
 
 ---
 
@@ -242,6 +132,8 @@ This is the unlock. The standard model — `npx skills add <author/skill>` — i
 4. **Writes a forked SKILL.md** at `~/.claude/skills/<name>-for-<project>/SKILL.md` containing the plan.
 5. **The agent rewrites each section in your project's voice** — keep high-fit material verbatim, rewrite stack-mismatched examples in your stack, drop irrelevant parts entirely.
 
+**Result:** Vue snippets become React snippets. Django routes become FastAPI routes. The capability transfers. The author's accent doesn't.
+
 ### Concrete example
 
 Run `--customize superpowers:test-driven-development` against a Python project:
@@ -258,29 +150,13 @@ Run `--customize superpowers:test-driven-development` against a Python project:
 
 High-fit sections (Red-Green-Refactor, Why Order Matters) get kept and emphasized. Narrative-only sections that don't ground in your project get dropped or rewritten. The frontmatter is renamed so the fork is clearly *yours-for-this-project*. The original author's contribution becomes invisible the way a great translator's does — the meaning transfers, the accent doesn't.
 
-```bash
-python registry.py --customize <source>            # source = registered id, local path, or owner/repo@skill
-python registry.py --customize <source> --no-fork  # preview the plan without writing the fork
-```
+Run it with `python registry.py --customize <source>` (add `--no-fork` to preview the plan); `<source>` is a registered id, a local path, or `owner/repo@skill`.
 
 ---
 
 ## Token cost
 
-Reproducibly measured against 5 real projects (empty → 17,680 files) and every CLI command. Full report at **[`docs/token-cost-report.html`](docs/token-cost-report.html)** · architecture/feature walkthrough at **[`docs/how-it-works.html`](docs/how-it-works.html)**.
-
-| | Number |
-|---|---:|
-| Always-on cost per session (both tiers combined) | **249 tokens** (0.025% of a 1M context window) |
-| Max single-command stdout, on a 17,680-file Next.js project | **965 tokens** |
-| Max single-command stdout, on a 48-file repo | **1,140 tokens** |
-| Effect of project size on cost | **None measurable** |
-| Heavy-session savings vs ad-hoc evaluation | **20,038 tokens (71%)** |
-| Re-asking about a previously evaluated skill | **~13 tokens** vs ~4,060 without persistence |
-
-The Python engine is 27,900 tokens of source code, but **runs as a Bash subprocess** — Claude only sees stdout. Project files (CLAUDE.md, package.json, etc.) are read into the subprocess's own RAM, parsed, and summarized into ~250 tokens of stdout. **The 17,680-file Next.js project costs the same as a 30-file folder** because the engine caps doc reads at 4 KB and emits only summaries.
-
-Regenerate the measurements on any machine: `pip install tiktoken && python docs/audit/deep_token_audit.py && python docs/audit/generate_html.py`.
+249 tokens always-on per session and at most 1,140 tokens of stdout per command; project size has no measurable effect because the engine reads your files in a subprocess. Full table in [`docs/reference.md`](docs/reference.md#token-cost) and the [token cost report](docs/token-cost-report.html).
 
 ---
 
@@ -288,148 +164,12 @@ Regenerate the measurements on any machine: `pip install tiktoken && python docs
 
 In any Claude Code session, ask anything below — the skill activates automatically:
 
-> *"Should I install agent-browser for this project?"*
-> → evaluates against your CLAUDE.md, runs a security scan, gives ADOPT / PARTIAL / SKIP with evidence
+- *"Should I install agent-browser for this project?"* → evaluates against your CLAUDE.md, runs a security scan, gives ADOPT / PARTIAL / SKIP with evidence
+- *"What skills would help this project?"* → scans your stack, ranks recommendations by fit, returns capability + preference splits with pros/cons
+- *"Audit my skills"* → finds duplicates, preference conflicts, security-unreviewed community skills, stale versions, low health scores
+- *"Migrate my skills to Cursor and Codex"* → multi-target copy, with safety checks for existing files
 
-> *"What skills would help this project?"*
-> → scans your stack, ranks recommendations by fit, returns capability + preference splits with pros/cons
-
-> *"Audit my skills"*
-> → finds duplicates, preference conflicts, security-unreviewed community skills, stale versions, low health scores
-
-> *"Migrate my skills to Cursor and Codex"*
-> → multi-target copy, with safety checks for existing files
-
-Slash commands: `/skill-evaluate`, `/skill-recommend`, `/skill-audit`.
-
----
-
-## Platforms
-
-Skills Curator supports **55 agent platforms** as of v4.3, mirrored from `vercel-labs/skills`. **Primary first-class:** `claude-code`, `github-copilot`. Every platform listed in [`references/commands.md`](skills/skills-curator/references/commands.md) has a verified install path.
-
-```bash
-python registry.py --platforms                # detected + primary
-python registry.py --platforms --verbose      # all 55
-python registry.py --migrate cursor,codex     # multi-target install
-python registry.py --migrate detected         # every platform on this machine
-```
-
----
-
-## Architecture
-
-```
-   Claude's context              Subprocess (Python)        External resources
-  ┌──────────────────┐         ┌────────────────────┐     ┌──────────────────────┐
-  │ SKILL.md (3.4K)  │  Bash   │   registry.py      │     │  project files       │
-  │ description (62) │ ──────► │   reads project    │ ◄─► │  GitHub API (24h)    │
-  │ stdout (10-1.2K) │ ◄────── │   parses signals   │     │  registry on disk    │
-  │ + agent's reads  │ stdout  │   emits stdout     │     └──────────────────────┘
-  └──────────────────┘         └────────────────────┘
-```
-
-Token cost happens only inside the purple box (Claude's context). Everything else runs in Python memory, free. Full diagram + step-by-step walkthrough: **[`docs/how-it-works.html`](docs/how-it-works.html)**.
-
----
-
-## Command reference
-
-```bash
-R="$HOME/.claude/skills/skills-curator/scripts/registry.py"
-
-# Intelligence layer (proactive)
-python "$R" --auto                              # scan only on project drift
-python "$R" --symptoms "tests are slow"         # map complaint to skills
-python "$R" --recommend                         # what fits this project (with pros/cons)
-
-# Evaluation + history
-python "$R" --eval ID PROJECT VERDICT "summary" --pros "..." --cons "..."
-python "$R" --history <skill-id>                # all past evaluations
-python "$R" --export-eval <skill-id>            # PR-ready markdown
-
-# Customization (the headline capability)
-python "$R" --customize <source>                # fork external skill for this project
-python "$R" --customize <source> --no-fork      # preview plan only
-
-# Maintenance + discovery
-python "$R" --audit                             # duplicates, conflicts, stale, unreviewed
-python "$R" --check <path>                      # security scan a skill folder
-python "$R" --discover [term]                   # search live catalog
-python "$R" --migrate cursor,codex              # cross-agent copy
-
-# Sync (Python tier only)
-python "$R" --sync   |   --push                 # private GitHub Gist
-```
-
-Full reference (every command + flag): [`skills/skills-curator/references/commands.md`](skills/skills-curator/references/commands.md).
-
----
-
-## FAQ
-
-<details>
-<summary><b>Why no install counts?</b></summary>
-
-skills.sh telemetry isn't publicly accessible — only via an authenticated `sk_live_` API key. A tool whose pitch is *judgment* shouldn't lead with scraped fake popularity. We rank by **tag overlap × trust tier** instead — a 200-install skill that fits your stack beats a 50,000-install one that doesn't.
-
-</details>
-
-<details>
-<summary><b>Do I need Python?</b></summary>
-
-For the full version, yes — Python 3.10+ (stdlib only, no `pip install`). For Lite, no — the agent does everything via Bash/Read/Glob/Grep. Lite has feature parity except for cross-device Gist sync.
-
-</details>
-
-<details>
-<summary><b>How is this different from `npx skills`?</b></summary>
-
-`npx skills` is install plumbing — find, install, list, sync. Skills Curator is the layer above it: *should* you install, does it conflict with what you already have, and **how do you adopt it without inheriting the author's voice**. We use `npx skills` underneath.
-
-</details>
-
-<details>
-<summary><b>If `--customize` rewrites in my voice, isn't that just "copy and edit"?</b></summary>
-
-It's `copy → automated decomposition → relevance scoring per section → action plan → guided rewrite`. The engine produces a structured plan (keep/trim/drop/rewrite per section); the agent executes the rewrite using your CLAUDE.md and existing skill conventions as the style source. The scoring forces a deliberate choice on every section instead of letting mismatched examples slip through.
-
-</details>
-
-<details>
-<summary><b>If the skill reads my project, doesn't that cost tokens?</b></summary>
-
-No — and this is the most-missed point. The engine reads project files in a Python subprocess (its own RAM), parses them, and emits only ~250 tokens of summary to stdout. Claude never sees the raw bytes. A 17,680-file project with a 20 KB CLAUDE.md generates the same stdout size as a 30-file folder. Detailed walkthrough: [`docs/how-it-works.html`](docs/how-it-works.html).
-
-</details>
-
-<details>
-<summary><b>Does this work on platforms other than Claude Code?</b></summary>
-
-Yes — `--platforms` lists 55 supported agents and `--migrate` copies skills to any of them. First-class targets are Claude Code and GitHub Copilot.
-
-</details>
-
-<details>
-<summary><b>Is my registry private?</b></summary>
-
-Yes. Stored at `~/.claude/skills/skills-curator/registry.json`, never sent anywhere unless you explicitly enable Gist sync (set `SKILLS_CURATOR_GIST_ID` + `SKILLS_CURATOR_GITHUB_TOKEN`). Disable all outbound calls with `SKILLS_NO_TELEMETRY=1`.
-
-</details>
-
-<details>
-<summary><b>How does external skills research work?</b></summary>
-
-Three layers: (1) **19 curated entries** built into the script with hand-written pros/cons; (2) **GitHub topic search** (`topic:claude-skill`, `claude-code-skill`, `agent-skill`) — one call per topic, sorted by stars, cached 24h, metadata only (no SKILL.md fetched at this stage); (3) **on-demand SKILL.md fetch** when `--check` / `--customize` / `--evaluate` triggers it. Trust tier auto-classified by author membership in `_TRUSTED_AUTHORS`.
-
-</details>
-
-<details>
-<summary><b>What if I disagree with a verdict?</b></summary>
-
-Just evaluate again — every record is an entry in `evaluation_history`. The latest entry wins for the current verdict, but the full history is preserved. Read why past-you decided what they did via `--history <skill-id>`.
-
-</details>
+Slash commands: `/skill-evaluate`, `/skill-recommend`, `/skill-audit`. Architecture, the full command reference, platforms, FAQ, requirements and repository layout are in [`docs/reference.md`](docs/reference.md).
 
 ---
 
@@ -443,53 +183,23 @@ Just evaluate again — every record is an entry in `evaluation_history`. The la
 
 ## Project status
 
-| | |
-|---|---|
-| **Maturity** | Stable. v4.6.1 current. Schema v3 (stable since v4.0). |
-| **Tiers** | Lite (default, zero deps) + Python full (opt-in). |
-| **CI** | 3 OS × 4 Python versions on every PR (Python tier only). |
-| **Tests** | 37 pytest cases (Python tier). |
-| **Catalog** | 19 curated + live GitHub topic discovery (24h cache). |
-| **Platforms** | 55, mirrored from `vercel-labs/skills`. |
-| **License** | MIT. |
-| **Maintainer** | [@captkernel](https://github.com/captkernel). |
+**Stable.** v4.6.1 current; schema v3 (stable since v4.0). Lite (default, zero deps) + Python full (opt-in). CI runs 3 OS × 4 Python versions on every PR, with 37 pytest cases (Python tier). Catalog: 19 curated entries + live GitHub topic discovery (24h cache). 55 platforms, mirrored from `vercel-labs/skills`. MIT. Maintainer: [@captkernel](https://github.com/captkernel).
 
 ---
 
-## Requirements
+## What it runs, reads and sends
 
-- **Python 3.10+** for the full tier (Lite has no Python requirement)
-- **Standard library only** — no `pip install` step
-- **Network** — optional. Set `SKILLS_NO_TELEMETRY=1` to disable all outbound calls.
-
----
-
-## Repository layout
-
-```
-Skills_Curator/
-├── skills/skills-curator/         ← Python tier
-│   ├── SKILL.md                   ← Auto-loads in Claude Code
-│   ├── references/                ← Progressive-disclosure docs
-│   └── scripts/registry.py        ← The whole engine, stdlib only (~2.3k LOC)
-├── skills/skills-curator-lite/    ← Lite tier (no Python)
-│   └── SKILL.md
-├── .claude/commands/              ← /skill-evaluate, /skill-recommend, /skill-audit
-├── .claude-plugin/plugin.json     ← Plugin manifest
-├── docs/
-│   ├── token-cost-report.html     ← Empirical token measurements
-│   ├── how-it-works.html          ← Feature walkthrough + architecture
-│   └── audit/                     ← Reproducibility scripts
-├── tests/                         ← 37 pytest cases
-├── install.sh / install.ps1
-└── deploy.py                      ← Maintainer-only
-```
+- **Runs.** Lite uses only the agent's Bash, Read, Glob, Grep and Write tools, plus `curl` to the GitHub search API (and to `raw.githubusercontent.com` when you customize a GitHub-hosted skill). The Python tier runs one stdlib-only script, `skills/skills-curator/scripts/registry.py`, as a subprocess.
+- **Reads.** Your project's files (stack, dependencies, CLAUDE.md) and the skills installed under `~/.claude/skills`.
+- **Writes.** Its own `registry.json` under `~/.claude/skills/` on your machine; a fork folder there when you run `--customize`; copies into other agents' skill folders when you run `--migrate`.
+- **Sends.** Without Gist sync, only GET requests to GitHub: topic search on `api.github.com`, SKILL.md fetches from `raw.githubusercontent.com` when you customize or check a remote skill, and release lookups when you run `--stale`. Your code, project content and registry stay on your machine.
+- **Gist sync is opt-in.** The Python tier pushes the registry to a private GitHub Gist only after you set `SKILLS_CURATOR_GIST_ID` and `SKILLS_CURATOR_GITHUB_TOKEN` and run `--push` or `--sync`. Setup: [`docs/gist-sync.md`](docs/gist-sync.md).
 
 ---
 
 ## Security
 
-`registry.py` is stdlib-only Python. Optional network calls go to `api.github.com` (Gist sync, version checks, **catalog topic search**) only. **It never sends your code, project content, or registry contents to any external service.** Disable all outbound calls with `SKILLS_NO_TELEMETRY=1`.
+`registry.py` is stdlib-only Python. Optional network calls go to GitHub only (`api.github.com` for Gist sync, version checks and **catalog topic search**; `raw.githubusercontent.com` for SKILL.md fetches). **It never sends your code, project content, or registry contents to any external service.** `SKILLS_NO_TELEMETRY=1` turns off catalog search and SKILL.md fetches; `--stale` and Gist sync still connect when you run them.
 
 The `--check` scanner is **conservative** — it flags patterns that *could* be dangerous even when benign (like `eval()` in a registry script). That's intentional. Review flagged files and decide; don't miss something.
 
@@ -499,13 +209,7 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 
 ## Contributing
 
-PRs welcome. High-value contributions:
-
-- **New `SECURITY_RISK_PATTERNS`** — with justification + a test in `tests/test_security_scan.py`
-- **New `KNOWN_SKILLS` catalog entries** — high-trust only, with source link and pros/cons
-- **New `FRAMEWORK_SIGNALS` / `GOAL_SIGNALS`** for the project scanner
-- **New `_TRUSTED_AUTHORS`** entries — for trust auto-classification
-- **Verified `PLATFORMS` corrections** — with a doc URL
+PRs welcome. High-value contributions: new `SECURITY_RISK_PATTERNS` (with justification + a test in `tests/test_security_scan.py`), high-trust `KNOWN_SKILLS` catalog entries with source link and pros/cons, new `FRAMEWORK_SIGNALS` / `GOAL_SIGNALS` for the project scanner, new `_TRUSTED_AUTHORS` entries, and verified `PLATFORMS` corrections with a doc URL.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). All PRs must pass `pytest tests/` and `python registry.py --validate --strict`.
 

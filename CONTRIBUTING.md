@@ -89,7 +89,11 @@ CI runs all of the above on every PR via `.github/workflows/validate.yml`.
 
 ## Releasing
 
-Maintainer-only. After merging:
+Maintainer-only.
+
+Bump "version" in .claude-plugin/plugin.json (and CHANGELOG.md) on every release, or plugin users never receive the update.
+
+After merging:
 
 1. Tag: `git tag -a v4.x.y -m "..."`
 2. Push tag: `git push origin v4.x.y`
