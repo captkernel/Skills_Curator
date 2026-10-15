@@ -103,7 +103,7 @@ claude.ai uses its own Skills feature instead of `npx skills`, so the install is
 
 1. **Download:** [`skills-curator-claudeai.zip`](https://github.com/captkernel/Skills_Curator/raw/main/dist/skills-curator-claudeai.zip) (19 KB)
 2. **Upload:** claude.ai → **Settings → Capabilities → Skills → Upload skill** → pick the zip
-3. **(Recommended) Persist your registry:** add an empty `skills_registry.json` to a Project's Knowledge — Skills Curator auto-reads it and emits updates as downloadable files. Full setup in [`INSTALL.md`](skills/skills-curator-claudeai/INSTALL.md).
+3. **(Recommended) Persist your registry:** add an empty `skills_registry.json` to a Project's Knowledge — Skills Curator auto-reads it and emits updates as downloadable files. Full setup in [`INSTALL.md`](editions/skills-curator-claudeai/INSTALL.md).
 
 Same intelligence layer as the Claude Code editions: same `--customize` decomposition, same trust-rated catalog, same security scan, same shared registry schema. **It just runs in claude.ai instead of in your CLI.**
 
@@ -126,7 +126,7 @@ The three editions share the same judgment model and the same registry JSON sche
 | Engine | None — agent runs the spec via Bash / Read / Glob / Grep | Python 3.10+ (stdlib only, ~2.3k LOC) | None — agent runs the spec via code-execution sandbox |
 | Install | `npx skills add captkernel/Skills_Curator` (default) | `... --with-python` (opt-in) | Upload zip via Settings → Capabilities → Skills |
 | Install friction | Zero | Python 3.10+ check | Manual zip + upload |
-| Persistence | `~/.claude/skills/.../registry.json` | `~/.claude/skills/.../registry.json` | Project Knowledge / upload / Gist (see [persistence guide](skills/skills-curator-claudeai/references/persistence.md)) |
+| Persistence | `~/.claude/skills/.../registry.json` | `~/.claude/skills/.../registry.json` | Project Knowledge / upload / Gist (see [persistence guide](editions/skills-curator-claudeai/references/persistence.md)) |
 | Project signals | Files in cwd | Files in cwd | Attached files + Project Knowledge + pasted snippets |
 | Proactive `--auto` activation | ✅ byte-count fingerprint | ✅ MD5 fingerprint | ❌ (no cwd, no session boundary the skill controls) |
 | Symptom mapping (17 patterns) | ✅ | ✅ | ✅ |

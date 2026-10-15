@@ -18,7 +18,7 @@ The plugin ships **three** SKILL.md variants targeting **two** different runtime
 |---|---|---|---|
 | `skills-curator-lite/` | Claude Code (CLI) | Auto via `npx skills add captkernel/Skills_Curator` | Default tier — no Python. Lite is tracked at its own internal version (`2.0.0`); only the plugin's outer version follows SemVer for the whole repo. |
 | `skills-curator/` | Claude Code (CLI) | `--with-python` opt-in via the same install command | Python 3.10+ tier. `VERSION` constant in `scripts/registry.py` tracks plugin version. |
-| `skills-curator-claudeai/` | claude.ai (web + desktop) | Manual zip + upload via Settings → Capabilities → Skills | **NOT in `plugin.json` `skills[]`** — that array is for Claude Code's plugin loader. Shipping the claude.ai variant via that path would incorrectly drop it into `~/.claude/skills/`. |
+| `skills-curator-claudeai/` | claude.ai (web + desktop) | Manual zip + upload via Settings → Capabilities → Skills | Lives in editions/, outside skills/, because plugin.json "skills" adds to the default skills/ scan rather than replacing it. |
 
 **Why not all in `plugin.json` skills[]:** The `skills[]` array tells Claude Code's plugin loader which subfolders to auto-install into `~/.claude/skills/`. The claude.ai edition uses different persistence (Project Knowledge, not `~/.claude/`), different invocation (natural language, not slash commands), and doesn't make sense as a Claude Code skill. It's distributed via the same repo but a different channel (the zip flow documented in its `INSTALL.md`).
 
@@ -83,7 +83,7 @@ Skills_Curator/                             ← repo root
 │       └── registry.py                     ← stdlib-only engine, ~2.3k lines
 ├── skills/skills-curator-lite/             ← Lite edition (Claude Code default)
 │   └── SKILL.md                            ← embedded catalog + spec, no engine
-├── skills/skills-curator-claudeai/         ← claude.ai edition (web + desktop, v4.5.0+)
+├── editions/skills-curator-claudeai/         ← claude.ai edition (web + desktop, v4.5.0+)
 │   ├── SKILL.md                            ← slim spec (~250 lines)
 │   ├── INSTALL.md                          ← user install guide (zip + upload)
 │   └── references/                         ← progressive disclosure

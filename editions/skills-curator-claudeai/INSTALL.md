@@ -40,14 +40,14 @@ skills-curator-claudeai.zip
 **Windows PowerShell:**
 
 ```powershell
-cd skills/skills-curator-claudeai
+cd editions/skills-curator-claudeai
 Compress-Archive -Path SKILL.md, INSTALL.md, references -DestinationPath ../../skills-curator-claudeai.zip -Force
 ```
 
 **macOS / Linux:**
 
 ```bash
-cd skills/skills-curator-claudeai
+cd editions/skills-curator-claudeai
 zip -r ../../skills-curator-claudeai.zip SKILL.md INSTALL.md references
 ```
 

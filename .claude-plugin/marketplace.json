@@ -1,0 +1,6 @@
+{
+  "name": "skills-curator",
+  "owner": { "name": "captKernel", "url": "https://github.com/captkernel" },
+  "description": "Self-hosted marketplace for Skills Curator. All captKernel plugins: /plugin marketplace add captkernel/plugins",
+  "plugins": [{ "name": "skills-curator", "source": "./" }]
+}

@@ -2,6 +2,15 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.6.1] — 2026-10-14
+
+### Fixed
+- Claude Code plugin installs loaded the claude.ai edition as a third skill: `plugin.json` `skills` adds to the default `skills/` scan. The claude.ai edition now lives in `editions/`.
+- `claude plugin validate --strict` passes: contributor `CLAUDE.md` moved to `.claude/CLAUDE.md`.
+
+### Added
+- `.claude-plugin/marketplace.json`; install with `/plugin marketplace add captkernel/plugins` then `/plugin install skills-curator@captkernel`.
+
 ## [4.6.0] — 2026-05-18
 
 `--customize` now scaffolds an archive of every section of the source SKILL.md so dropped/trimmed functionality stays recoverable. A new `--restore <fork-id>` command re-evaluates that archive against the project's *current* signals and surfaces (or splices back) any sections whose relevance has grown — e.g. a Vue section dropped from a React-only fork can be patched back when Vue is added to the project, without re-customizing from scratch.
