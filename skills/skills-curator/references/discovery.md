@@ -35,7 +35,7 @@ Recommendation history is saved to `~/.claude/skills/skills-curator/recommendati
 ## Recommendation Commands
 
 ```bash
-R=~/.claude/skills/skills-curator/scripts/registry.py
+R="<this skill folder>/scripts/registry.py"   # the path SKILL.md Setup shows; plugin installs are not under ~/.claude/skills
 
 # Recommend for current project
 python "$R" --recommend
@@ -172,7 +172,7 @@ To get proactive skill suggestions on a schedule:
 
 ```bash
 # macOS/Linux: weekly check via crontab
-0 9 * * MON python ~/.claude/skills/skills-curator/scripts/registry.py --recommend --refresh > /tmp/skill-recs.txt
+0 9 * * MON python "<this skill folder>/scripts/registry.py" --recommend --refresh > /tmp/skill-recs.txt
 ```
 
 ```powershell

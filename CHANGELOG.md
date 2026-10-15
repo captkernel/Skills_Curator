@@ -2,6 +2,11 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.6.2] — 2026-10-15
+
+### Fixed
+- Python tier failed when installed as a Claude Code plugin: `SKILL.md` called `~/.claude/skills/skills-curator/scripts/registry.py`, which does not exist in the plugin cache. Commands now use `${CLAUDE_SKILL_DIR}/scripts/registry.py`, which Claude Code resolves to the skill's own folder for manual and plugin installs. Registry data still lives in `~/.claude/skills/skills-curator/` (created on first write).
+
 ## [4.6.1] — 2026-10-14
 
 ### Fixed

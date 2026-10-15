@@ -71,7 +71,7 @@ Skills Curator knows 55 platforms (sourced from `vercel-labs/skills` `dist/cli.m
 ## CLI Examples
 
 ```bash
-R=~/.claude/skills/skills-curator/scripts/registry.py
+R="<this skill folder>/scripts/registry.py"   # the path SKILL.md Setup shows; plugin installs are not under ~/.claude/skills
 
 python "$R" --list
 python "$R" --search "browser"

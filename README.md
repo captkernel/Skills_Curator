@@ -21,7 +21,7 @@ The intelligence layer for Claude skills — surfaces what fits your project, de
 
 *32 seconds: what it does, and why. — [9:16 reels](https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel.mp4) · [4:5 feed](https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel-4x5.mp4)*
 
-**Status: Stable · v4.6.1 · 55 supported platforms · Three editions: Lite (default) · Python · claude.ai (web + desktop)**
+**Status: Stable · v4.6.2 · 55 supported platforms · Three editions: Lite (default) · Python · claude.ai (web + desktop)**
 
 </div>
 
@@ -184,7 +184,7 @@ Slash commands: `/skill-evaluate`, `/skill-recommend`, `/skill-audit`. Architect
 
 ## Project status
 
-**Stable.** v4.6.1 current; schema v3 (stable since v4.0). Lite (default, zero deps) + Python full (opt-in). CI runs 3 OS × 4 Python versions on every PR, with 37 pytest cases (Python tier). Catalog: 19 curated entries + live GitHub topic discovery (24h cache). 55 platforms, mirrored from `vercel-labs/skills`. MIT. Maintainer: [@captkernel](https://github.com/captkernel).
+**Stable.** v4.6.2 current; schema v3 (stable since v4.0). Lite (default, zero deps) + Python full (opt-in). CI runs 3 OS × 4 Python versions on every PR, with 37 pytest cases (Python tier). Catalog: 19 curated entries + live GitHub topic discovery (24h cache). 55 platforms, mirrored from `vercel-labs/skills`. MIT. Maintainer: [@captkernel](https://github.com/captkernel).
 
 ---
 

@@ -2,7 +2,7 @@
 name: skills-curator
 description: Use when the user mentions a skill/plugin by name, asks "should I install X", asks for skill recommendations, wants a security check on a skill, asks about duplicates or conflicts, wants to create a new skill, or wants to migrate skills across agent platforms (Cursor, Codex, Gemini, etc.).
 metadata:
-  version: "4.6.1"
+  version: "4.6.2"
   author: captkernel
   homepage: https://github.com/captkernel/Skills_Curator
   license: MIT
@@ -60,7 +60,7 @@ Customization is the headline capability; **proactive activation** is what makes
 If the working directory contains `CLAUDE.md`, `package.json`, `requirements.txt`, `pyproject.toml`, `go.mod`, or `Cargo.toml`, run **once, silently** at the start of the session:
 
 ```bash
-python ~/.claude/skills/skills-curator/scripts/registry.py --auto
+python "${CLAUDE_SKILL_DIR}/scripts/registry.py" --auto
 ```
 
 `--auto` is fingerprint-based: it only does a full re-scan when the project has actually changed (new dep, new framework, new CLAUDE.md content). Otherwise it prints a one-line "no changes since last scan" and exits. **Cheap to run on every session — designed to be called proactively.**
@@ -117,11 +117,12 @@ These are the three slash commands surfaced in Claude Code. Everything else is i
 # Registry lives at:
 ~/.claude/skills/skills-curator/registry.json
 
-# CLI:
-python ~/.claude/skills/skills-curator/scripts/registry.py
-# Windows:
-python "%USERPROFILE%\.claude\skills\skills-curator\scripts\registry.py"
+# CLI (the script ships in this skill's own scripts/ folder; Claude Code
+# fills in ${CLAUDE_SKILL_DIR} for manual and plugin installs alike):
+python "${CLAUDE_SKILL_DIR}/scripts/registry.py"
 ```
+
+Every `python registry.py ...` command below means `python "${CLAUDE_SKILL_DIR}/scripts/registry.py" ...`.
 
 ---
 
