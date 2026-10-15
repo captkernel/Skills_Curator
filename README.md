@@ -25,7 +25,7 @@ npx skills add captkernel/Skills_Curator
 
 *32 seconds: what it does, and why. — [9:16 reels](https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel.mp4) · [4:5 feed](https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel-4x5.mp4)*
 
-**Status: Stable · v4.6.0 · 55 supported platforms · Three editions: Lite (default) · Python · claude.ai (web + desktop)**
+**Status: Stable · v4.6.1 · 55 supported platforms · Three editions: Lite (default) · Python · claude.ai (web + desktop)**
 
 </div>
 
@@ -107,7 +107,7 @@ claude.ai uses its own Skills feature instead of `npx skills`, so the install is
 
 Same intelligence layer as the Claude Code editions: same `--customize` decomposition, same trust-rated catalog, same security scan, same shared registry schema. **It just runs in claude.ai instead of in your CLI.**
 
-This edition does not appear in `plugin.json`'s `skills[]` array — Claude Code users only get Lite + Python from `npx skills add`. The claude.ai bundle is distributed via the direct zip download above. One repo, two channels.
+This edition lives in `editions/`, outside the `skills/` folder the plugin scans, so Claude Code users only get Lite + Python from `npx skills add`. The claude.ai bundle is distributed via the direct zip download above. One repo, two channels.
 
 ---
 
@@ -445,7 +445,7 @@ Just evaluate again — every record is an entry in `evaluation_history`. The la
 
 | | |
 |---|---|
-| **Maturity** | Stable. v4.6.0 current. Schema v3 (stable since v4.0). |
+| **Maturity** | Stable. v4.6.1 current. Schema v3 (stable since v4.0). |
 | **Tiers** | Lite (default, zero deps) + Python full (opt-in). |
 | **CI** | 3 OS × 4 Python versions on every PR (Python tier only). |
 | **Tests** | 37 pytest cases (Python tier). |

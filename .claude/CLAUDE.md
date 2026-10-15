@@ -20,7 +20,7 @@ The plugin ships **three** SKILL.md variants targeting **two** different runtime
 | `skills-curator/` | Claude Code (CLI) | `--with-python` opt-in via the same install command | Python 3.10+ tier. `VERSION` constant in `scripts/registry.py` tracks plugin version. |
 | `skills-curator-claudeai/` | claude.ai (web + desktop) | Manual zip + upload via Settings → Capabilities → Skills | Lives in editions/, outside skills/, because plugin.json "skills" adds to the default skills/ scan rather than replacing it. |
 
-**Why not all in `plugin.json` skills[]:** The `skills[]` array tells Claude Code's plugin loader which subfolders to auto-install into `~/.claude/skills/`. The claude.ai edition uses different persistence (Project Knowledge, not `~/.claude/`), different invocation (natural language, not slash commands), and doesn't make sense as a Claude Code skill. It's distributed via the same repo but a different channel (the zip flow documented in its `INSTALL.md`).
+**Why not all in `plugin.json` skills[]:** The claude.ai edition lives in `editions/`, outside `skills/`, because `plugin.json` `skills` ADDS to the default `skills/` scan; it does not restrict it. Anything under `skills/` loads for plugin users, and this edition must not: it uses different persistence (Project Knowledge, not `~/.claude/`), different invocation (natural language, not slash commands), and doesn't make sense as a Claude Code skill. It's distributed via the same repo but a different channel (the zip flow documented in its `INSTALL.md`).
 
 **Registry schema is shared across editions:** `v3.0` JSON. A registry written by any edition can be read by any other. Power users can roam a single registry across all three runtimes via Gist sync (Python edition has `--sync`; claude.ai edition has Mode C).
 
@@ -83,7 +83,7 @@ Skills_Curator/                             ← repo root
 │       └── registry.py                     ← stdlib-only engine, ~2.3k lines
 ├── skills/skills-curator-lite/             ← Lite edition (Claude Code default)
 │   └── SKILL.md                            ← embedded catalog + spec, no engine
-├── editions/skills-curator-claudeai/         ← claude.ai edition (web + desktop, v4.5.0+)
+├── editions/skills-curator-claudeai/       ← claude.ai edition (web + desktop, v4.5.0+)
 │   ├── SKILL.md                            ← slim spec (~250 lines)
 │   ├── INSTALL.md                          ← user install guide (zip + upload)
 │   └── references/                         ← progressive disclosure

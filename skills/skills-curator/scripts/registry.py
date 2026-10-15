@@ -77,7 +77,7 @@ import urllib.error
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-VERSION = "4.6.0"
+VERSION = "4.6.1"
 SCHEMA_VERSION = "3.0"
 
 SKILL_DIR            = Path.home() / ".claude" / "skills" / "skills-curator"
