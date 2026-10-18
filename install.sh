@@ -37,7 +37,9 @@ fi
 echo "📦 Installing skills-curator-lite (Python-free, default tier)..."
 mkdir -p "$SKILL_LITE_DIR"
 cp "$SRC_LITE/SKILL.md" "$SKILL_LITE_DIR/SKILL.md"
-echo "   → $SKILL_LITE_DIR/SKILL.md"
+mkdir -p "$SKILL_LITE_DIR/references"
+cp "$SRC_LITE"/references/* "$SKILL_LITE_DIR/references/"
+echo "   → $SKILL_LITE_DIR/SKILL.md (+ references/)"
 
 # Initialize Lite registry (markdown skill writes JSON via the agent)
 [ -f "$SKILL_LITE_DIR/registry.json" ] || \

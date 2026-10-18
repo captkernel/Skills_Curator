@@ -34,7 +34,8 @@ if (-not (Test-Path $SrcLite)) {
 Write-Host "Installing skills-curator-lite (Python-free, default tier)..." -ForegroundColor Cyan
 New-Item -ItemType Directory -Force -Path $SkillLiteDir | Out-Null
 Copy-Item "$SrcLite\SKILL.md" "$SkillLiteDir\SKILL.md" -Force
-Write-Host "   -> $SkillLiteDir\SKILL.md"
+Copy-Item "$SrcLite\references" "$SkillLiteDir" -Recurse -Force
+Write-Host "   -> $SkillLiteDir\SKILL.md (+ references\)"
 
 if (-not (Test-Path "$SkillLiteDir\registry.json")) {
   '{"version":"3.0","last_updated":"","skills":[]}' | Out-File -Encoding utf8 "$SkillLiteDir\registry.json"

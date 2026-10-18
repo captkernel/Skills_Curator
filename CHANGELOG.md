@@ -2,6 +2,31 @@
 
 All notable changes to Skills Curator. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.7.0] — 2026-10-18
+
+Skills Curator now searches the same index as `find-skills`, the most-installed skill on skills.sh, and ranks it for your project instead of by popularity alone. find-skills tells you what's popular; Skills Curator tells you what fits your project and is safe to install.
+
+### Added
+- **skills.sh search** as a third discovery source next to the curated catalog and GitHub topic search. Uses the public JSON API (`https://skills.sh/api/search`) that the official `npx skills find` command uses; results are per-skill with `npx skills add <source> --skill <skillId>`. Best effort, 5s timeout, off when `SKILLS_NO_TELEMETRY` is set. `SKILLS_SH_API_KEY`, previously unused, is now sent as a Bearer token when set. HTML scraping stays removed.
+- **`--curate "<query>" [--limit N]`**: the fast path for "find a skill for X". One call, top 5 by default, each with a `why:` line, a project-scope install command, the skills.sh link and a scan-before-install footer. Installed skills are excluded.
+- **Blended ranking** for `--curate`, `--discover` and `--recommend`: 0.35 relevance + 0.30 project fit + 0.20 trust + 0.15 popularity (log-scaled installs or stars). With a query, fit is scaled by relevance so a weak match cannot outrank a strong one on fit alone. Skills you marked SKIP for this project drop to ×0.3 and are labelled "previously rejected".
+- **Third-party audits (advisory)**: Gen, Socket and Snyk verdicts from skills.sh appear in `--eval`, `--check` and `--export-eval`. Never blocks.
+- **find-skills overlap**: `--audit` flags `vercel-labs/skills` find-skills when installed, so the two don't both trigger on the same request.
+- **CURATE verb** in the Lite and claude.ai editions, with the same sources and ranking.
+- 21 new tests (`tests/test_curate.py`); 58 total.
+
+### Changed
+- **Triggers widened** in all three editions to fire on "how do I do X", "find a skill for X" and "is there a skill that…".
+- **Lite edition slimmed from 923 to 210 lines.** Catalog, signals, platforms, security patterns, persistence, customize and templates moved to `skills/skills-curator-lite/references/`, loaded on demand. Nothing dropped.
+- **Install advice is project-scope only**; never `-g` or `-y`.
+- `--path` is resolved, so `--path .` reports the real project name.
+- README: "Skills Curator vs find-skills" comparison; `npx skills add captkernel/Skills_Curator` is the primary install.
+
+### Notes
+- `--find` keeps its old meaning (alias of `--discover`) for compatibility.
+- `--auto` and `--symptoms` still use the previous scoring.
+- The audit endpoint is undocumented and may change; failures are silent.
+
 ## [4.6.2] — 2026-10-15
 
 ### Fixed

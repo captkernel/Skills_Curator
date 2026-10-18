@@ -68,9 +68,24 @@ Hint format: *"Stack mismatch (`<skill-tag>` in skill vs `<project-tag>` in proj
 
 ---
 
+## Blended ranking (CURATE)
+
+CURATE ranks candidates from all sources (skills.sh search, `catalog.yaml`, GitHub topic search) with one score:
+
+| Component | Weight | How to compute |
+|---|---|---|
+| Relevance | 0.35 | Query terms matched against name, description and tags, normalised to 0-1 |
+| Project fit | 0.30 | Tag overlap with the project tags above (0 if no project context was given) |
+| Trust | 0.20 | `official 1.0, high 0.8, medium 0.6, community 0.4, unknown 0.2` |
+| Popularity | 0.15 | Installs (skills.sh) or stars (GitHub), log-scaled and normalised to 0-1 |
+
+Adjustments: skills the registry already marks installed are excluded; skills with a prior SKIP verdict keep their score ×0.3 and are labelled "previously rejected". Every result gets a `why:` line naming the strongest components (e.g. `why: matches "pdf", overlaps [documents], official`). If there is no project context, say project fit was not applied. Popularity is the smallest weight on purpose.
+
+---
+
 ## How to use this file
 
-The SKILL.md tells the agent to read this file during RECOMMEND and CUSTOMIZE. It's a reference, not a runtime — there's no script that processes the tables. The agent reads the tables, applies them to whatever the user has attached, and emits the tag set.
+The SKILL.md tells the agent to read this file during RECOMMEND, CURATE and CUSTOMIZE. It's a reference, not a runtime — there's no script that processes the tables. The agent reads the tables, applies them to whatever the user has attached, and emits the tag set.
 
 If a relevant keyword for the user's stack is missing from these tables, the agent should:
 1. Mention the gap to the user.

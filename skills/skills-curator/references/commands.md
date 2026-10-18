@@ -24,16 +24,18 @@ All commands are CLI flags on `scripts/registry.py`. Slash commands live in `.cl
 
 | Flag | Purpose |
 |---|---|
-| `--recommend [--refresh] [--max N]` | Project-aware recommendations |
-| `--discover [TERM] [--refresh]` | Search or list live catalog |
+| `--curate "QUERY" [--limit N]` | **Fast path.** One call searches the skills.sh index (~1.38M skills) plus the curated + GitHub-topic catalog, blended-ranks for this project, prints top N (default 5) with a `why:` line, install command and skills.sh link. Installed/adopted skills excluded |
+| `--recommend [--refresh] [--max N]` | Project-aware recommendations (blended rank, no query) |
+| `--discover [TERM] [--refresh]` | Full catalog search (curated + GitHub topics), blended rank; no TERM lists the catalog |
+| `--find [TERM]` | Legacy alias of `--discover` (kept for backward compatibility) |
 | `--scan` | Project signals only |
 
 ## Safety (v4)
 
 | Flag | Purpose |
 |---|---|
-| `--check PATH` | Security-scan a skill folder (14 risk patterns) |
-| `--audit` | Duplicates + conflicts + gaps |
+| `--check PATH` | Security-scan a skill folder (14 risk patterns); shows third-party audits (advisory) when the registered skill has a known source |
+| `--audit` | Duplicates + conflicts + gaps; flags `find-skills` as overlapping with Skills Curator |
 | `--health` | A–D health score per skill |
 | `--stale` | Check GitHub releases for newer versions |
 
@@ -91,6 +93,8 @@ python "$R" --eval agent-browser my-scraper partial \
   --cons "Requires Chrome,Token-heavy" \
   --conflicts "Overlaps with Playwright"
 
+python "$R" --curate "react performance"            # skills.sh + catalog, top 5
+python "$R" --curate "e2e testing" --limit 10
 python "$R" --recommend
 python "$R" --discover react
 python "$R" --check ~/.claude/skills/agent-browser/
@@ -128,6 +132,27 @@ python $R --list
 You can also just talk to Claude in natural language — the skill auto-activates on relevant prompts ("should I install X", "what skills fit this project", etc.). Slash commands are a shortcut, not a requirement.
 
 ---
+
+## Blended ranking (`--curate`, `--discover TERM`, `--recommend`)
+
+```
+score = 0.35*relevance + 0.30*fit + 0.20*trust + 0.15*popularity     (each in [0,1])
+```
+
+- **relevance** — share of query terms matched (id/name 1.0, tags 0.8, description 0.6); 1.0 with no query; skills.sh hits floor at 0.3 (the index already matched them).
+- **fit** — project signals from `_scan_project` found in the entry's tags/name/description; 3 matches (or all, for small projects) = 1.0.
+- **trust** — official 1.0, high .8, medium .6, community .4, unknown .2 (by author, `_classify_trust`).
+- **popularity** — `min(1, log10(installs+1)/6)`; skills.sh installs, else GitHub stars, else 0.
+- **Decision history** — latest SKIP for this project → score × 0.3, labelled `previously rejected`; ADOPT / active here / on disk → `already installed` (excluded from `--curate` and `--recommend`).
+
+Every result prints a `why:` line with the components, e.g.
+`why: match 1.0 · fit .67 (nextjs, react) · trust high · 185K installs  [score 0.86]`.
+
+Install advice is project-scope: `npx skills add <owner/repo> --skill <name>` (never `-g`, never `-y`). `--curate` ends with `Scan before installing: registry.py --check <path>`.
+
+## Network
+
+skills.sh search (`GET https://skills.sh/api/search?q=…&limit=20`, 5s timeout) and partner audits (`GET https://www.skills.sh/tele/audit?source=…&skills=…`, 3s timeout) are best-effort JSON calls; any failure means "no results", never an error. `SKILLS_NO_TELEMETRY=1` disables both (along with GitHub topic search and SKILL.md fetches). `SKILLS_SH_API_KEY`, if set, is sent as `Authorization: Bearer` on skills.sh calls — optional.
 
 ## Security scan patterns checked by `--check`
 
