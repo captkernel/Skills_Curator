@@ -2,18 +2,19 @@
 name: skills-curator
 description: >
   Use when the user mentions a skill or plugin by name, asks "should I install
-  X?", asks "what skills fit this project?", asks to audit installed skills,
+  X?", asks "how do I do X?", "find a skill for X" or "is there a skill
+  that...", asks "what skills fit this project?", asks to audit installed skills,
   asks whether a skill is safe to use, or wants to customize an external skill
   for their stack. Evaluates skills against the user's actual project
   (pros / cons / conflicts / ADOPT-PARTIAL-SKIP verdict), recommends what fits,
   scans for security red flags before adoption, persists every decision to a
   registry the user keeps in Project Knowledge, and forks stack-mismatched
-  skills into project-tailored versions. Decide once, never re-decide.
+  skills into project-tailored versions. Find-skills plus judgment.
 license: MIT
 metadata:
   version: "1.0.0"
   edition: claude.ai
-  plugin_version: "4.6.2"
+  plugin_version: "4.7.0"
   author: captkernel
   homepage: https://github.com/captkernel/Skills_Curator
   derived_from: skills-curator-lite
@@ -21,9 +22,9 @@ metadata:
 
 # Skills Curator (claude.ai edition)
 
-**Decide once. Re-decide never.**
+**The intelligence layer for Claude skills.**
 
-The intelligence layer for Claude skills, adapted for claude.ai (web + desktop). Same judgment model as the [Claude Code version](https://github.com/captkernel/Skills_Curator) — evaluate before installing, persist decisions, recommend by project fit, customize stack-mismatched skills — re-architected for claude.ai's sandbox-per-conversation runtime.
+Find-skills plus judgment: finders tell you what is popular; Skills Curator tells you what fits your project and is safe to install. Adapted for claude.ai (web + desktop). Same judgment model as the [Claude Code version](https://github.com/captkernel/Skills_Curator) — evaluate before installing, persist decisions, recommend by project fit, customize stack-mismatched skills — re-architected for claude.ai's sandbox-per-conversation runtime.
 
 | | Claude Code | **claude.ai (this edition)** |
 |---|---|---|
@@ -42,7 +43,7 @@ The first time the skill activates in a conversation, open with this two-line or
 > 🧭 *Skills Curator loaded — your intelligence layer for Claude skills (claude.ai edition).*
 > *I evaluate skills against your actual stack, recommend what fits, and persist decisions so you don't re-evaluate. Working on your request now.*
 
-Skip the orientation if you're about to surface concrete picks from a registry the user has already pinned — those are more useful than a generic intro. Don't repeat in later turns of the same conversation.
+Skip the orientation if you're about to surface concrete picks. Don't repeat it in later turns.
 
 ---
 
@@ -94,9 +95,19 @@ Ask once per session: *"What should I call this project in the registry? (Used t
 
 ---
 
-## The five verbs
+## The six verbs
 
-Removed from this edition: **PLATFORMS** and **MIGRATE** (claude.ai isn't installing to CLI agents). All five are invoked by natural language.
+Removed from this edition: **PLATFORMS** and **MIGRATE** (claude.ai isn't installing to CLI agents). All six are invoked by natural language.
+
+### 0. CURATE — "find a skill for X" / "how do I do X?" / "is there a skill that..."
+
+Fast path: top 5 matches for a free-text query, no full evaluation.
+
+1. **If the runtime allows network** (code execution with internet, or a web fetch tool), query skills.sh: `https://skills.sh/api/search?q=<url-encoded query>` (JSON, per-skill results; install with `npx skills add <source> --skill <name>`). Also match the query against `references/catalog.yaml` and, if the user wants "latest", the GitHub topic search below.
+2. **If there is no network**, say so in one line and search `references/catalog.yaml` only.
+3. Rank with the blended formula in `references/signals.md` § Blended ranking (0.35 relevance + 0.30 project fit + 0.20 trust + 0.15 popularity). Exclude skills the registry marks installed; downrank previously SKIPped ones (×0.3, labelled).
+4. Show the top 5, each with a one-line `why:`, trust tier, the project-scope install command, and the footer *"Scan before installing — ask me to SCAN any of these."* Never suggest a global, no-confirmation install (`-g -y`).
+5. If `find-skills` appears in the results, label it "overlaps Skills Curator". If `vercel-labs/find-skills` is installed, note it overlaps (same index, ranked by install count only); one finder is enough. Third-party audit badges (Socket/Snyk/Gen) from skills.sh are advisory only, not a substitute for SCAN. No query is logged by this skill.
 
 ### 1. RECOMMEND — "what skills fit this project?"
 
@@ -279,11 +290,7 @@ for topic in claude-skill claude-code-skill agent-skill; do
 done
 ```
 
-Parse each JSON, classify trust by author (`anthropics` / `vercel-labs` / `microsoft` / `google` → official; `ComposioHQ` / `supermemoryai` / `remotion-dev` / `firecrawl` → high; `obra` → medium; else unknown), build catalog entries with empty pros/cons. **Curated entries from `references/catalog.yaml` win on id collision** — never overwrite hand-written pros/cons.
-
-Unauthenticated GitHub API rate-limit: 60 req/hr per IP. If hit, fall back to embedded catalog and warn the user.
-
-Optionally cache the merged catalog to `/mnt/user-data/outputs/catalog.json` so the user can pin it in Project Knowledge.
+Parse each JSON, classify trust by author (`anthropics` / `vercel-labs` / `microsoft` / `google` → official; `ComposioHQ` / `supermemoryai` / `remotion-dev` / `firecrawl` → high; `obra` → medium; else unknown), build entries with empty pros/cons. **Curated entries win on id collision.** Unauthenticated rate-limit is 60 req/hr per IP; if hit, fall back to the embedded catalog and warn the user.
 
 ---
 
@@ -318,4 +325,4 @@ If the user has Claude Code installed and any of those matter, point them at:
 
 (Alternative: `npx skills add captkernel/Skills_Curator`.)
 
-The editions don't conflict — they target different runtimes, and the registry JSON schema is shared so a user can sync between them via a Gist.
+The editions don't conflict; the registry schema is shared, so a Gist can sync between them.

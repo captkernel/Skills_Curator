@@ -8,7 +8,7 @@ This is the source repo for Skills Curator. The end-user README is `README.md`. 
 
 A plugin that handles judgment about other skills: pre-install evaluation, security scanning, project-aware recommendation, persistent decision history, cross-agent migration. Single-file Python engine + three SKILL.md variants + 3 slash commands + a plugin manifest.
 
-The pitch: *"Decide once. Re-decide never."* Other tools manage skills; Skills Curator persists your judgment.
+The headline: *"The intelligence layer for Claude skills."* find-skills tells you what's popular; Skills Curator tells you what fits your project and is safe to install, and persists that judgment.
 
 ## Three editions (as of v4.5.0)
 
@@ -82,7 +82,8 @@ Skills_Curator/                             ← repo root
 │   └── scripts/
 │       └── registry.py                     ← stdlib-only engine, ~2.3k lines
 ├── skills/skills-curator-lite/             ← Lite edition (Claude Code default)
-│   └── SKILL.md                            ← embedded catalog + spec, no engine
+│   ├── SKILL.md                            ← slim spec (≤300 lines), no engine
+│   └── references/                         ← catalog.yaml, signals, platforms, security-patterns, persistence, customize, templates
 ├── editions/skills-curator-claudeai/       ← claude.ai edition (web + desktop, v4.5.0+)
 │   ├── SKILL.md                            ← slim spec (~250 lines)
 │   ├── INSTALL.md                          ← user install guide (zip + upload)
@@ -91,7 +92,7 @@ Skills_Curator/                             ← repo root
 │       ├── signals.md
 │       ├── security-patterns.md
 │       └── persistence.md
-└── tests/                                  ← 37 pytest cases (Python edition only)
+└── tests/                                  ← 58 pytest cases (Python edition only)
     ├── conftest.py                         ← isolated tmp_path fixture
     ├── test_registry_core.py
     ├── test_migration.py
@@ -108,7 +109,7 @@ Skills_Curator/                             ← repo root
 
 Before running `deploy.py`:
 
-1. `python -m pytest tests/` — all 37 pass
+1. `python -m pytest tests/` — all 58 pass
 2. `python skills/skills-curator/scripts/registry.py --validate --strict` — exit 0
 3. `python skills/skills-curator/scripts/registry.py --version` — matches `VERSION`, `plugin.json`, `SKILL.md` metadata, `CHANGELOG.md`
 4. README claims match what's actually shipped (especially command lists)
@@ -133,20 +134,8 @@ Before running `deploy.py`:
 
 ---
 
-## Why no install counts?
+## Install counts and skills.sh
 
-skills.sh has no public JSON API for per-skill telemetry. The `sk_live_` API gates everything behind email-Vercel-for-a-key. Earlier versions scraped HTML — that was brittle and dishonest for a tool whose pitch is judgment over popularity. Removed in v4.0.
+skills.sh exposes a public JSON search API (`https://skills.sh/api/search?q=&limit=`) — the same one the official `npx skills find` command uses. Since v4.7.0 it is a third discovery source. Install counts feed popularity, which is capped at 15% of the blended score (0.35 relevance + 0.30 fit + 0.20 trust + 0.15 popularity): judgment over popularity, not instead of it. `SKILLS_SH_API_KEY` is optional.
 
-If a future version adds it back, the env var should be `SKILLS_SH_API_KEY` (already plumbed in `_http_get`), and the source of truth should be the API not scrape. Don't add scraping back unless skills.sh provides a stable public schema.
-
----
-
-## Schema versions
-
-`registry.py` migrates v1 → v2 → v3 in `_migrate()`. Migration **persists once on first read** (this was a v3.x bug — used to print the migration banner on every load).
-
-When bumping schema:
-1. Add the new field to `_migrate()` with a `setdefault` for old skills
-2. Bump `SCHEMA_VERSION`
-3. Update `references/schema.md`
-4. Add a test in `tests/test_migration.py`
+Still never scrape skills.sh HTML (removed in v4.0, brittle). Partner audits come from `https://www.skills.sh/tele/audit` — undocumented, advisory only, never block on it.

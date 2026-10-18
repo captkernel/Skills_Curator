@@ -35,7 +35,13 @@ Skill type: <Capability Uplift | Encoded Preference>
 
 ### ⚠️ Security Note  (omit if not applicable)
 - <any community skill risks, network calls, or data access to be aware of>
+
+### Third-party audits (advisory)  (omit if none returned)
+- Gen: <risk> · Socket: <risk>, <n> alerts · Snyk: <risk>
+- Details: https://skills.sh/<owner/repo>
 ```
+
+**Third-party audits.** When a skill's source is known (`npx skills add <owner/repo> --skill <name>` or an `owner/repo` source), `--eval`, `--check` and `--export-eval` show partner audit results from skills.sh (Gen, Socket, Snyk) — the same data `npx skills add` displays. They are advisory: best effort with a 3s timeout, silently omitted on any failure or with `SKILLS_NO_TELEMETRY=1`, and never block a verdict. Our own `--check` scan remains the gate.
 
 ---
 

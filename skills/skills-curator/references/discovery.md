@@ -14,19 +14,23 @@ Reads the project directory and extracts structured signals:
 - Existing skills installed globally and project-locally
 - Outputs a unified tag set used for matching
 
-**Stage 2 — Catalog Fetch (`_load_catalog`)**
-Loads a curated catalog of trusted skills, enriched live from `skills.sh` if network is available. The merge is keyed by skill `id` — built-in seed entries take precedence, with discovered entries appended.
+**Stage 2 — Catalog Fetch (`_load_catalog`, `_fetch_skills_sh`)**
+Three sources:
+1. **Curated seed** (`KNOWN_SKILLS`) — hand-written pros/cons, always available offline.
+2. **GitHub topics** (`claude-skill`, `claude-code-skill`, `agent-skill`) — cached with the seed at `~/.claude/skills/skills-curator/catalog.json` for 24 hours. Force refresh with `--refresh`.
+3. **skills.sh index** (~1.38M skills) — queried live per search via its JSON API (`https://skills.sh/api/search?q=…&limit=20`, the same endpoint `npx skills find` uses). Query-time only, never cached into the catalog. Each hit maps to `npx skills add <source> --skill <skillId>`, trust by owner, tag `skills-sh`, its install count, and a link `https://skills.sh/<source>/<skillId>`. Used by `--curate`.
 
-The catalog is cached at `~/.claude/skills/skills-curator/catalog.json` for 24 hours.
-Force refresh with `--refresh`.
+Merge: curated entries win on collision (same `owner/repo/skill`) — they keep their pros/cons and only gain the install count. We never scrape skills.sh HTML (removed in v4.0); this is a JSON API.
 
-**Stage 3 — Match and Rank (`cmd_recommend`)**
-For each catalog skill not already in the registry:
-- Counts tag overlap between project signals and skill tags
-- Adds weighted bonus for popularity (when available)
-- Adds trust-level bonus (official > high > medium > community)
-- Skips skills already registered (so you only see new suggestions)
-- Splits results into Capability vs Preference groups
+**Stage 3 — Blended rank (`_rank_entries`, used by `--curate`, `--discover TERM`, `--recommend`)**
+`score = 0.35*relevance + 0.30*fit + 0.20*trust + 0.15*popularity`, each in [0,1]:
+- relevance — query terms matched over id/name (1.0), tags (0.8), description (0.6); 1.0 when there is no query
+- fit — project signals found in the entry's tags/name/description (3 matches = 1.0); with a query, fit × relevance
+- trust — official 1.0, high .8, medium .6, community .4, unknown .2
+- popularity — `min(1, log10(installs+1)/6)` (skills.sh installs, else GitHub stars, else 0) — capped at 15% of the score: judgment over popularity
+- decision history — a SKIP for this project multiplies the score by 0.3 (`previously rejected`); ADOPT / installed skills are `already installed` and excluded from `--curate` and `--recommend`
+- every result prints a `why:` line, e.g. `why: match 1.0 · fit .6 (nextjs, react) · trust high · 185K installs`
+- `--recommend` additionally requires at least one tag overlap and splits into Capability vs Preference groups
 
 Recommendation history is saved to `~/.claude/skills/skills-curator/recommendations.json`.
 
@@ -43,7 +47,11 @@ python "$R" --recommend
 # Recommend with fresh catalog
 python "$R" --recommend --refresh
 
-# Search the live catalog
+# Fast path: skills.sh + catalog, ranked for this project (top 5)
+python "$R" --curate "react performance"
+python "$R" --curate "e2e testing" --limit 10
+
+# Full catalog search (curated + GitHub topics), blended rank
 python "$R" --discover react
 
 # List everything in catalog
@@ -91,7 +99,7 @@ your registry?
 
 ### Single-skill response template
 
-When surfacing one specific skill (after `--find` or `--search` returns a clear winner), use this template:
+When surfacing one specific skill (after `--curate` or `--search` returns a clear winner), use this template:
 
 ```
 I found a skill that might help: **<Skill Name>** (<trust-emoji> <trust-level>)
@@ -114,9 +122,9 @@ Always offer `/skill-evaluate` before install for anything not 🏛️ Official 
 
 ## Skill Categories
 
-The recommendation engine maps project signals to these domains. Use these category names + example queries when explaining recommendations or running `--find`:
+The recommendation engine maps project signals to these domains. Use these category names + example queries when explaining recommendations or running `--curate`:
 
-| Category | Project signals that trigger | Example `--find` queries |
+| Category | Project signals that trigger | Example `--curate` queries |
 |---|---|---|
 | Web development | `package.json`, React/Next/Vue/Svelte, `tailwind`, `.tsx`/`.jsx` | `react`, `nextjs`, `tailwind`, `frontend-design` |
 | Backend / APIs | FastAPI, Express, Flask, Django, `requirements.txt` with web frameworks | `api`, `rest`, `graphql`, `auth` |
@@ -129,7 +137,7 @@ The recommendation engine maps project signals to these domains. Use these categ
 | Productivity / git | many feature branches, frequent PRs, conventional commits | `commit-writer`, `pr-review`, `git-workflow` |
 | Documentation generation | `docusaurus`, `sphinx`, `typedoc` | `docgen`, `api-docs`, `readme-builder` |
 
-If the user's request doesn't map to any category, fall through to `--find <free-text>` and rank results by trust × tag overlap as usual.
+If the user's request doesn't map to any category, fall through to `--curate "<free-text>"` — it searches the skills.sh index and blended-ranks the hits.
 
 ---
 
@@ -139,7 +147,8 @@ If the user's request doesn't map to any category, fall through to `--find <free
 2. **Try alternative terms.** Skill authors don't agree on naming. `deploy` / `deployment` / `ci-cd` / `release` may all surface different skills.
 3. **Check official sources first.** `vercel-labs/agent-skills`, `anthropics/skills`, and `microsoft/*` cover most common domains. If the answer is there, stop.
 4. **Use `--scan` to ground the query.** Run `--scan` first, look at the detected tags, and use those as the search vocabulary instead of the user's exact phrasing.
-5. **`--find` and `--discover` are aliases.** Use whichever you remember — same engine.
+5. **Use `--curate` first.** It is the fast path (skills.sh + catalog, one call). `--discover` searches only the curated + GitHub-topic catalog; `--find` is a legacy alias of `--discover`.
+6. **Rival skill.** If `find-skills` is installed too, `--audit` flags it: both trigger on "find a skill" requests — keep one.
 
 ---
 
@@ -159,7 +168,7 @@ If the user's request doesn't map to any category, fall through to `--find <free
 
 ## Catalog Sources
 
-1. **skills.sh** — Public skills catalog. Live-fetched if network is available.
+1. **skills.sh** — Public index (~1.38M skills), JSON search API queried live by `--curate` (5s timeout, best effort; off with `SKILLS_NO_TELEMETRY=1`; optional `SKILLS_SH_API_KEY` sent as Bearer).
 2. **anthropics/skills** — Official Anthropic skill collection
 3. **vercel-labs/agent-skills** — Vercel Engineering's curated skills
 4. **Built-in seed** — Hand-curated high-trust skills always available offline

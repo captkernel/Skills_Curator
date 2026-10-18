@@ -18,7 +18,7 @@ If you have Claude Code, install the Claude Code plugin instead (`/plugin market
 
 A pre-built bundle ships with each release. Skip the build step entirely:
 
-- **[`skills-curator-claudeai.zip`](https://github.com/captkernel/Skills_Curator/raw/main/dist/skills-curator-claudeai.zip)** — 19 KB, SKILL.md at the archive root, ready for upload.
+- **[`skills-curator-claudeai.zip`](https://github.com/captkernel/Skills_Curator/raw/main/dist/skills-curator-claudeai.zip)** — 22 KB, SKILL.md at the archive root, ready for upload.
 
 Or build it yourself from a clone (instructions below).
 
@@ -58,6 +58,8 @@ zip -r ../../skills-curator-claudeai.zip SKILL.md INSTALL.md references
 1. Open claude.ai → **Settings** → **Capabilities** → **Skills**.
 2. Click **Upload skill** and select `skills-curator-claudeai.zip`.
 3. Toggle the skill on for the contexts where you want it active (globally, or per-Project).
+
+Try it: ask *"find a skill for PDF extraction"*. If your conversation has network access, the skill searches skills.sh live; otherwise it falls back to the bundled `references/catalog.yaml` and says so.
 
 ---
 
@@ -145,6 +147,7 @@ You should see the orientation line *"Skills Curator loaded — your intelligenc
 | Cross-agent migration | Removed | 55 platforms | 55 platforms |
 | Engine | Agent + references/ | Agent + embedded YAML | Python single-pass (~2.3k LOC) |
 | Tests | None (no engine) | None | 37 pytest cases |
+| CURATE ("find a skill for X") | ✅ skills.sh search if network is allowed, else bundled catalog | ✅ `--curate` (catalog + GitHub + skills.sh) | ✅ `--curate` (catalog + GitHub + skills.sh) |
 | Headline verb (`CUSTOMIZE`) | ✅ outputs to `/mnt/user-data/outputs/<fork>.zip` | ✅ writes to `~/.claude/skills/<fork>/` | ✅ writes to `~/.claude/skills/<fork>/` |
 
 For migrating skills to other CLI agents (Cursor, Codex, Gemini CLI, etc.), use the Claude Code editions. claude.ai has no equivalent target.

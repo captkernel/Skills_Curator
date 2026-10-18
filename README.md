@@ -4,13 +4,13 @@
 
 # Skills Curator
 
-**Install the skill. Customize it to your stack. Decide once, never re-decide.**
+**Find the skill that fits. Customize it to your stack. Keep the verdict.**
 
 The intelligence layer for Claude skills — surfaces what fits your project, decomposes external skills into project-tailored forks, and persists every judgment.
 
 [![Version](https://img.shields.io/github/v/release/captkernel/Skills_Curator?style=flat-square&label=version)](https://github.com/captkernel/Skills_Curator/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/captkernel/Skills_Curator/validate.yml?branch=main&style=flat-square&label=ci)](.github/workflows/validate.yml)
-[![Tests](https://img.shields.io/badge/tests-37%20passing-success?style=flat-square)](tests/)
+[![Tests](https://img.shields.io/badge/tests-58%20passing-success?style=flat-square)](tests/)
 [![Editions](https://img.shields.io/badge/editions-Lite%20%2B%20Python%20%2B%20claude.ai-blue?style=flat-square)](#editions)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/captkernel/Skills_Curator?style=flat-square)](https://github.com/captkernel/Skills_Curator/commits)
@@ -21,7 +21,7 @@ The intelligence layer for Claude skills — surfaces what fits your project, de
 
 *32 seconds: what it does, and why. — [9:16 reels](https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel.mp4) · [4:5 feed](https://github.com/captkernel/Skills_Curator/raw/main/docs/video/skills-curator-reel-4x5.mp4)*
 
-**Status: Stable · v4.6.2 · 55 supported platforms · Three editions: Lite (default) · Python · claude.ai (web + desktop)**
+**Status: Stable · v4.7.0 · 55 supported platforms · Three editions: Lite (default) · Python · claude.ai (web + desktop)**
 
 </div>
 
@@ -29,12 +29,18 @@ The intelligence layer for Claude skills — surfaces what fits your project, de
 
 ## Install
 
-**Claude Code (plugin, recommended):**
+```bash
+npx skills add captkernel/Skills_Curator
+```
+
+That one line is the main install path (it also registers the skill on the [skills.sh](https://skills.sh) leaderboard). Installs Lite by default and adds the Python tier if Python 3.10+ is found.
+
+**Claude Code (plugin) alternative:**
 ```
 /plugin marketplace add captkernel/plugins
 /plugin install skills-curator@captkernel
 ```
-Other ways: the one-line installer below, a manual copy into `~/.claude/skills/`, or the claude.ai zip.
+Other ways: clone + installer, a manual copy into `~/.claude/skills/`, or the claude.ai zip (below).
 
 - **`--customize` forks a skill into your stack.** It splits an external SKILL.md into sections, scores each one against your project, and rewrites mismatched examples in your stack. The capability transfers; the author's accent doesn't.
 - **Token cost is measured, not estimated.** 249 tokens always-on per session and at most 1,140 tokens per command, flat from an empty folder to a 17,680-file project ([report](docs/token-cost-report.html)).
@@ -43,10 +49,7 @@ Other ways: the one-line installer below, a manual copy into `~/.claude/skills/`
 ### Other ways to install
 
 ```bash
-# One-liner (installs Lite by default, adds Python tier if Python 3.10+ is found):
-npx skills add captkernel/Skills_Curator
-
-# Or clone + run an installer (copies into ~/.claude/skills/ and ~/.claude/commands/):
+# Clone + run an installer (copies into ~/.claude/skills/ and ~/.claude/commands/):
 git clone https://github.com/captkernel/Skills_Curator
 cd Skills_Curator
 bash install.sh                                      # auto; or --lite-only / --with-python
@@ -61,6 +64,25 @@ After install, the skill auto-loads in any new Claude Code session and announces
 
 ---
 
+## Skills Curator vs find-skills
+
+`find-skills` ([vercel-labs/skills](https://github.com/vercel-labs/skills)) is the most-installed skill on skills.sh (about 3.9M installs as of Oct 2026). It is a short prompt that runs `npx skills find` against the skills.sh index and ranks by install count. **find-skills tells you what's popular; Skills Curator tells you what fits your project and is safe to install.** Skills Curator searches the same skills.sh index, plus a curated catalog and GitHub topic search, then adds judgment.
+
+| | find-skills | **Skills Curator** |
+|---|---|---|
+| Coverage | skills.sh index (about 1.38M skills as of Oct 2026) | skills.sh search + trust-rated curated catalog + GitHub topic search |
+| Ranking signal | Install count | Blended: 0.35 relevance + 0.30 project fit + 0.20 trust + 0.15 popularity (log-scaled); with a query, fit counts as fit × relevance; `why:` line per result |
+| Project fit | None | Reads your stack, deps and CLAUDE.md |
+| Security | Advisory partner audits in the CLI | Our own pre-install scan; Socket/Snyk/Gen audits shown as advisory extras |
+| Persistence | None | Every verdict saved; rejected skills are down-ranked, installed ones excluded |
+| Install safety | Installs with `-g -y` (global, no confirmation) | Project scope, never `-g -y` |
+| Customize | None | `--customize` forks a skill into your stack |
+| Migration | None | 55 agent platforms |
+
+Try the fast path: `python registry.py --curate "pdf extraction" --limit 5` (or just ask Claude "find a skill for PDF extraction"). Queries are not logged by us. If find-skills is installed, Skills Curator flags it as overlapping.
+
+---
+
 ## Editions
 
 Three editions ship in one repo, targeting two different runtimes. Pick by **where you run Claude**, not by feature wish-list:
@@ -68,7 +90,7 @@ Three editions ship in one repo, targeting two different runtimes. Pick by **whe
 - **Claude Code (CLI)** → Lite (default) or Python (opt-in performance tier). The plugin installs both; `npx skills add` installs Lite and adds Python if 3.10+ is found.
 - **claude.ai (web + desktop)** → claude.ai edition. Uploaded as a zip via Settings → Capabilities → Skills.
 
-The three editions share the same judgment model and the same registry JSON schema (v3.0) — a registry written by one edition can be read by another. Lite needs no engine; the Python tier adds single-pass speed on 100+ skills, 37 regression tests and Gist sync; the claude.ai edition drops `PLATFORMS` / `MIGRATE` and saves forks as uploadable zips. Full side-by-side table: [`docs/reference.md`](docs/reference.md#editions-full-comparison).
+The three editions share the same judgment model and the same registry JSON schema (v3.0) — a registry written by one edition can be read by another. Lite needs no engine; the Python tier adds single-pass speed on 100+ skills, 58 regression tests and Gist sync; the claude.ai edition drops `PLATFORMS` / `MIGRATE` and saves forks as uploadable zips. Full side-by-side table: [`docs/reference.md`](docs/reference.md#editions-full-comparison).
 
 ---
 
@@ -104,7 +126,7 @@ Skills Curator inverts the model. It's context-aware — reads what you're build
 | Install / list skills | ✅ | ✅ |
 | **Context-aware** — recommendations match your stack, refresh on project change | ❌ | ✅ `--auto` |
 | **Listens for symptoms** — *"slow tests"* → recommends test-perf skills | ❌ | ✅ `--symptoms` (17 patterns) |
-| **Trust-rated catalog** — curated + live GitHub topic search | ⚠️ varies | ✅ 19 curated + live |
+| **Trust-rated catalog** — curated + GitHub topic search + skills.sh search | ⚠️ varies | ✅ 19 curated + live |
 | **Pre-install evaluation** with pros / cons / conflicts / verdict | ❌ | ✅ Persisted forever |
 | **Skill decomposition + project-voice rewrite** — adopt capability without inheriting voice | ❌ | ✅ `--customize` |
 | **Pre-install security scan** — 15 risk patterns | ⚠️ post-install only | ✅ Pre-install, automatic |
@@ -112,9 +134,9 @@ Skills Curator inverts the model. It's context-aware — reads what you're build
 | **Cross-agent migration** with verified paths | ⚠️ partial | ✅ **55 platforms** |
 | **Cross-device sync** via private GitHub Gist | ❌ | ✅ |
 | **Bounded token cost** — engine reads project in subprocess, not Claude's context | ❌ | ✅ ([report](docs/token-cost-report.html)) |
-| Honest about install counts (no fake popularity scraping) | ❌ | ✅ |
+| Popularity is a minor signal (15%), never the headline | ❌ | ✅ |
 
-`--auto` re-runs recommendations only when your project's key files change, `--symptoms` maps complaints like *"my tests are slow"* to skill categories, and `--find` / `--discover` searches the catalog by keyword. More in [The intelligence layer](docs/reference.md#the-intelligence-layer).
+`--auto` re-runs recommendations only when your project's key files change, `--symptoms` maps complaints like *"my tests are slow"* to skill categories, and `--curate "<query>"` searches the catalog, GitHub and skills.sh with project-aware ranking. More in [The intelligence layer](docs/reference.md#the-intelligence-layer).
 
 ---
 
@@ -184,7 +206,7 @@ Slash commands: `/skill-evaluate`, `/skill-recommend`, `/skill-audit`. Architect
 
 ## Project status
 
-**Stable.** v4.6.2 current; schema v3 (stable since v4.0). Lite (default, zero deps) + Python full (opt-in). CI runs 3 OS × 4 Python versions on every PR, with 37 pytest cases (Python tier). Catalog: 19 curated entries + live GitHub topic discovery (24h cache). 55 platforms, mirrored from `vercel-labs/skills`. MIT. Maintainer: [@captkernel](https://github.com/captkernel).
+**Stable.** v4.7.0 current; schema v3 (stable since v4.0). Lite (default, zero deps) + Python full (opt-in). CI runs 3 OS × 4 Python versions on every PR, with 58 pytest cases (Python tier). Catalog: 19 curated entries + live GitHub topic discovery (24h cache) + skills.sh search. 55 platforms, mirrored from `vercel-labs/skills`. MIT. Maintainer: [@captkernel](https://github.com/captkernel).
 
 ---
 

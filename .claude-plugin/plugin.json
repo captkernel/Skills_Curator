@@ -1,7 +1,7 @@
 {
   "name": "skills-curator",
-  "version": "4.6.2",
-  "description": "Intelligence layer for Claude skills. Maintains a trust-rated catalog (curated + GitHub topic search), recommends what fits your project, returns ranked lists with pros, cons and customization advice, persists every decision, and migrates skills across 55 supported agent platforms. The plugin ships two tiers: Lite (Python-free, the default) and Python full (performance tier). A claude.ai edition for the claude.ai Skills feature is a separate download.",
+  "version": "4.7.0",
+  "description": "Intelligence layer for Claude skills. Searches skills.sh, a trust-rated curated catalog and GitHub topics with blended ranking (relevance, project fit, trust, popularity), recommends what fits your project, returns ranked lists with pros, cons and customization advice, persists every decision, and migrates skills across 55 supported agent platforms. The plugin ships two tiers: Lite (Python-free, the default) and Python full (performance tier). A claude.ai edition for the claude.ai Skills feature is a separate download.",
   "author": {
     "name": "captKernel",
     "url": "https://github.com/captkernel"

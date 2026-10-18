@@ -19,6 +19,7 @@ Usage:
   python registry.py --recommend [--refresh]    # Project-aware recommendations (full output)
   python registry.py --discover [term]          # Search live catalog
   python registry.py --find [term]              # Alias for --discover
+  python registry.py --curate "<query>" [--limit N]  # skills.sh + catalog, ranked for this project
   python registry.py --scan                     # Project tech signals only
   python registry.py --check <path>             # Security scan a skill folder
   python registry.py --audit                    # Duplicate + conflict detection
@@ -70,15 +71,17 @@ for _stream in (sys.stdout, sys.stderr):
 
 import hashlib
 import json
+import math
 import os
 import re
 import argparse
+import urllib.parse
 import urllib.request
 import urllib.error
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-VERSION = "4.6.2"
+VERSION = "4.7.0"
 SCHEMA_VERSION = "3.0"
 
 SKILL_DIR            = Path.home() / ".claude" / "skills" / "skills-curator"
@@ -526,6 +529,7 @@ def cmd_eval(skill_id: str, project: str, verdict: str, summary: str,
             if pros:      print(f"   pros     : {len(pros)}")
             if cons:      print(f"   cons     : {len(cons)}")
             if conflicts: print(f"   conflicts: {len(conflicts)}")
+            _print_partner_audits(s)
             return
     print(f"❌ Skill '{skill_id}' not found.")
 
@@ -636,6 +640,13 @@ def cmd_export_eval(skill_id: str) -> None:
     elif skill.get("security_reviewed"):
         lines.append("## 🔒 Security")
         lines.append("- Marked as security-reviewed in registry")
+        lines.append("")
+
+    audit_lines = _skill_audit_lines(skill)
+    if audit_lines:
+        lines.append("## Third-party audits (advisory)")
+        for ln in audit_lines:
+            lines.append(f"- {ln}")
         lines.append("")
 
     lines.append("---")
@@ -1003,8 +1014,12 @@ def _load_catalog(refresh: bool = False) -> list[dict]:
     Curated entries (KNOWN_SKILLS) include hand-written pros/cons. GitHub
     topic search adds breadth but those entries arrive with empty pros/cons
     and "unknown"-tier trust unless the author is in _TRUSTED_AUTHORS.
-    Cached for CATALOG_TTL_HOURS. We never scrape skills.sh HTML — that was
-    deliberately removed in v4.0 (brittle, dishonest for a judgment tool).
+    Cached for CATALOG_TTL_HOURS. We still never scrape skills.sh HTML — that
+    was deliberately removed in v4.0 (brittle, dishonest for a judgment tool).
+    skills.sh coverage now comes from its JSON search API (the same endpoint
+    the official vercel-labs/skills CLI uses), queried per search by
+    _fetch_skills_sh() and merged at query time — never cached into this
+    topic catalog.
     """
     if not refresh and CATALOG_FILE.exists():
         try:
@@ -1026,6 +1041,442 @@ def _load_catalog(refresh: bool = False) -> list[dict]:
             "skills": merged,
         }, f, indent=2)
     return merged
+
+
+# ─── skills.sh discovery + blended ranking ────────────────────────────────────
+# skills.sh indexes ~1.38M skills. We query its JSON search API (the endpoint
+# the official vercel-labs/skills CLI uses for `npx skills find`) at query
+# time — results are never cached into the topic catalog. Breadth comes from
+# skills.sh; judgment (fit, trust, decision history) stays ours.
+
+SKILLS_SH_BASE      = "https://skills.sh"
+SKILLS_SH_AUDIT_URL = "https://www.skills.sh/tele/audit"
+SKILLS_SH_TIMEOUT   = 5
+AUDIT_TIMEOUT       = 3
+
+TRUST_SCORES = {"official": 1.0, "high": 0.8, "medium": 0.6, "community": 0.4, "unknown": 0.2}
+RANK_WEIGHTS = {"relevance": 0.35, "fit": 0.30, "trust": 0.20, "popularity": 0.15}
+SKIP_PENALTY = 0.3
+# skills.sh already matched these server-side (semantic search), so a hit
+# never scores below this relevance floor even when no literal term matches.
+SKILLS_SH_RELEVANCE_FLOOR = 0.3
+
+_CTRL_RE = re.compile(r"[\x00-\x1f\x7f-\x9f]")
+_STOPWORDS = {"a", "an", "the", "for", "and", "or", "of", "to", "in", "on",
+              "with", "skill", "skills", "my", "best"}
+
+
+def _sanitize(value) -> str:
+    """Strip control characters (terminal escapes) from untrusted API text."""
+    return _CTRL_RE.sub("", str(value or "")).strip()
+
+
+def _skills_sh_headers() -> dict:
+    h = {"Accept": "application/json"}
+    if SKILLS_SH_API_KEY:
+        h["Authorization"] = f"Bearer {SKILLS_SH_API_KEY}"
+    return h
+
+
+def _skills_sh_to_entry(item: dict) -> dict | None:
+    """Map one skills.sh search hit to a catalog entry.
+
+    Response items look like {"id": "owner/repo/skill", "source": "owner/repo",
+    "skillId": "skill", "name": "...", "installs": N}. skillId (fallback name)
+    feeds --skill and the skills.sh link; the full id is the dedupe key.
+    """
+    source = _sanitize(item.get("source"))
+    skill = _sanitize(item.get("skillId") or item.get("name"))
+    if not source or "/" not in source or not skill:
+        return None
+    owner = source.split("/", 1)[0]
+    try:
+        installs = int(item.get("installs") or 0)
+    except (TypeError, ValueError):
+        installs = 0
+    return {
+        "id": skill,
+        "sh_id": _sanitize(item.get("id")) or f"{source}/{skill}",
+        "name": _sanitize(item.get("name")) or skill,
+        "skill": skill,
+        "source": source,
+        "type": "capability",
+        "trust": _classify_trust(owner),
+        "install": f"npx skills add {source} --skill {skill}",
+        "tags": ["skills-sh"],
+        "description": "",
+        "installs": installs,
+        "url": f"{SKILLS_SH_BASE}/{source}/{skill}",
+        "pros": [],
+        "cons": [],
+    }
+
+
+def _fetch_skills_sh(query: str, limit: int = 20, owner: str | None = None,
+                     timeout: int = SKILLS_SH_TIMEOUT) -> list[dict]:
+    """Search the skills.sh index. Best effort: [] on any error, empty query,
+    or when SKILLS_NO_TELEMETRY=1 (the same switch that gates all catalog
+    search and SKILL.md fetches)."""
+    if NO_TELEMETRY or not (query or "").strip():
+        return []
+    params = {"q": query.strip(), "limit": str(limit)}
+    if owner:
+        params["owner"] = owner
+    url = f"{SKILLS_SH_BASE}/api/search?{urllib.parse.urlencode(params)}"
+    try:
+        raw = _http_get(url, headers=_skills_sh_headers(), timeout=timeout)
+        if not raw:
+            return []
+        data = json.loads(raw)
+        items = data.get("skills", []) if isinstance(data, dict) else []
+    except Exception:
+        return []
+    out: list[dict] = []
+    seen: set[str] = set()
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        e = _skills_sh_to_entry(item)
+        if e and e["sh_id"] not in seen:
+            seen.add(e["sh_id"])
+            out.append(e)
+    return out
+
+
+def _skill_source_parts(skill: dict) -> tuple[str, str | None] | None:
+    """Extract (owner/repo, skill-name|None) from an entry's install command
+    or source. Returns None when no GitHub-style source is known."""
+    install = skill.get("install") or skill.get("install_command") or ""
+    m = re.search(r"skills\s+add\s+([\w.-]+/[\w.-]+)(?:\s+--skill\s+([\w.:-]+))?", install)
+    if m:
+        return m.group(1), m.group(2) or skill.get("skill")
+    src = (skill.get("source") or "").strip()
+    m = re.match(r"^(?:https?://github\.com/)?([\w.-]+/[\w.-]+?)(?:\.git)?/?$", src)
+    if m:
+        return m.group(1), skill.get("skill")
+    return None
+
+
+def _entry_key(entry: dict) -> str:
+    """Stable 'owner/repo/skill' key (or 'owner/repo' for whole-repo installs)."""
+    if entry.get("sh_id"):
+        return entry["sh_id"].lower()
+    parts = _skill_source_parts(entry)
+    if parts and parts[1]:
+        return f"{parts[0]}/{parts[1]}".lower()
+    return (entry.get("source") or entry.get("id", "")).lower()
+
+
+def _merge_find_results(catalog: list[dict], sh_entries: list[dict]) -> list[dict]:
+    """Merge skills.sh hits into the curated + GitHub-topic catalog. Curated
+    entries win on collision (same owner/repo/skill): they keep their
+    pros/cons/trust and only gain the skills.sh install count + link. A
+    skills.sh hit whose short id collides with a different source is kept,
+    re-keyed by its full id so neither shadows the other."""
+    merged = [dict(s) for s in catalog]
+    by_key = {_entry_key(s): s for s in merged}
+    ids = {s.get("id") for s in merged}
+    for e in sh_entries:
+        k = _entry_key(e)
+        if k in by_key:
+            cur = by_key[k]
+            if not cur.get("installs"):
+                cur["installs"] = e.get("installs", 0)
+            cur.setdefault("url", e.get("url"))
+            if "skills-sh" not in cur.get("tags", []):
+                cur["tags"] = list(cur.get("tags", [])) + ["skills-sh"]
+            continue
+        e = dict(e)
+        if e["id"] in ids:
+            e["id"] = e["sh_id"]
+        ids.add(e["id"])
+        by_key[k] = e
+        merged.append(e)
+    return merged
+
+
+def _tokens(text: str) -> set[str]:
+    return {t for t in re.split(r"[^a-z0-9+#]+", (text or "").lower()) if len(t) > 1}
+
+
+def _query_terms(query: str | None) -> list[str]:
+    return [t for t in sorted(_tokens(query or "")) if t not in _STOPWORDS]
+
+
+def _relevance(entry: dict, query: str | None) -> float:
+    """Share of query terms that match, weighted by where they match:
+    id/name 1.0, tags 0.8, description 0.6. 1.0 when there is no query."""
+    terms = _query_terms(query)
+    if not terms:
+        return 1.0
+    name_t = _tokens(f"{entry.get('id', '')} {entry.get('name', '')} {entry.get('skill', '')}")
+    tag_t: set[str] = set()
+    for t in entry.get("tags", []):
+        tag_t |= _tokens(t)
+    desc_t = _tokens(entry.get("description", ""))
+    total = 0.0
+    for term in terms:
+        if term in name_t:
+            total += 1.0
+        elif term in tag_t:
+            total += 0.8
+        elif term in desc_t:
+            total += 0.6
+    rel = total / len(terms)
+    if "skills-sh" in entry.get("tags", []):
+        rel = max(rel, SKILLS_SH_RELEVANCE_FLOOR)
+    return round(min(1.0, rel), 4)
+
+
+def _fit(entry: dict, project_tags) -> tuple[float, list[str]]:
+    """Overlap of the entry's tags/name/description with project signals.
+    Three matching signals (or all of them, for small projects) = full fit."""
+    ptags = {t.lower() for t in (project_tags or [])}
+    if not ptags:
+        return 0.0, []
+    words: set[str] = set()
+    for t in entry.get("tags", []):
+        words.add(t.lower())
+        words |= _tokens(t)
+    words |= _tokens(f"{entry.get('id', '')} {entry.get('name', '')} {entry.get('description', '')}")
+    matched = sorted(ptags & words)
+    return round(min(1.0, len(matched) / min(3, len(ptags))), 4), matched
+
+
+def _popularity(entry: dict) -> tuple[float, int | None, str]:
+    """min(1, log10(n+1)/6) over installs (skills.sh) or GitHub stars."""
+    for key, label in (("installs", "installs"), ("weekly_installs", "installs"),
+                       ("stars", "stars")):
+        n = entry.get(key)
+        if isinstance(n, (int, float)) and n > 0:
+            return round(min(1.0, math.log10(n + 1) / 6), 4), int(n), label
+    return 0.0, None, ""
+
+
+def _blended_score(relevance: float, fit: float, trust: float, popularity: float) -> float:
+    return round(RANK_WEIGHTS["relevance"] * relevance + RANK_WEIGHTS["fit"] * fit
+                 + RANK_WEIGHTS["trust"] * trust + RANK_WEIGHTS["popularity"] * popularity, 4)
+
+
+def _decision_index(registry: dict, project_name: str,
+                    existing_skills=None) -> tuple[set[str], set[str]]:
+    """Return (rejected_ids, installed_ids) for this project from the registry
+    decision history plus skill folders found on disk. The latest verdict for
+    this project wins: SKIP → rejected; ADOPT or active here → installed."""
+    rejected: set[str] = set()
+    installed: set[str] = {s.lower() for s in (existing_skills or [])}
+    project_name = (project_name or "").lower()
+    for s in registry.get("skills", []):
+        sid = s.get("id", "").lower()
+        evs = [e for e in s.get("evaluation_history", []) if (e.get("project") or "").lower() == project_name]
+        last = evs[-1].get("verdict") if evs else None
+        if last == "skip":
+            rejected.add(sid)
+        elif last == "adopt" or project_name in {p.lower() for p in s.get("active_in_projects", [])}:
+            installed.add(sid)
+    return rejected, installed
+
+
+def _rank_entries(entries: list[dict], query: str | None, project_tags,
+                  rejected: set[str] | None = None,
+                  installed: set[str] | None = None,
+                  exclude_installed: bool = False) -> list[dict]:
+    """Blended rank: 0.35 relevance + 0.30 fit + 0.20 trust + 0.15 popularity.
+    With a query, fit is scaled by relevance (fit x relevance).
+    SKIP-for-this-project entries get score*0.3 ("previously rejected");
+    installed ones are flagged "already installed" (or dropped when
+    exclude_installed)."""
+    rejected = rejected or set()
+    installed = installed or set()
+    out: list[dict] = []
+    for e in entries:
+        ids = {e.get("id", "").lower(), (e.get("skill") or "").lower()} - {""}
+        flags: list[str] = []
+        if ids & installed:
+            if exclude_installed:
+                continue
+            flags.append("already installed")
+        rel = _relevance(e, query)
+        fit, matched = _fit(e, project_tags)
+        # With a query, fit only counts as far as the entry matches it, so a
+        # weak match can't outrank a strong one on project fit alone.
+        if _query_terms(query):
+            fit = round(fit * rel, 4)
+        trust = TRUST_SCORES.get(e.get("trust", "unknown"), TRUST_SCORES["unknown"])
+        pop, count, count_label = _popularity(e)
+        score = _blended_score(rel, fit, trust, pop)
+        if ids & set(RIVAL_SKILLS):
+            flags.append("overlaps Skills Curator")
+        if ids & rejected:
+            score = round(score * SKIP_PENALTY, 4)
+            flags.append("previously rejected")
+        out.append({"entry": e, "score": score, "relevance": rel, "fit": fit,
+                    "matched": matched, "trust": trust, "popularity": pop,
+                    "count": count, "count_label": count_label, "flags": flags})
+    out.sort(key=lambda r: (-r["score"], -(r["count"] or 0), r["entry"].get("id", "")))
+    return out
+
+
+def _fmt_count(n: int | None) -> str:
+    if not n:
+        return ""
+    if n >= 1_000_000:
+        return f"{n / 1_000_000:.1f}M".replace(".0M", "M")
+    if n >= 1_000:
+        return f"{round(n / 1_000)}K"
+    return str(n)
+
+
+def _fmt_frac(x: float) -> str:
+    if x >= 1:
+        return "1.0"
+    if x <= 0:
+        return "0"
+    return f"{x:.2f}".lstrip("0").rstrip("0").rstrip(".")
+
+
+def _why_line(r: dict, show_relevance: bool = True) -> str:
+    """One line exposing every ranking component, e.g.
+    `why: match 1.0 · fit .67 (react, nextjs) · trust official · 812K installs`."""
+    parts: list[str] = []
+    if show_relevance:
+        parts.append(f"match {_fmt_frac(r['relevance'])}")
+    if r["matched"]:
+        parts.append(f"fit {_fmt_frac(r['fit'])} ({', '.join(r['matched'][:4])})")
+    else:
+        parts.append("fit 0")
+    parts.append(f"trust {r['entry'].get('trust', 'unknown')}")
+    if r["count"]:
+        parts.append(f"{_fmt_count(r['count'])} {r['count_label']}")
+    else:
+        parts.append("popularity unknown")
+    parts.extend(r["flags"])
+    return "why: " + " · ".join(parts) + f"  [score {r['score']:.2f}]"
+
+
+def cmd_curate(query: str | None, project_dir: Path | None = None,
+               limit: int = 5, refresh: bool = False,
+               owner: str | None = None) -> list[dict]:
+    """Fast path: one call searches the skills.sh index (~1.38M skills) plus
+    the curated + GitHub-topic catalog, then ranks with the blended score
+    against this project's signals and decision history. Installed/adopted
+    skills are excluded; previously rejected ones sink. Returns the shown rows."""
+    project_dir = project_dir or Path.cwd()
+    query = (query or "").strip()
+    signals = _scan_project(project_dir)
+    registry = load_registry()
+    rejected, installed = _decision_index(registry, project_dir.name,
+                                          signals.get("existing_skills", []))
+    sh = _fetch_skills_sh(query, owner=owner) if query else []
+    entries = _merge_find_results(_load_catalog(refresh), sh)
+    ranked = _rank_entries(entries, query or None, signals["tags"],
+                           rejected, installed, exclude_installed=True)
+    if query:
+        ranked = [r for r in ranked if r["relevance"] > 0]
+    top = ranked[:max(1, limit)]
+
+    label = f"'{query}'" if query else "project fit"
+    if sh:
+        src = "skills.sh + catalog"
+    elif query and NO_TELEMETRY:
+        src = "catalog only (SKILLS_NO_TELEMETRY=1)"
+    elif query:
+        src = "catalog only (skills.sh unavailable)"
+    else:
+        src = "catalog"
+    print(f"\n🔎 Curate {label}: {len(ranked)} candidate(s) from {src}, "
+          f"ranked for {project_dir.name}\n")
+    if not top:
+        print("  No matches. Try a broader query.\n")
+        return []
+    for i, r in enumerate(top, 1):
+        e = r["entry"]
+        print(f"  {i}. {e.get('name', e['id'])}  ({e.get('source', '?')})")
+        if e.get("description"):
+            print(f"     {e['description'][:90]}")
+        print(f"     {_why_line(r, show_relevance=bool(query))}")
+        print(f"     install: {e.get('install', '?')}")
+        if e.get("url"):
+            print(f"     {e['url']}")
+        print()
+    print("  Scan before installing: registry.py --check <path>\n")
+    return top
+
+
+def _fetch_partner_audits(source: str, skill: str,
+                          timeout: int = AUDIT_TIMEOUT) -> dict | None:
+    """Third-party audit results (Gen/ATH, Socket, Snyk) from the skills.sh
+    audit endpoint, requested exactly as `npx skills add` does:
+    GET https://www.skills.sh/tele/audit?source=<owner/repo>&skills=<skill>
+    → {"<skill>": {"ath": {"risk"}, "socket": {"risk", "alerts"}, "snyk": {"risk"}}}.
+    Advisory and best effort: None on any error, timeout, or
+    SKILLS_NO_TELEMETRY=1. Never blocks anything."""
+    if NO_TELEMETRY or not source or not skill:
+        return None
+    params = urllib.parse.urlencode({"source": source, "skills": skill})
+    try:
+        raw = _http_get(f"{SKILLS_SH_AUDIT_URL}?{params}", timeout=timeout)
+        if not raw:
+            return None
+        data = json.loads(raw)
+        audit = data.get(skill) if isinstance(data, dict) else None
+        return audit if isinstance(audit, dict) and audit else None
+    except Exception:
+        return None
+
+
+_PARTNER_LABELS = {"ath": "Gen", "socket": "Socket", "snyk": "Snyk"}
+
+
+def _audit_lines(source: str, skill: str) -> list[str]:
+    """Render partner audits as plain lines ([] when nothing is known)."""
+    audit = _fetch_partner_audits(source, skill)
+    if not audit:
+        return []
+    lines: list[str] = []
+    for key, data in audit.items():
+        if not isinstance(data, dict):
+            continue
+        label = _PARTNER_LABELS.get(key, _sanitize(key).title())
+        risk = _sanitize(data.get("risk", "unknown")) or "unknown"
+        extra = ""
+        if "alerts" in data:
+            n = data.get("alerts") or 0
+            extra = f", {n} alert{'s' if n != 1 else ''}"
+        lines.append(f"{label}: {risk}{extra}")
+    if lines:
+        lines.append(f"Details: {SKILLS_SH_BASE}/{source}/{skill}")
+    return lines
+
+
+def _skill_audit_lines(skill: dict) -> list[str]:
+    parts = _skill_source_parts(skill)
+    if not parts or not parts[1]:
+        return []
+    return _audit_lines(parts[0], parts[1])
+
+
+def _print_partner_audits(skill: dict) -> None:
+    lines = _skill_audit_lines(skill)
+    if not lines:
+        return
+    print("  Third-party audits (advisory):")
+    for ln in lines:
+        print(f"     {ln}")
+
+
+# Skills whose job overlaps Skills Curator's own. Installing both means two
+# skills trigger on the same "find/install a skill" requests.
+RIVAL_SKILLS = {
+    "find-skills": "find-skills overlaps: Skills Curator covers search plus fit, "
+                   "safety and persistence; keep one to avoid both triggering",
+}
+
+
+def _rival_overlaps(registry_skills: list[dict], installed_dirs=None) -> list[str]:
+    present = {s.get("id", "").lower() for s in registry_skills}
+    present |= {d.lower() for d in (installed_dirs or [])}
+    return [msg for rid, msg in RIVAL_SKILLS.items() if rid in present]
 
 
 # ─── Intelligence layer ───────────────────────────────────────────────────────
@@ -1717,29 +2168,28 @@ def cmd_recommend(project_dir: Path | None = None,
 
     print("📦 Loading skill catalog...")
     catalog = _load_catalog(refresh)
-    registry_ids = {s["id"] for s in load_registry().get("skills", [])}
-    existing = set(signals.get("existing_skills", [])) | registry_ids
-
-    scored: list[tuple[int, set[str], dict]] = []
-    for skill in catalog:
-        if skill["id"] in existing:
-            continue
-        overlap = tags & set(skill.get("tags", []))
-        if not overlap:
-            continue
-        # Score on fit, not popularity. Tag overlap is the primary signal;
-        # trust tier is the tiebreaker.
-        score = len(overlap) * 10
-        score += {"official": 20, "high": 15, "medium": 5, "community": 2}.get(skill.get("trust", ""), 0)
-        scored.append((score, overlap, skill))
-    scored.sort(key=lambda x: -x[0])
+    registry = load_registry()
+    rejected, installed = _decision_index(registry, project_dir.name,
+                                          signals.get("existing_skills", []))
+    # Registered skills stay out of recommendations (already tracked) unless
+    # this project rejected them — those resurface, penalised and labelled.
+    tracked = {s["id"].lower() for s in registry.get("skills", [])} - rejected
+    candidates = [sk for sk in catalog
+                  if sk["id"].lower() not in tracked
+                  and tags & set(sk.get("tags", []))]
+    # Blended rank (no query → relevance 1.0): fit and trust dominate,
+    # popularity is capped at 15% of the score.
+    ranked = _rank_entries(candidates, None, tags, rejected, installed,
+                           exclude_installed=True)
+    scored = [(r["score"], tags & set(r["entry"].get("tags", [])), r["entry"], r)
+              for r in ranked]
 
     if not scored:
         print("\n  ✅ No new recommendations — stack looks well covered.\n")
         return
 
-    capability = [(s, o, sk) for s, o, sk in scored if sk.get("type") == "capability"]
-    preference = [(s, o, sk) for s, o, sk in scored if sk.get("type") == "preference"]
+    capability = [row for row in scored if row[2].get("type") == "capability"]
+    preference = [row for row in scored if row[2].get("type") == "preference"]
 
     trust_icons = {"official": "🏛️", "high": "✅", "medium": "🟡", "community": "⬜", "unknown": "❓"}
 
@@ -1771,10 +2221,10 @@ def cmd_recommend(project_dir: Path | None = None,
         if not group:
             return
         print(f"\n  {icon} {label}\n")
-        for i, (_, overlap, sk) in enumerate(group[:max_show], 1):
+        for i, (_, overlap, sk, r) in enumerate(group[:max_show], 1):
             t = trust_icons.get(sk.get("trust", ""), "❓")
             print(f"  {i:02}. {t} {sk['name']}")
-            print(f"       Why     : [{', '.join(sorted(overlap)[:3])}]")
+            print(f"       {_why_line(r, show_relevance=False)}")
             print(f"       What    : {sk.get('description', '')[:75]}")
             print(f"       Trust   : {sk.get('trust', '?')}")
             for p in sk.get("pros", [])[:2]:
@@ -1791,7 +2241,7 @@ def cmd_recommend(project_dir: Path | None = None,
     show(preference, "PREFERENCE — better defaults", "🎨", min(max_n, 4))
 
     recs = [{"id": sk["id"], "name": sk["name"], "install": sk["install"],
-             "score": s, "overlap": sorted(o)} for s, o, sk in scored[:10]]
+             "score": s, "overlap": sorted(o)} for s, o, sk, _ in scored[:10]]
     history: dict = {}
     if RECOMMENDATIONS_FILE.exists():
         try:
@@ -1805,27 +2255,32 @@ def cmd_recommend(project_dir: Path | None = None,
     print(f"  💾 Saved to recommendations.json")
 
 
-def cmd_discover(term: str | None = None, refresh: bool = False) -> None:
+def cmd_discover(term: str | None = None, refresh: bool = False,
+                 project_dir: Path | None = None) -> None:
+    """Full catalog search (curated + GitHub topics). With a term, results
+    use the blended rank against this project; without one, list the whole
+    catalog by trust. For the skills.sh index too, use --curate."""
     catalog = _load_catalog(refresh)
     trust_icons = {"official": "🏛️", "high": "✅", "medium": "🟡", "community": "⬜", "unknown": "❓"}
 
     trust_rank = {"official": 0, "high": 1, "medium": 2, "community": 3, "unknown": 4}
 
     if term:
-        tl = term.lower()
-        results = [
-            s for s in catalog
-            if tl in " ".join(
-                [s.get("id", ""), s.get("name", ""), s.get("description", "")]
-                + s.get("tags", [])
-            ).lower()
-        ]
-        results.sort(key=lambda x: trust_rank.get(x.get("trust", ""), 99))
-        print(f"\n🔍 Catalog search '{term}' — {len(results)} result(s)\n")
-        for s in results[:10]:
+        project_dir = project_dir or Path.cwd()
+        signals = _scan_project(project_dir)
+        rejected, installed = _decision_index(load_registry(), project_dir.name,
+                                              signals.get("existing_skills", []))
+        ranked = [r for r in _rank_entries(catalog, term, signals["tags"],
+                                           rejected, installed)
+                  if r["relevance"] > 0]
+        print(f"\n🔍 Catalog search '{term}' — {len(ranked)} result(s)\n")
+        for r in ranked[:10]:
+            s = r["entry"]
             t = trust_icons.get(s.get("trust", ""), "❓")
             print(f"  {t} {s['name']:35}  {s.get('trust', '?'):10}  [{s['id']}]")
-            print(f"     {s.get('description', '')[:75]}")
+            if s.get("description"):
+                print(f"     {s.get('description', '')[:75]}")
+            print(f"     {_why_line(r)}")
             print(f"     {s['install']}")
     else:
         catalog_sorted = sorted(catalog, key=lambda x: trust_rank.get(x.get("trust", ""), 99))
@@ -1956,6 +2411,7 @@ def _mark_security_reviewed(scanned_path: Path, findings: list) -> None:
         return
 
     matched["security_reviewed"] = True
+    _print_partner_audits(matched)
     matched["security_scan"] = {
         "date": str(date.today()),
         "result": "clean" if not findings else "review-needed",
@@ -2021,6 +2477,21 @@ def cmd_audit() -> None:
         print()
     else:
         print("  ✅ No preference conflicts detected\n")
+
+    # 2b. Rival skills that overlap Skills Curator itself
+    installed_dirs: list[str] = []
+    for sd in [Path.cwd() / ".claude" / "skills", Path.home() / ".claude" / "skills"]:
+        try:
+            installed_dirs += [d.name for d in sd.iterdir()
+                               if d.is_dir() and (d / "SKILL.md").exists()]
+        except Exception:
+            pass
+    rivals = _rival_overlaps(skills, installed_dirs)
+    if rivals:
+        print(f"  🟠 OVERLAPS WITH SKILLS CURATOR ({len(rivals)})")
+        for msg in rivals:
+            print(f"     • {msg}")
+        print()
 
     # 3. Unevaluated skills
     unevaluated = [s for s in skills if not s.get("evaluation_history")]
@@ -2416,6 +2887,11 @@ def main() -> None:
     p.add_argument("--discover",   nargs="?", const="", metavar="TERM")
     p.add_argument("--find",       nargs="?", const="", metavar="TERM",
                    help="Alias for --discover (familiar name from npx skills find)")
+    p.add_argument("--curate",     metavar="QUERY",
+                   help="Fast path: search skills.sh (~1.38M skills) + catalog, "
+                        "blended rank for this project (use --limit N, default 5)")
+    p.add_argument("--limit",      type=int, default=5,
+                   help="With --curate, number of results to show (default 5)")
     p.add_argument("--scan",       action="store_true")
     # Intelligence layer (proactive)
     p.add_argument("--auto",       action="store_true",
@@ -2453,7 +2929,7 @@ def main() -> None:
     p.add_argument("--version",    action="version", version=f"%(prog)s {VERSION}")
 
     args = p.parse_args()
-    proj = args.path or Path.cwd()
+    proj = (args.path or Path.cwd()).resolve()
 
     if args.list:                       cmd_list(args.type)
     elif args.search:                   cmd_search(args.search)
@@ -2475,8 +2951,9 @@ def main() -> None:
     elif args.customize:                cmd_customize(args.customize, proj, emit_fork=not args.no_fork)
     elif args.restore:                  cmd_restore_customization(args.restore, proj, apply=args.apply)
     elif args.recommend:                cmd_recommend(proj, args.refresh, args.max)
-    elif args.discover is not None:     cmd_discover(args.discover or None, args.refresh)
-    elif args.find is not None:         cmd_discover(args.find or None, args.refresh)
+    elif args.curate is not None:       cmd_curate(args.curate, proj, args.limit, args.refresh)
+    elif args.discover is not None:     cmd_discover(args.discover or None, args.refresh, proj)
+    elif args.find is not None:         cmd_discover(args.find or None, args.refresh, proj)
     elif args.scan:                     cmd_scan(proj)
     elif args.check:                    cmd_check(args.check)
     elif args.audit:                    cmd_audit()
